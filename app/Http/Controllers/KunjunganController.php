@@ -115,20 +115,32 @@ class KunjunganController extends Controller
 
         // B. ATURAN PENDAFTARAN (H-1 & SENIN)
         if ($requestDate->isMonday()) {
-            // --- ATURAN KHUSUS HARI SENIN ---
-            // Syarat: Hari ini harus JUMAT
-            if (!$today->isFriday()) {
-                return back()->with('error', 'Pendaftaran untuk hari SENIN hanya dibuka pada hari JUMAT sebelumnya.')->withInput();
+            // --- ATURAN KHUSUS HARI SENIN (VERSI FLEKSIBEL) ---
+            // Aturan: Pendaftaran dibuka mulai Jumat, Sabtu, hingga Minggu (H-1).
+
+            // 1. Cek Hari Ini (Apakah hari ini Jumat, Sabtu, atau Minggu?)
+            if (!$today->isFriday() && !$today->isSaturday() && !$today->isSunday()) {
+                return back()->with('error', 'Pendaftaran untuk kunjungan hari SENIN hanya dibuka mulai hari Jumat, Sabtu, dan Minggu sebelumnya.')->withInput();
             }
 
-            // Syarat: Tanggal yang diminta harus Senin terdekat (Selisih 3 hari dari Jumat)
-            // Jumat (0) -> Sabtu (1) -> Minggu (2) -> Senin (3)
-            if ($today->diffInDays($requestDate) != 3) {
-                return back()->with('error', 'Tanggal Senin yang Anda pilih tidak valid. Silakan pilih Senin terdekat.')->withInput();
+            // 2. Cek Jarak Hari (Pastikan Senin terdekat)
+            // Hitung selisih hari: 
+            // Jumat ke Senin = 3 hari
+            // Sabtu ke Senin = 2 hari
+            // Minggu ke Senin = 1 hari
+            $diff = $today->diffInDays($requestDate);
+
+            // Logika Validasi:
+            // - Harus masa depan ($requestDate > $today)
+            // - Tidak boleh lebih dari 3 hari (Jumat)
+            // - Tidak boleh kurang dari 1 hari (Minggu)
+            if (!$requestDate->gt($today) || $diff > 3 || $diff < 1) {
+                return back()->with('error', 'Tanggal Senin yang Anda pilih tidak valid. Mohon pilih hari Senin terdekat (Minggu depan).')->withInput();
             }
         } else {
             // --- ATURAN HARI BIASA (SELASA - SABTU) ---
-            // Syarat: Pendaftaran wajib H-1
+            // Syarat: Pendaftaran wajib H-1 (Satu hari sebelumnya)
+
             if ($today->diffInDays($requestDate) != 1) {
                 return back()->with('error', 'Pendaftaran kunjungan wajib dilakukan H-1 (Satu hari sebelum jadwal kunjungan).')->withInput();
             }
