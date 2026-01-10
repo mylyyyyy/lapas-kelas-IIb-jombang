@@ -64,24 +64,10 @@ class KunjunganController extends Controller
     public function store(Request $request)
     {
         // ====================================================
-        // 0. FIX LOGIC: OTOMATIS ISI SESI (Jika Bukan Senin)
+        // 1. DYNAMIC & CONDITIONAL VALIDATION
         // ====================================================
-        // Kita cek dulu tanggal yang dipilih user
-        if ($request->has('tanggal_kunjungan')) {
-            try {
-                $date = \Carbon\Carbon::parse($request->tanggal_kunjungan);
-
-                // Jika BUKAN hari Senin, sistem otomatis mengisi 'pagi'
-                // Agar tidak kena error "The sesi field is required"
-                if (!$date->isMonday()) {
-                    $request->merge(['sesi' => 'pagi']);
-                }
-            } catch (\Exception $e) {
-                // Abaikan error format tanggal, nanti ditangani validasi di bawah
-            }
-        }
-        // 1. VALIDASI INPUT FORM
-        $request->validate([
+        
+        $rules = [
             'nama_pengunjung'   => 'required|string|max:255',
             'nik_ktp'           => 'required|numeric|digits:16',
             'nomor_hp'          => 'required|string',
@@ -90,136 +76,110 @@ class KunjunganController extends Controller
             'barang_bawaan'     => 'nullable|string',
             'jenis_kelamin'     => 'required|in:Laki-laki,Perempuan',
             'foto_ktp'          => 'required|image|max:5000',
-            'wbp_id'            => 'required',
+            'wbp_id'            => 'required|exists:wbps,id',
             'hubungan'          => 'required|string',
             'tanggal_kunjungan' => 'required|date',
-
-            // Validation rule tetap 'required', tapi karena kita sudah merge 'pagi' di atas,
-            // maka hari selain Senin akan lolos validasi ini.
-            'sesi'              => 'required',
-        ]);
-
-        // ====================================================
-        // MULAI LOGIKA BISNIS (VALIDASI KHUSUS)
-        // ====================================================
-
-        // Setup Variabel Tanggal
-        // Kita pakai startOfDay() agar jam tidak berpengaruh, murni cek tanggal
-        $requestDate = \Carbon\Carbon::parse($request->tanggal_kunjungan)->startOfDay();
-        $today       = \Carbon\Carbon::now()->startOfDay();
-
-        // A. VALIDASI HARI LIBUR
-        if ($requestDate->isSunday()) {
-            return back()->with('error', 'Maaf, layanan kunjungan TUTUP pada hari Minggu.')->withInput();
-        }
-
-        // B. ATURAN PENDAFTARAN (H-1 & SENIN)
-        if ($requestDate->isMonday()) {
-            // --- ATURAN KHUSUS HARI SENIN (VERSI FLEKSIBEL) ---
-            // Aturan: Pendaftaran dibuka mulai Jumat, Sabtu, hingga Minggu (H-1).
-
-            // 1. Cek Hari Ini (Apakah hari ini Jumat, Sabtu, atau Minggu?)
-            if (!$today->isFriday() && !$today->isSaturday() && !$today->isSunday()) {
-                return back()->with('error', 'Pendaftaran untuk kunjungan hari SENIN hanya dibuka mulai hari Jumat, Sabtu, dan Minggu sebelumnya.')->withInput();
-            }
-
-            // 2. Cek Jarak Hari (Pastikan Senin terdekat)
-            // Hitung selisih hari: 
-            // Jumat ke Senin = 3 hari
-            // Sabtu ke Senin = 2 hari
-            // Minggu ke Senin = 1 hari
-            $diff = $today->diffInDays($requestDate);
-
-            // Logika Validasi:
-            // - Harus masa depan ($requestDate > $today)
-            // - Tidak boleh lebih dari 3 hari (Jumat)
-            // - Tidak boleh kurang dari 1 hari (Minggu)
-            if (!$requestDate->gt($today) || $diff > 3 || $diff < 1) {
-                return back()->with('error', 'Tanggal Senin yang Anda pilih tidak valid. Mohon pilih hari Senin terdekat (Minggu depan).')->withInput();
-            }
-        } else {
-            // --- ATURAN HARI BIASA (SELASA - SABTU) ---
-            // Syarat: Pendaftaran wajib H-1 (Satu hari sebelumnya)
-
-            if ($today->diffInDays($requestDate) != 1) {
-                return back()->with('error', 'Pendaftaran kunjungan wajib dilakukan H-1 (Satu hari sebelum jadwal kunjungan).')->withInput();
-            }
-        }
-
-        // C. SISTEM KUNCI (LOCK) WBP 1 MINGGU
-        // Aturan: WBP tidak boleh dikunjungi lagi jika sudah ada kunjungan dalam 6 hari terakhir
-        // Hitung mundur 6 hari dari tanggal yang diminta
-        $startWindow = $requestDate->copy()->subDays(6);
-
-        $existingVisit = Kunjungan::where('wbp_id', $request->wbp_id)
-            ->where('status', '!=', 'rejected') // Abaikan yang statusnya ditolak
-            ->whereBetween('tanggal_kunjungan', [$startWindow->format('Y-m-d'), $requestDate->format('Y-m-d')])
-            ->first();
-
-        if ($existingVisit) {
-            // Ambil tanggal kapan WBP itu dikunjungi terakhir kali
-            $lastVisitDate = Carbon::parse($existingVisit->tanggal_kunjungan);
-            // Hitung kapan boleh dikunjungi lagi (Tanggal terakhir + 7 hari)
-            $nextAllowedDate = $lastVisitDate->addDays(7)->translatedFormat('l, d F Y');
-
-            return back()->with('error', "WBP ini sudah menerima kunjungan pada tanggal " . $lastVisitDate->translatedFormat('d M Y') . ". Sesuai aturan, WBP baru bisa dikunjungi kembali mulai: " . $nextAllowedDate)->withInput();
-        }
-
-        // ====================================================
-        // AKHIR LOGIKA BISNIS - LANJUT SIMPAN DATABASE
-        // ====================================================
-
-        // MAPPING DATA
-        $inputData = [
-            'wbp_id'            => $request->wbp_id,
-            'nama_pengunjung'   => $request->nama_pengunjung,
-            'nik_ktp'           => $request->nik_ktp,
-            'no_wa_pengunjung'  => $request->nomor_hp,
-            'email_pengunjung'  => $request->email_pengunjung,
-            'alamat_pengunjung' => $request->alamat_lengkap,
-            'barang_bawaan'     => $request->barang_bawaan,
-            'jenis_kelamin'     => $request->jenis_kelamin,
-            'hubungan'          => $request->hubungan,
-            'tanggal_kunjungan' => $request->tanggal_kunjungan,
-            'sesi'              => $request->sesi,
         ];
 
+        if ($request->has('tanggal_kunjungan')) {
+            try {
+                $date = Carbon::parse($request->tanggal_kunjungan);
+                if ($date->isMonday()) {
+                    $rules['sesi'] = 'required|in:pagi,siang';
+                } else {
+                    $request->merge(['sesi' => 'pagi']);
+                }
+            } catch (\Exception $e) {
+                // Let main validation handle format errors
+            }
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $validatedData = $validator->validated();
+
+        // ====================================================
+        // 2. BUSINESS LOGIC VALIDATION
+        // ====================================================
+        $requestDate = Carbon::parse($validatedData['tanggal_kunjungan'])->startOfDay();
+        $today       = Carbon::now()->startOfDay();
+        $wbp         = Wbp::find($validatedData['wbp_id']);
+
+        if ($requestDate->isFriday() || $requestDate->isSaturday() || $requestDate->isSunday()) {
+            return back()->with('error', 'Layanan kunjungan tidak tersedia pada hari Jumat, Sabtu, dan Minggu.')->withInput();
+        }
+
+        if ($requestDate->isMonday()) {
+            if (!($today->isFriday() || $today->isSaturday() || $today->isSunday())) {
+                return back()->with('error', 'Pendaftaran untuk hari Senin hanya dibuka pada hari Jumat, Sabtu, dan Minggu sebelumnya.')->withInput();
+            }
+            if ($today->diffInDays($requestDate, false) < 1) {
+                 return back()->with('error', 'Pendaftaran untuk hari Senin minimal dilakukan pada hari Minggu.')->withInput();
+            }
+        } else {
+            if ($today->diffInDays($requestDate, false) !== 1) {
+                return back()->with('error', 'Pendaftaran kunjungan wajib dilakukan H-1 (satu hari sebelum jadwal kunjungan).')->withInput();
+            }
+        }
+
+        $isSeninRabu = $requestDate->isMonday() || $requestDate->isWednesday();
+        $isSelasaKamis = $requestDate->isTuesday() || $requestDate->isThursday();
+
+        if ($isSeninRabu && !Str::startsWith($wbp->no_registrasi, 'B')) {
+            return back()->with('error', "Jadwal hari Senin & Rabu hanya untuk Narapidana (Kode Registrasi B). WBP yang Anda pilih tidak termasuk dalam kategori ini.")->withInput();
+        }
+        if ($isSelasaKamis && !Str::startsWith($wbp->no_registrasi, 'A')) {
+            return back()->with('error', "Jadwal hari Selasa & Kamis hanya untuk Tahanan (Kode Registrasi A). WBP yang Anda pilih tidak termasuk dalam kategori ini.")->withInput();
+        }
+
+        $oneWeekAgo = $requestDate->copy()->subWeek();
+        $recentVisit = Kunjungan::where('wbp_id', $validatedData['wbp_id'])
+            ->where('status', 'approved')
+            ->where('tanggal_kunjungan', '>=', $oneWeekAgo->format('Y-m-d'))
+            ->orderBy('tanggal_kunjungan', 'desc')
+            ->first();
+            
+        if ($recentVisit) {
+            $nextAllowedDate = Carbon::parse($recentVisit->tanggal_kunjungan)->addWeek()->translatedFormat('l, d F Y');
+            return back()->with('error', "WBP ini sudah menerima kunjungan pada " . Carbon::parse($recentVisit->tanggal_kunjungan)->translatedFormat('d M Y') . ". WBP baru bisa dikunjungi lagi setelah 1 minggu, yaitu mulai " . $nextAllowedDate)->withInput();
+        }
+
+        // ====================================================
+        // 3. DATABASE TRANSACTION
+        // ====================================================
         try {
             DB::beginTransaction();
 
-            // A. Upload Foto
             $pathFotoUtama = $request->file('foto_ktp')->store('uploads/ktp', 'public');
+            $nomorAntrian = Kunjungan::where('tanggal_kunjungan', $validatedData['tanggal_kunjungan'])->count() + 1;
+            
+            // Re-add non-validated but necessary fields from the request
+            $fullData = array_merge($validatedData, [
+                'no_wa_pengunjung'  => $request->nomor_hp,
+                'email_pengunjung'  => $request->email_pengunjung,
+                'alamat_pengunjung' => $request->alamat_lengkap,
+            ]);
 
-            // B. Simpan Kunjungan
-            $nomorAntrian = Kunjungan::where('tanggal_kunjungan', $request->tanggal_kunjungan)->count() + 1;
-
-            $kunjungan = Kunjungan::create(array_merge($inputData, [
+            $kunjungan = Kunjungan::create(array_merge($fullData, [
                 'kode_kunjungan'       => 'VIS-' . strtoupper(Str::random(6)),
                 'nomor_antrian_harian' => $nomorAntrian,
                 'status'               => 'pending',
                 'qr_token'             => Str::uuid(),
                 'foto_ktp'             => $pathFotoUtama,
-                'pengikut_laki'        => 0,
-                'pengikut_perempuan'   => 0,
-                'pengikut_anak'        => 0
             ]));
 
-            // C. Simpan Detail Pengikut
             if ($request->has('pengikut_nama')) {
                 foreach ($request->pengikut_nama as $index => $nama) {
                     if (!empty($nama)) {
-                        $pathFotoPengikut = null;
-                        if ($request->hasFile("pengikut_foto.$index")) {
-                            $pathFotoPengikut = $request->file("pengikut_foto")[$index]->store('uploads/pengikut', 'public');
-                        }
-
                         Pengikut::create([
                             'kunjungan_id'  => $kunjungan->id,
                             'nama'          => $nama,
                             'nik'           => $request->pengikut_nik[$index] ?? null,
                             'hubungan'      => $request->pengikut_hubungan[$index] ?? null,
-                            'barang_bawaan' => $request->pengikut_barang[$index] ?? null,
-                            'foto_ktp'      => $pathFotoPengikut
                         ]);
                     }
                 }
@@ -227,19 +187,19 @@ class KunjunganController extends Controller
 
             DB::commit();
 
-            // KIRIM EMAIL PENDING (Jika konfigurasi env sudah benar)
             try {
-                if ($request->email_pengunjung) {
-                    Mail::to($request->email_pengunjung)->send(new KunjunganPending($kunjungan));
-                }
+                Mail::to($validatedData['email_pengunjung'])->send(new KunjunganPending($kunjungan));
             } catch (\Exception $e) {
+                \Log::error('Email sending failed for Kunjungan ID ' . $kunjungan->id . ': ' . $e->getMessage());
             }
 
             return redirect()->route('kunjungan.status', $kunjungan->id)
-                ->with('success', "PENDAFTARAN BERHASIL! Nomor Antrian: {$nomorAntrian}");
+                ->with('success', "PENDAFTARAN BERHASIL! Nomor Antrian Anda: {$nomorAntrian}");
+
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Terjadi Kesalahan: ' . $e->getMessage())->withInput();
+            \Log::error('Error storing visit: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
+            return back()->with('error', 'Terjadi kesalahan internal saat memproses pendaftaran. Silakan coba lagi.')->withInput();
         }
     }
 
