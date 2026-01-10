@@ -635,7 +635,7 @@
                    {{-- DATA PENGIKUT (DINAMIS DENGAN FOTO & DETAIL) --}}
                     <div class="mt-8 bg-gradient-to-r from-emerald-50 to-green-50 p-6 rounded-2xl border border-emerald-100 animate-slide-up-delay" 
                          x-data="{ 
-                             followers: [] // Array kosong untuk menampung pengikut
+                             followers: []
                          }">
                         
                         <div class="border-b-2 border-emerald-200 pb-3 mb-6 flex justify-between items-center">
@@ -643,21 +643,31 @@
                                 <span class="bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs font-extrabold px-3 py-1.5 rounded-full shadow-md flex items-center gap-1 animate-pulse">
                                     <i class="fa-solid fa-users"></i> 3
                                 </span> 
-                                <span class="text-emerald-800">Data Pengikut (Opsional)</span>
+                                <span class="text-emerald-800">Data Pengikut (Maksimal 4 Orang)</span>
                             </h3>
                             
-                            {{-- Tombol Tambah --}}
-                            <button type="button" @click="followers.push({id: Date.now()})" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-lg shadow transition flex items-center gap-1">
-                                <i class="fa-solid fa-plus"></i> Tambah Orang
-                            </button>
+                            {{-- Tombol Tambah dengan limit --}}
+                            <div>
+                                <button type="button" 
+                                    @click="if(followers.length < 4) followers.push({id: Date.now()})"
+                                    :disabled="followers.length >= 4"
+                                    :class="followers.length >= 4 ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700'"
+                                    class="text-xs text-white font-bold py-2 px-3 rounded-lg shadow transition flex items-center gap-1">
+                                    <i class="fa-solid fa-plus"></i> Tambah Orang
+                                </button>
+                            </div>
                         </div>
+
+                        {{-- Pesan Peringatan Limit --}}
+                        <p x-show="followers.length >= 4" x-transition class="text-center text-sm font-semibold text-red-600 bg-red-100 border border-red-300 rounded-lg p-2 mb-4">
+                            <i class="fa-solid fa-exclamation-circle mr-1"></i> Anda telah mencapai batas maksimal 4 pengikut.
+                        </p>
 
                         {{-- AREA LOOPING FORM --}}
                         <div class="space-y-6">
                             <template x-for="(follower, index) in followers" :key="follower.id">
-                                <div class="bg-white p-5 rounded-xl shadow-sm border border-emerald-200 relative transition-all duration-300 hover:shadow-md">
+                                <div class="bg-white p-5 rounded-xl shadow-sm border border-emerald-200 relative transition-all duration-300 hover:shadow-md animate-fade-in">
                                     
-                                    {{-- Header per Orang --}}
                                     <div class="flex justify-between items-center mb-4">
                                         <span class="text-xs font-bold text-emerald-600 uppercase tracking-wide bg-emerald-50 px-2 py-1 rounded">
                                             Pengikut ke-<span x-text="index + 1"></span>
@@ -708,10 +718,9 @@
                                 </div>
                             </template>
 
-                            {{-- Pesan Jika Kosong --}}
                             <div x-show="followers.length === 0" class="text-center py-6 border-2 border-dashed border-emerald-200 rounded-xl bg-white bg-opacity-50">
                                 <i class="fa-solid fa-user-plus text-3xl text-emerald-200 mb-2"></i>
-                                <p class="text-sm text-slate-500">Tidak ada pengikut tambahan?</p>
+                                <p class="text-sm text-slate-500">Tidak ada pengikut tambahan.</p>
                                 <p class="text-xs text-slate-400">Klik tombol <strong>+ Tambah Orang</strong> jika Anda membawa teman/keluarga.</p>
                             </div>
                         </div>

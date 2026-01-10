@@ -79,6 +79,17 @@ class KunjunganController extends Controller
             'wbp_id'            => 'required|exists:wbps,id',
             'hubungan'          => 'required|string',
             'tanggal_kunjungan' => 'required|date',
+            // Aturan untuk pengikut
+            'pengikut_nama'     => 'nullable|array|max:4',
+            'pengikut_nik'      => 'nullable|array|max:4',
+            'pengikut_hubungan' => 'nullable|array|max:4',
+            'pengikut_foto'     => 'nullable|array|max:4',
+            'pengikut_foto.*'   => 'nullable|image|max:5000', // Validasi setiap file di dalam array
+        ];
+
+        // Pesan error kustom untuk batas maksimal pengikut
+        $messages = [
+            'pengikut_nama.max' => 'Jumlah pengikut tidak boleh lebih dari 4 orang.',
         ];
 
         if ($request->has('tanggal_kunjungan')) {
@@ -94,7 +105,7 @@ class KunjunganController extends Controller
             }
         }
 
-        $validator = Validator::make($request->all(), $rules);
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
