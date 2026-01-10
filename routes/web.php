@@ -47,6 +47,7 @@ Route::get('/kontak', [App\Http\Controllers\HomeController::class, 'contact'])->
 Route::post('/kontak', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
 Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
 Route::get('/galeri-karya', [GalleryController::class, 'index'])->name('gallery.index');
+Route::get('/profil', [App\Http\Controllers\HomeController::class, 'profile'])->name('profile.index');
 
 // Berita & Pengumuman (Publik)
 Route::get('/berita', [NewsController::class, 'index'])->name('news.public.index');

@@ -75,7 +75,7 @@
 
         {{-- Secondary Links --}}
         <div class="flex flex-wrap justify-center gap-4 mt-8 mb-12 animate-fade-in-up" style="animation-delay: 0.6s;">
-            <a href="#profil" class="group border-2 border-white/30 hover:border-white hover:bg-white hover:text-slate-900 text-white text-sm font-semibold py-3 px-6 rounded-full shadow-lg transition-all card-hover-scale inline-flex items-center justify-center gap-2 btn-glow card-3d">
+            <a href="{{ route('profile.index') }}" class="group border-2 border-white/30 hover:border-white hover:bg-white hover:text-slate-900 text-white text-sm font-semibold py-3 px-6 rounded-full shadow-lg transition-all card-hover-scale inline-flex items-center justify-center gap-2 btn-glow card-3d">
                 <i class="fa-solid fa-building-columns group-hover:animate-float-up inline-block"></i>
                 <span>Profil Kami</span>
             </a>
@@ -89,91 +89,6 @@
             </a>
         </div>
 
-    </div>
-</section>
-
-<section id="profil" class="py-32 mb-16 bg-gradient-to-b from-white to-gray-50">
-    <div class="container mx-auto px-6">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-20">
-                <div class="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-8">
-                    <i class="fas fa-building mr-2"></i>
-                    Tentang Kami
-                </div>
-                <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-800 mb-8">
-                    Lembaga Pemasyarakatan <span class="text-blue-600">Kelas IIB Jombang</span>
-                </h2>
-                <div class="h-1 w-24 bg-gradient-to-r from-blue-500 to-yellow-500 mx-auto mb-8"></div>
-                <p class="text-lg text-gray-600 leading-relaxed max-w-4xl mx-auto">
-                    Berkomitmen tinggi dalam memberikan pembinaan kepribadian dan kemandirian kepada Warga Binaan Pemasyarakatan (WBP). Kami bertekad menciptakan lingkungan yang aman, tertib, dan manusiawi sebagai bekal mereka kembali ke masyarakat.
-                </p>
-            </div>
-
-            {{-- Stats Cards --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                <div class="transition-all duration-1000 bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-2xl shadow-xl border border-blue-200 flex flex-col items-center justify-center card-hover-scale group animate-icon-pulse">
-                    <div class="w-20 h-20 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                        <i class="fa-solid fa-users-line text-3xl"></i>
-                    </div>
-                    <h3 class="text-5xl font-black text-blue-800 mb-2">450+</h3>
-                    <p class="text-sm font-bold text-blue-600 uppercase tracking-wider">Warga Binaan</p>
-                    <p class="text-xs text-blue-500 mt-2 text-center">Kapasitas terpasang dengan pembinaan optimal</p>
-                </div>
-                <div class="transition-all duration-1000 bg-gradient-to-br from-emerald-50 to-emerald-100 p-8 rounded-2xl shadow-xl border border-emerald-200 flex flex-col items-center justify-center card-hover-scale group animate-icon-pulse">
-                    <div class="w-20 h-20 flex items-center justify-center bg-gradient-to-br from-emerald-500 to-emerald-600 text-white rounded-full mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                        <i class="fa-solid fa-handshake-angle text-3xl"></i>
-                    </div>
-                    <h3 class="text-5xl font-black text-emerald-800 mb-2">12+</h3>
-                    <p class="text-sm font-bold text-emerald-600 uppercase tracking-wider">Program Pembinaan</p>
-                    <p class="text-xs text-emerald-500 mt-2 text-center">Program holistik untuk reintegrasi sosial</p>
-                </div>
-                <div class="transition-all duration-1000 bg-gradient-to-br from-yellow-50 to-yellow-100 p-8 rounded-2xl shadow-xl border border-yellow-200 flex flex-col items-center justify-center card-hover-scale group animate-icon-pulse">
-                    <div class="w-20 h-20 flex items-center justify-center bg-gradient-to-br from-yellow-500 to-yellow-600 text-white rounded-full mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                        <i class="fa-solid fa-star text-3xl"></i>
-                    </div>
-                    <h3 class="text-5xl font-black text-yellow-800 mb-2">95%</h3>
-                    <p class="text-sm font-bold text-yellow-600 uppercase tracking-wider">Tingkat Keberhasilan</p>
-                    <p class="text-xs text-yellow-500 mt-2 text-center">Reintegrasi yang berhasil ke masyarakat</p>
-                </div>
-            </div>
-
-            {{-- Mission Statement --}}
-            <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h3 class="text-3xl font-bold text-slate-800 mb-6">Visi & Misi Kami</h3>
-                        <div class="space-y-6">
-                            <div class="flex items-start">
-                                <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mr-4 mt-1 flex-shrink-0 shadow-lg border-4 border-blue-200">
-                                    <span class="text-3xl">👁️</span>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-slate-800 mb-2">Visi</h4>
-                                    <p class="text-gray-600">Menjadi lembaga pemasyarakatan yang unggul dalam pembinaan dan pelayanan yang berorientasi pada kemanusiaan.</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mr-4 mt-1 flex-shrink-0 shadow-lg border-4 border-orange-200">
-                                    <span class="text-3xl">🎯</span>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-slate-800 mb-2">Misi</h4>
-                                    <p class="text-gray-600">Menyelenggarakan pembinaan yang komprehensif, memberikan pelayanan prima, dan menjaga keamanan serta ketertiban.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="relative">
-                        <div class="aspect-square bg-gradient-to-br from-blue-100 to-yellow-100 rounded-2xl flex items-center justify-center">
-                            <div class="text-center">
-                                <i class="fas fa-balance-scale text-6xl text-blue-600 mb-4"></i>
-                                <p class="text-lg font-semibold text-slate-700">Keadilan & Kemanusiaan</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </section>
 

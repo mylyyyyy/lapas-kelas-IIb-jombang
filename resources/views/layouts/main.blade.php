@@ -78,7 +78,7 @@
                 {{-- Menu Tengah --}}
                 <div class="hidden md:flex space-x-8 items-center">
                     <a href="{{ url('/') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-semibold transition-all duration-300">Beranda</a>
-                    <a href="{{ url('/#profil') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-semibold transition-all duration-300">Profil</a>
+                    <a href="{{ route('profile.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-semibold transition-all duration-300">Profil</a>
                     <a href="{{ route('news.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-semibold transition-all duration-300">Berita</a>
                     <a href="{{ route('announcements.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-semibold transition-all duration-300">Pengumuman</a>
                     {{-- TAMBAHAN: MENU GALERI (Disisipkan disini) --}}
@@ -135,7 +135,7 @@
                     <i class="fa-solid fa-user-plus mr-2"></i> Pendaftaran Kunjungan
                 </a>
                 <a href="{{ url('/') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-white hover:bg-slate-800/50 transition-all duration-300">Beranda</a>
-                <a href="{{ url('/#profil') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">Profil</a>
+                <a href="{{ route('profile.index') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">Profil</a>
                 <a href="{{ route('news.public.index') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">Berita</a>
                 <a href="{{ route('announcements.public.index') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">Pengumuman</a>
                 {{-- TAMBAHAN: MENU GALERI MOBILE --}}

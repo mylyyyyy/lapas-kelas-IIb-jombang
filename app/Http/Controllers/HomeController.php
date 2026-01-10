@@ -19,4 +19,9 @@ class HomeController extends Controller
     {
         return view('contact.index');
     }
+
+    public function profile()
+    {
+        return view('profile.index');
+    }
 }
