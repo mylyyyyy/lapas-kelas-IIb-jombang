@@ -82,4 +82,27 @@ class WhatsAppService
 
         $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
     }
+
+    /**
+     * Sends a reminder notification for an upcoming visit.
+     *
+     * @param Kunjungan $kunjungan
+     */
+    public function sendReminder(Kunjungan $kunjungan)
+    {
+        // Ensure WBP relationship is loaded for message content
+        $kunjungan->load('wbp');
+
+        $message = "Halo {$kunjungan->nama_pengunjung},\n\n"
+                 . "Ini adalah pengingat bahwa jadwal kunjungan tatap muka Anda adalah *BESOK*.\n"
+                 . "Detail Kunjungan:\n"
+                 . "Tanggal: " . \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y') . "\n"
+                 . "Sesi: " . ucfirst($kunjungan->sesi) . "\n"
+                 . "Warga Binaan: " . $kunjungan->wbp->nama . "\n\n"
+                 . "Mohon siapkan diri Anda dan pastikan membawa identitas asli serta QR Code Anda.\n"
+                 . "Link QR Code: " . route('kunjungan.verify', $kunjungan->qr_token) . "\n\n"
+                 . "Terima kasih atas perhatiannya.";
+        
+        $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
+    }
 }
