@@ -147,6 +147,14 @@
             @if($status_verifikasi == 'success' && $kunjungan)
                 {{-- ✅ HASIL: DATA DITEMUKAN --}}
                 <div class="glass-panel rounded-3xl p-8 border-l-8 border-emerald-500 relative overflow-hidden">
+                    
+                    {{-- Display Auto-Approval Message --}}
+                    @if(isset($approval_message))
+                        <div class="mb-6 bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 rounded-lg shadow-md">
+                            <p class="font-bold text-lg"><i class="fas fa-info-circle mr-2"></i> {{ $approval_message }}</p>
+                        </div>
+                    @endif
+
                     <div class="absolute top-0 right-0 w-40 h-40 bg-emerald-100 rounded-full mix-blend-multiply filter blur-2xl opacity-50 -mr-10 -mt-10"></div>
                     
                     <div class="flex flex-col md:flex-row items-start gap-8 relative z-10">

@@ -198,12 +198,21 @@ class KunjunganController extends Controller
         ]);
 
         $token = trim($request->qr_token);
-        $kunjungan = Kunjungan::where('qr_token', $token)->first();
+        $kunjungan = Kunjungan::with(['wbp', 'pengikuts'])->where('qr_token', $token)->first();
 
         if ($kunjungan) {
+            $message = 'Kunjungan valid dan sudah disetujui sebelumnya.';
+            // Automatically approve if status is pending
+            if ($kunjungan->status === 'pending') {
+                $kunjungan->status = 'approved';
+                $kunjungan->save();
+                $message = 'Kunjungan berhasil disetujui secara otomatis!';
+            }
+
             return view('admin.kunjungan.verifikasi', [
                 'kunjungan' => $kunjungan,
-                'status_verifikasi' => 'success'
+                'status_verifikasi' => 'success',
+                'verification_message' => $message
             ]);
         } else {
             return view('admin.kunjungan.verifikasi', [

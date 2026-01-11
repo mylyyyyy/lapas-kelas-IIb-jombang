@@ -18,10 +18,11 @@
         <p>Data pendaftaran kunjungan Anda telah berhasil masuk ke sistem kami.</p>
         
         <p style="background: #fff3cd; padding: 10px; border-radius: 5px; color: #856404;">
-            <strong>Status Saat Ini: MENUNGGU VERIFIKASI</strong>
+            <strong>Status Saat Ini: MENUNGGU KEDATANGAN</strong>
         </p>
 
-        <p>Mohon tunggu beberapa saat. Admin kami akan memeriksa data Anda. Notifikasi persetujuan (Tiket) atau penolakan akan dikirimkan melalui email ini.</p>
+        <p>Pendaftaran Anda berhasil! <strong>Simpan dan tunjukkan QR Code yang terlampir pada email ini saat tiba di Lapas.</strong></p>
+        <p>Proses scan QR Code di lokasi akan sekaligus menjadi persetujuan final kunjungan Anda. Tidak ada email persetujuan terpisah, jadi pastikan Anda membawa QR Code ini.</p>
         
         <p>Terima kasih.</p>
     </div>

@@ -12,15 +12,21 @@ class KunjunganPending extends Mailable
     use Queueable, SerializesModels;
 
     public $kunjungan;
+    public $qrCodePath;
 
-    public function __construct(Kunjungan $kunjungan)
+    public function __construct(Kunjungan $kunjungan, $qrCodePath)
     {
         $this->kunjungan = $kunjungan;
+        $this->qrCodePath = $qrCodePath;
     }
 
     public function build()
     {
-        return $this->subject('⏳ Pendaftaran Berhasil - Menunggu Verifikasi')
-            ->view('emails.kunjungan_pending');
+        return $this->subject('⏳ Pendaftaran Berhasil - Tiket Kunjungan Anda')
+            ->view('emails.kunjungan_pending')
+            ->attach($this->qrCodePath, [
+                'as' => 'qrcode.png',
+                'mime' => 'image/png',
+            ]);
     }
 }

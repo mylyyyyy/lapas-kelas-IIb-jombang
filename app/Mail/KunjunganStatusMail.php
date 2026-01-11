@@ -4,44 +4,58 @@ namespace App\Mail;
 
 use App\Models\Kunjungan;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class KunjunganStatusMail extends Mailable
+class KunjunganStatusMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     public $kunjungan;
+    public $qrCodePath;
 
-    public function __construct(Kunjungan $kunjungan)
+    /**
+     * Create a new message instance.
+     *
+     * @return void
+     */
+    public function __construct(Kunjungan $kunjungan, $qrCodePath = null)
     {
         $this->kunjungan = $kunjungan;
+        $this->qrCodePath = $qrCodePath;
     }
 
-    public function envelope(): Envelope
+    /**
+     * Build the message.
+     *
+     * @return $this
+     */
+    public function build()
     {
-        $subject = $this->kunjungan->status === 'approved'
-            ? '✅ Pendaftaran Kunjungan Disetujui - Lapas Kelas IIB Jombang'
-            : '❌ Pendaftaran Kunjungan Ditolak - Lapas Kelas IIB Jombang';
+        $subject = '';
+        switch ($this->kunjungan->status) {
+            case 'approved':
+                $subject = '✅ Tiket Kunjungan Anda Telah Disetujui';
+                break;
+            case 'rejected':
+                $subject = '❌ Tiket Kunjungan Anda Ditolak';
+                break;
+            default:
+                $subject = '⏳ Pendaftaran Kunjungan Anda Menunggu Persetujuan';
+                break;
+        }
 
-        return new Envelope(
-            subject: $subject,
-        );
-    }
+        $email = $this->subject($subject)
+                       ->view('emails.kunjungan.status');
 
-    public function content(): Content
-    {
-        // Pastikan file view ada di resources/views/emails/kunjungan-status.blade.php
-        return new Content(
-            view: 'emails.kunjungan-status',
-        );
-    }
+        if ($this->qrCodePath && file_exists($this->qrCodePath)) {
+            $email->attach($this->qrCodePath, [
+                'as' => 'qrcode.png',
+                'mime' => 'image/png',
+            ]);
+        }
 
-    public function attachments(): array
-    {
-        return [];
+        return $email;
     }
 }

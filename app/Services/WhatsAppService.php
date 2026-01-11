@@ -39,13 +39,14 @@ class WhatsAppService
      *
      * @param Kunjungan $kunjungan
      */
-    public function sendPending(Kunjungan $kunjungan)
+    public function sendPending(Kunjungan $kunjungan, string $qrCodeUrl)
     {
-        $message = "Terima kasih telah mendaftar untuk kunjungan di Lapas Jombang.\n\n" 
-                 . "Kode Pendaftaran Anda: *{$kunjungan->kode_kunjungan}*\n"
-                 . "Status: MENUNGGU PERSETUJUAN\n\n"
-                 . "Anda akan menerima notifikasi selanjutnya setelah pendaftaran Anda diverifikasi oleh petugas kami.\n\n"
-                 . "Lihat status pendaftaran Anda di sini: " . route('kunjungan.status', $kunjungan->id);
+        $message = "Pendaftaran Anda berhasil! Simpan QR Code Anda.\n\n"
+                 . "Kode Pendaftaran: *{$kunjungan->kode_kunjungan}*\n"
+                 . "Status: MENUNGGU KEDATANGAN\n\n"
+                 . "Tunjukkan QR Code dari link di bawah ini kepada petugas saat tiba di Lapas untuk persetujuan final.\n"
+                 . $qrCodeUrl . "\n\n"
+                 . "Terima kasih.";
 
         $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
     }
