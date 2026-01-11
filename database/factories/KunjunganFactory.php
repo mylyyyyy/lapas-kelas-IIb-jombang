@@ -2,33 +2,44 @@
 
 namespace Database\Factories;
 
+use App\Models\Kunjungan;
+use App\Models\Wbp;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Carbon\Carbon;
+use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Kunjungan>
- */
 class KunjunganFactory extends Factory
 {
     /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Kunjungan::class;
+
+    /**
      * Define the model's default state.
      *
-     * @return array<string, mixed>
+     * @return array
      */
-    public function definition(): array
+    public function definition()
     {
         return [
             'nama_pengunjung' => $this->faker->name(),
-            'nik_pengunjung' => $this->faker->numerify('################'),
+            'nik_ktp' => $this->faker->numerify('################'),
             'no_wa_pengunjung' => $this->faker->phoneNumber(),
             'email_pengunjung' => $this->faker->unique()->safeEmail(),
             'alamat_pengunjung' => $this->faker->address(),
-            'nama_wbp' => $this->faker->name(),
-            'hubungan' => $this->faker->randomElement(['Orang Tua', 'Suami / Istri', 'Anak', 'Saudara', 'Teman']),
-            'tanggal_kunjungan' => Carbon::now()->next(Carbon::TUESDAY)->format('Y-m-d'),
-            'nomor_antrian_harian' => $this->faker->unique()->numberBetween(1, 200),
-            'sesi' => null,
-            'status' => 'pending',
+            'jenis_kelamin' => $this->faker->randomElement(['Laki-laki', 'Perempuan']),
+            'wbp_id' => Wbp::factory(),
+            'hubungan' => $this->faker->randomElement(['Keluarga', 'Teman']),
+            'tanggal_kunjungan' => $this->faker->dateTimeBetween('+1 day', '+1 month'),
+            'sesi' => 'pagi',
+            'status' => $this->faker->randomElement(['pending', 'approved', 'rejected']),
+            'kode_kunjungan' => 'VIS-' . strtoupper(Str::random(6)),
+            'qr_token' => Str::uuid(),
+            'nomor_antrian_harian' => $this->faker->numberBetween(1, 100),
+            'preferred_notification_channel' => 'email',
+            'foto_ktp' => 'uploads/ktp/default.jpg',
         ];
     }
 }

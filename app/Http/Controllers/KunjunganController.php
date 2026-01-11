@@ -303,6 +303,15 @@ class KunjunganController extends Controller
         return view('admin.kunjungan.verifikasi');
     }
 
+    public function riwayat()
+    {
+        $kunjungans = Kunjungan::where('email_pengunjung', auth()->user()->email)
+            ->orderBy('tanggal_kunjungan', 'desc')
+            ->paginate(10);
+
+        return view('guest.kunjungan.riwayat', compact('kunjungans'));
+    }
+
     public function verifikasiSubmit(Request $request)
     {
         $token = $request->qr_token;

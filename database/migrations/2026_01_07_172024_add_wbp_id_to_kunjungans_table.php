@@ -12,16 +12,19 @@ return new class extends Migration
     public function up()
     {
         Schema::table('kunjungans', function (Blueprint $table) {
-            // Menambah kolom wbp_id setelah kolom id
-            $table->foreignId('wbp_id')->after('id')->constrained('wbps')->onDelete('cascade');
+            if (!Schema::hasColumn('kunjungans', 'wbp_id')) {
+                $table->foreignId('wbp_id')->after('id')->constrained('wbps')->onDelete('cascade');
+            }
         });
     }
 
     public function down()
     {
         Schema::table('kunjungans', function (Blueprint $table) {
-            $table->dropForeign(['wbp_id']);
-            $table->dropColumn('wbp_id');
+            if (Schema::hasColumn('kunjungans', 'wbp_id')) {
+                $table->dropForeign(['wbp_id']);
+                $table->dropColumn('wbp_id');
+            }
         });
     }
 };

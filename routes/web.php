@@ -98,6 +98,14 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middle
 
 
 // =========================================================================
+// 5. USER AREA (RIWAYAT KUNJUNGAN, ETC)
+// =========================================================================
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/kunjungan/riwayat', [KunjunganController::class, 'riwayat'])->name('kunjungan.riwayat');
+});
+
+
+// =========================================================================
 // 4. ADMIN PANEL (DASHBOARD & MANAJEMEN)
 // =========================================================================
 // Semua route di dalam grup ini wajib LOGIN dan punya role ADMIN

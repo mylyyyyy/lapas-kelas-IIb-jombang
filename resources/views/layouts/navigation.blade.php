@@ -1,3 +1,6 @@
+@php
+    use Illuminate\Support\Facades\Auth;
+@endphp
 <nav x-data="{ open: false }" class="sticky top-0 z-50 bg-gradient-to-r from-slate-950 via-blue-950 to-slate-950 border-b border-white/10 backdrop-blur-xl shadow-2xl transition-all duration-300">
     
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -52,6 +55,23 @@
                         @endif
                     </a>
 
+                    {{-- 3. RIWAYAT KUNJUNGAN LINK --}}
+                    <a href="{{ route('kunjungan.riwayat') }}"
+                       class="relative px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 group
+                       {{ request()->routeIs('kunjungan.riwayat')
+                          ? 'bg-green-600/20 text-green-400 border border-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.3)]'
+                          : 'text-slate-300 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10'
+                       }}">
+
+                        <span class="relative z-10 flex items-center gap-2 transform transition-transform duration-300 group-hover:-translate-y-0.5">
+                            <i class="fas fa-history text-lg {{ request()->routeIs('kunjungan.riwayat') ? 'text-green-400' : 'text-slate-400 group-hover:text-green-400' }}"></i>
+                            {{ __('Riwayat Kunjungan') }}
+                        </span>
+
+                        @if(request()->routeIs('kunjungan.riwayat'))
+                            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-green-400 rounded-full shadow-[0_0_10px_#4ade80]"></div>
+                        @endif
+                    </a>
                 </div>
             </div>
 
@@ -60,7 +80,7 @@
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center gap-3 px-4 py-2 border border-white/10 text-sm leading-4 font-medium rounded-xl text-slate-300 bg-white/5 hover:bg-white/10 hover:text-white hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.2)] focus:outline-none transition ease-in-out duration-300 transform hover:-translate-y-0.5">
-                            
+
                             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-inner">
                                 {{ substr(Auth::user()->name, 0, 1) }}
                             </div>
@@ -112,17 +132,23 @@
     {{-- MOBILE MENU LIST --}}
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-slate-900/95 backdrop-blur-xl border-t border-white/10">
         <div class="pt-2 pb-3 space-y-1 px-4">
-            
+
             {{-- Mobile Dashboard --}}
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" 
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')"
                 class="rounded-lg text-slate-300 hover:text-white hover:bg-blue-600/20 hover:border-blue-500 transition-all">
                 <i class="fas fa-home mr-2"></i> {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
             {{-- Mobile Galeri Karya (BARU) --}}
-            <x-responsive-nav-link :href="route('gallery.index')" :active="request()->routeIs('gallery.index')" 
+            <x-responsive-nav-link :href="route('gallery.index')" :active="request()->routeIs('gallery.index')"
                 class="rounded-lg text-slate-300 hover:text-white hover:bg-amber-600/20 hover:border-amber-500 transition-all">
                 <i class="fas fa-store mr-2 text-amber-500"></i> {{ __('Galeri Karya') }}
+            </x-responsive-nav-link>
+
+            {{-- Mobile Riwayat Kunjungan --}}
+            <x-responsive-nav-link :href="route('kunjungan.riwayat')" :active="request()->routeIs('kunjungan.riwayat')"
+                class="rounded-lg text-slate-300 hover:text-white hover:bg-green-600/20 hover:border-green-500 transition-all">
+                <i class="fas fa-history mr-2 text-green-500"></i> {{ __('Riwayat Kunjungan') }}
             </x-responsive-nav-link>
 
         </div>
