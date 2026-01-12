@@ -48,6 +48,13 @@
                 <i class="fas fa-print text-slate-400 group-hover:text-slate-600"></i>
                 <span>Cetak</span>
             </button>
+            
+            {{-- Export Button (Triggers Modal) --}}
+            <button type="button" id="openExportModal" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all hover:-translate-y-0.5 active:scale-95">
+                <i class="fas fa-file-export"></i>
+                <span>Export Data</span>
+            </button>
+
             <a href="{{ route('admin.kunjungan.verifikasi') }}" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:-translate-y-0.5 active:scale-95">
                 <i class="fas fa-qrcode"></i>
                 <span>Scan QR</span>
@@ -282,6 +289,56 @@
     </div>
 </div>
 
+{{-- EXPORT MODAL --}}
+<div id="exportModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <i class="fas fa-file-export text-emerald-600"></i>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                            Export Data Kunjungan
+                        </h3>
+                        <div class="mt-4">
+                            <form id="exportForm" action="{{ route('admin.kunjungan.export') }}" method="GET">
+                                <input type="hidden" name="type" value="excel">
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="modal_export_period" class="block text-sm font-medium text-gray-700">Periode Export</label>
+                                        <select id="modal_export_period" name="period" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm rounded-md">
+                                            <option value="all">Semua Data</option>
+                                            <option value="day">Harian</option>
+                                            <option value="week">Mingguan</option>
+                                            <option value="month">Bulanan</option>
+                                        </select>
+                                    </div>
+                                    <div id="modal_export_date_container" style="display: none;">
+                                        <label for="modal_export_date" class="block text-sm font-medium text-gray-700">Pilih Tanggal</label>
+                                        <input type="date" id="modal_export_date" name="date" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm rounded-md" value="{{ \Carbon\Carbon::today()->format('Y-m-d') }}">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
+                <button type="submit" form="exportForm" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-emerald-600 text-base font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    <i class="fas fa-download mr-2 mt-1"></i> Export
+                </button>
+                <button type="button" id="closeExportModal" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- HIDDEN FORM FOR SINGLE ACTION --}}
 <form id="single-action-form" method="POST" class="hidden">
     @csrf
@@ -304,8 +361,8 @@ function closeKtp() {
     document.getElementById('ktpModal').classList.add('hidden');
 }
 
-// --- 1. LOGIC CHECKBOX ---
 document.addEventListener('DOMContentLoaded', function() {
+    // --- 1. LOGIC CHECKBOX ---
     const selectAll = document.getElementById('selectAll');
     const checkboxes = document.querySelectorAll('.kunjungan-checkbox');
     const bulkBar = document.getElementById('bulkActionBar');
@@ -336,98 +393,132 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleBulkBar();
         });
     });
+
+    // --- EXPORT MODAL LOGIC ---
+    const openExportModalBtn = document.getElementById('openExportModal');
+    const closeExportModalBtn = document.getElementById('closeExportModal');
+    const exportModal = document.getElementById('exportModal');
+    const modalExportPeriodSelect = document.getElementById('modal_export_period');
+    const modalExportDateContainer = document.getElementById('modal_export_date_container');
+
+    function toggleModalExportDateInput() {
+        if (modalExportPeriodSelect.value === 'day' || modalExportPeriodSelect.value === 'week' || modalExportPeriodSelect.value === 'month') {
+            modalExportDateContainer.style.display = 'block';
+        } else {
+            modalExportDateContainer.style.display = 'none';
+        }
+    }
+
+    if (openExportModalBtn && exportModal) {
+        openExportModalBtn.addEventListener('click', function() {
+            exportModal.classList.remove('hidden');
+            toggleModalExportDateInput(); // Set initial state when modal opens
+        });
+    }
+
+    if (closeExportModalBtn && exportModal) {
+        closeExportModalBtn.addEventListener('click', function() {
+            exportModal.classList.add('hidden');
+        });
+    }
+    
+    if (modalExportPeriodSelect) {
+        modalExportPeriodSelect.addEventListener('change', toggleModalExportDateInput);
+    }
+    
+    // --- 2. LOGIC BULK ACTION ---
+    function submitBulkAction(actionType) {
+        const form = document.getElementById('bulk-action-form');
+        const count = document.querySelectorAll('.kunjungan-checkbox:checked').length;
+
+        if(count === 0) return;
+
+        let url, title, text, btnColor, btnText;
+
+        if(actionType === 'delete') {
+            url = "{{ route('admin.kunjungan.bulk-delete') }}";
+            title = `Hapus ${count} Data?`;
+            text = "Data yang dihapus tidak dapat dikembalikan!";
+            btnColor = '#ef4444';
+            btnText = 'Ya, Hapus!';
+        } else {
+            url = "{{ route('admin.kunjungan.bulk-update') }}";
+            title = actionType === 'approved' ? `Setujui ${count} Data?` : `Tolak ${count} Data?`;
+            text = `Status data akan diubah menjadi ${actionType}.`;
+            btnColor = actionType === 'approved' ? '#10b981' : '#f59e0b';
+            btnText = 'Ya, Lanjutkan';
+            
+            // Hapus input status lama jika ada
+            const oldInput = document.getElementById('bulk_status_input');
+            if(oldInput) oldInput.remove();
+
+            // Tambah input status baru
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'status';
+            input.value = actionType;
+            input.id = 'bulk_status_input';
+            form.appendChild(input);
+        }
+
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: btnColor,
+            cancelButtonColor: '#64748b',
+            confirmButtonText: btnText,
+            cancelButtonText: 'Batal',
+            showClass: { popup: 'animate__animated animate__zoomInDown' },
+            hideClass: { popup: 'animate__animated animate__zoomOutUp' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.action = url;
+                form.submit();
+            }
+        });
+    }
+
+    // --- 3. LOGIC SINGLE ACTION ---
+    function submitSingleAction(url, actionType, method) {
+        const form = document.getElementById('single-action-form');
+        const methodInput = document.getElementById('single_method');
+        const statusInput = document.getElementById('single_status');
+
+        let title, text, btnColor;
+
+        if(actionType === 'delete') {
+            title = 'Hapus Data?';
+            text = "Data akan dihapus permanen.";
+            btnColor = '#ef4444';
+        } else {
+            title = actionType === 'approved' ? 'Setujui Kunjungan?' : 'Tolak Kunjungan?';
+            text = "Notifikasi email akan dikirim ke pengunjung.";
+            btnColor = actionType === 'approved' ? '#10b981' : '#f59e0b';
+        }
+
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: btnColor,
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Proses',
+            showClass: { popup: 'animate__animated animate__zoomInDown' },
+            hideClass: { popup: 'animate__animated animate__zoomOutUp' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.action = url;
+                methodInput.value = method;
+                statusInput.value = actionType === 'delete' ? '' : actionType;
+                form.submit();
+            }
+        });
+    }
 });
-
-// --- 2. LOGIC BULK ACTION ---
-function submitBulkAction(actionType) {
-    const form = document.getElementById('bulk-action-form');
-    const count = document.querySelectorAll('.kunjungan-checkbox:checked').length;
-
-    if(count === 0) return;
-
-    let url, title, text, btnColor, btnText;
-
-    if(actionType === 'delete') {
-        url = "{{ route('admin.kunjungan.bulk-delete') }}";
-        title = `Hapus ${count} Data?`;
-        text = "Data yang dihapus tidak dapat dikembalikan!";
-        btnColor = '#ef4444';
-        btnText = 'Ya, Hapus!';
-    } else {
-        url = "{{ route('admin.kunjungan.bulk-update') }}";
-        title = actionType === 'approved' ? `Setujui ${count} Data?` : `Tolak ${count} Data?`;
-        text = `Status data akan diubah menjadi ${actionType}.`;
-        btnColor = actionType === 'approved' ? '#10b981' : '#f59e0b';
-        btnText = 'Ya, Lanjutkan';
-        
-        // Hapus input status lama jika ada
-        const oldInput = document.getElementById('bulk_status_input');
-        if(oldInput) oldInput.remove();
-
-        // Tambah input status baru
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'status';
-        input.value = actionType;
-        input.id = 'bulk_status_input';
-        form.appendChild(input);
-    }
-
-    Swal.fire({
-        title: title,
-        text: text,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: btnColor,
-        cancelButtonColor: '#64748b',
-        confirmButtonText: btnText,
-        cancelButtonText: 'Batal',
-        showClass: { popup: 'animate__animated animate__zoomInDown' },
-        hideClass: { popup: 'animate__animated animate__zoomOutUp' }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.action = url;
-            form.submit();
-        }
-    });
-}
-
-// --- 3. LOGIC SINGLE ACTION ---
-function submitSingleAction(url, actionType, method) {
-    const form = document.getElementById('single-action-form');
-    const methodInput = document.getElementById('single_method');
-    const statusInput = document.getElementById('single_status');
-
-    let title, text, btnColor;
-
-    if(actionType === 'delete') {
-        title = 'Hapus Data?';
-        text = "Data akan dihapus permanen.";
-        btnColor = '#ef4444';
-    } else {
-        title = actionType === 'approved' ? 'Setujui Kunjungan?' : 'Tolak Kunjungan?';
-        text = "Notifikasi email akan dikirim ke pengunjung.";
-        btnColor = actionType === 'approved' ? '#10b981' : '#f59e0b';
-    }
-
-    Swal.fire({
-        title: title,
-        text: text,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: btnColor,
-        cancelButtonColor: '#64748b',
-        confirmButtonText: 'Ya, Proses',
-        showClass: { popup: 'animate__animated animate__zoomInDown' },
-        hideClass: { popup: 'animate__animated animate__zoomOutUp' }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.action = url;
-            methodInput.value = method;
-            statusInput.value = actionType === 'delete' ? '' : actionType;
-            form.submit();
-        }
-    });
-}
 </script>
+
+
 @endsection

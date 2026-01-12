@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\KunjunganStatusMail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel; // ADDED
+use App\Exports\KunjunganExport;   // ADDED
 
 class KunjunganController extends Controller
 {
@@ -270,5 +272,54 @@ class KunjunganController extends Controller
 
         // 4. Return sebagai JSON
         return response()->json($events);
+    }
+
+    /**
+     * Handle export requests (Excel, PDF).
+     */
+    public function export(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:excel,pdf',
+            'period' => 'required|in:day,week,month,all',
+            'date' => 'nullable|date',
+        ]);
+
+        $type = $request->input('type');
+        $period = $request->input('period');
+        $date = $request->input('date'); // This could be null
+
+        switch ($type) {
+            case 'excel':
+                return $this->exportExcel($period, $date);
+            case 'pdf':
+                return $this->exportPdf($period, $date);
+            default:
+                return back()->with('error', 'Unsupported export type.');
+        }
+    }
+
+    /**
+     * Export Kunjungan data to Excel.
+     */
+    protected function exportExcel(string $period, ?string $date)
+    {
+        $filename = 'Laporan_Kunjungan_' . ucfirst($period);
+        if ($date) {
+            $filename .= '_' . \Carbon\Carbon::parse($date)->format('Ymd');
+        }
+        $filename .= '.xlsx';
+
+        return Excel::download(new KunjunganExport($period, $date), $filename);
+    }
+
+    /**
+     * Export Kunjungan data to PDF. (Placeholder)
+     */
+    protected function exportPdf(string $period, ?string $date)
+    {
+        // For PDF export, you would typically use a library like barryvdh/laravel-dompdf
+        // and render a view into PDF. This is a placeholder for now.
+        return back()->with('info', 'PDF export is not yet implemented.');
     }
 }

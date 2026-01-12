@@ -119,6 +119,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     // C. MANAJEMEN KUNJUNGAN (VERIFIKASI & LAPORAN)
     Route::get('kunjungan/kalender', [AdminKunjunganController::class, 'kalender'])->name('admin.kunjungan.kalender');
     Route::get('api/kunjungan/kalender', [AdminKunjunganController::class, 'kalenderData'])->name('admin.api.kunjungan.kalender');
+    Route::get('kunjungan/export', [\App\Http\Controllers\Admin\KunjunganController::class, 'export'])->name('admin.kunjungan.export');
     Route::get('kunjungan/verifikasi', [AdminKunjunganController::class, 'showVerificationForm'])->name('admin.kunjungan.verifikasi');
     Route::post('kunjungan/verifikasi', [AdminKunjunganController::class, 'verifyQrCode'])->name('admin.kunjungan.verifikasi.submit');
     Route::post('kunjungan/bulk-update', [AdminKunjunganController::class, 'bulkUpdate'])->name('admin.kunjungan.bulk-update');
