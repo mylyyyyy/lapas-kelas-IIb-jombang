@@ -129,7 +129,7 @@ class KunjunganController extends Controller
                 return back()->with('error', 'Tanggal Senin tidak valid. Pilih Senin terdekat.')->withInput();
             }
         } else {
-            if ($today->diffInDays($requestDate, false) !== 1) {
+            if ($requestDate->toDateString() !== $today->copy()->addDay()->toDateString()) {
                 return back()->with('error', 'Pendaftaran kunjungan wajib dilakukan H-1 (satu hari sebelum jadwal kunjungan).')->withInput();
             }
         }
