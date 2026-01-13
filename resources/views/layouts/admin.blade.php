@@ -91,6 +91,12 @@
                     <span class="font-medium">Kalender Kunjungan</span>
                 </a>
 
+                <a href="{{ route('admin.rekapitulasi') }}" 
+                   class="flex items-center px-4 py-3 {{ request()->routeIs('admin.rekapitulasi') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.rekapitulasi') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <span class="font-medium">Rekapitulasi</span>
+                </a>
+
                 @if(in_array($userRole, ['super_admin', 'admin_umum', 'admin_registrasi']))
                 <a href="{{ route('admin.users.index') }}" 
                    class="flex items-center px-4 py-3 {{ request()->routeIs('admin.users.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">

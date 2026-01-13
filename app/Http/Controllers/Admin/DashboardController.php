@@ -197,4 +197,30 @@ class DashboardController extends Controller
             'kuotaBiasa' => $kuotaBiasa,
         ]);
     }
+
+    public function rekapitulasi()
+    {
+        // 1. Visitor Gender Statistics (Primary Visitor)
+        $genderCounts = Kunjungan::where('status', 'approved')
+            ->select('jenis_kelamin', DB::raw('count(*) as total'))
+            ->groupBy('jenis_kelamin')
+            ->pluck('total', 'jenis_kelamin')
+            ->all();
+
+        $visitorGender = [
+            'Laki-laki' => $genderCounts['Laki-laki'] ?? 0,
+            'Perempuan' => $genderCounts['Perempuan'] ?? 0,
+        ];
+
+        // 2. Most Visited WBP
+        $mostVisitedWbp = Kunjungan::where('status', 'approved')
+            ->join('wbps', 'kunjungans.wbp_id', '=', 'wbps.id')
+            ->select('wbps.nama', 'wbps.no_registrasi', 'wbps.blok', 'wbps.kamar', DB::raw('count(kunjungans.wbp_id) as visit_count'))
+            ->groupBy('kunjungans.wbp_id', 'wbps.nama', 'wbps.no_registrasi', 'wbps.blok', 'wbps.kamar')
+            ->orderBy('visit_count', 'desc')
+            ->limit(10)
+            ->get();
+
+        return view('admin.rekapitulasi.index', compact('visitorGender', 'mostVisitedWbp'));
+    }
 }
