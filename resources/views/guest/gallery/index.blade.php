@@ -2,138 +2,192 @@
 
 @section('content')
 
-{{-- CSS KHUSUS --}}
-<style>
-    /* Animasi Teks Gradient Bergerak */
-    .text-gradient-moving {
-        background: linear-gradient(to right, #fbbf24 20%, #f59e0b 30%, #fbbf24 70%, #f59e0b 80%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-fill-color: transparent;
-        background-size: 200% auto;
-        animation: textShine 4s linear infinite;
-    }
-    @keyframes textShine { to { background-position: 200% center; } }
+{{-- 1. DATA DUMMY PRODUK --}}
+@php
+    $products = [
+        ['name' => 'Asbak Kayu Jati', 'image' => asset('img/galeri/asbak kayu jati.png'), 'cat' => 'Kerajinan', 'price' => 'Rp 45.000'],
+        ['name' => 'Hiasan Meja', 'image' => asset('img/galeri/hiasan meja.png'), 'cat' => 'Dekorasi', 'price' => 'Rp 75.000'],
+        ['name' => 'Jam Dinding Ukir', 'image' => asset('img/galeri/jam dinding ukir.png'), 'cat' => 'Furniture', 'price' => 'Rp 150.000'],
+        ['name' => 'Phone Holder Jati', 'image' => asset('img/galeri/phone holder kayu jati.png'), 'cat' => 'Aksesoris', 'price' => 'Rp 35.000'],
+        ['name' => 'Tempat Pisau Dapur', 'image' => asset('img/galeri/tempat pisau dapur.png'), 'cat' => 'Peralatan', 'price' => 'Rp 85.000'],
+        ['name' => 'Tempat Tissue', 'image' => asset('img/galeri/tempat tissue.png'), 'cat' => 'Perlengkapan', 'price' => 'Rp 50.000'],
+    ];
 
-    /* 3D Perspective */
-    .perspective-header { perspective: 1000px; }
-    .content-3d-tilt { transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
-    .perspective-header:hover .content-3d-tilt { transform: rotateX(2deg) rotateY(-2deg) scale(1.02); }
-</style>
+    $shopeeLink = $links['shopee'] ?? 'https://shopee.co.id';
+    $tokpedLink = $links['tokopedia'] ?? 'https://tokopedia.com';
+@endphp
 
-{{-- HERO SECTION --}}
-<section class="relative pt-32 pb-20 bg-slate-900 overflow-hidden perspective-header">
-    {{-- Background --}}
-    <div class="absolute inset-0 z-0 pointer-events-none">
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'2\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
-        <div class="absolute top-10 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-[100px] animate-pulse"></div>
-        <div class="absolute bottom-10 right-10 w-96 h-96 bg-yellow-500/10 rounded-full blur-[100px] animate-pulse" style="animation-delay: 2s"></div>
+@push('styles')
+    {{-- ANIMASI & STYLE LIBRARIES --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        /* --- A. PREMIUM BUTTON STYLES (UTAMA) --- */
+        .btn-market-pro {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1;
+            border: 0;
+        }
+
+        /* Efek Kilatan Cahaya (Shine) saat Hover */
+        .btn-market-pro::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -120%; width: 100%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: all 0.6s ease;
+            z-index: 2;
+        }
+        .btn-market-pro:hover::after { left: 120%; }
+        .btn-market-pro:hover { transform: translateY(-5px) scale(1.03); }
+
+        /* WARNA SHOPEE (Orange) */
+        .btn-shopee-pro {
+            background: linear-gradient(135deg, #EE4D2D 0%, #FF7337 100%);
+            box-shadow: 0 8px 20px -6px rgba(238, 77, 45, 0.6);
+        }
+        .btn-shopee-pro:hover { box-shadow: 0 15px 30px -8px rgba(238, 77, 45, 0.8); }
+
+        /* WARNA TOKOPEDIA (Hijau) */
+        .btn-tokped-pro {
+            background: linear-gradient(135deg, #00AA5B 0%, #42B549 100%);
+            box-shadow: 0 8px 20px -6px rgba(0, 170, 91, 0.6);
+        }
+        .btn-tokped-pro:hover { box-shadow: 0 15px 30px -8px rgba(0, 170, 91, 0.8); }
+
+        /* --- B. CARD STYLES --- */
+        .product-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            transition: all 0.5s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-10px);
+            border-color: #3b82f6;
+            box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.25);
+        }
+
+        /* Icon Action Buttons (Mini) */
+        .action-btn { transition: all 0.3s ease; }
+        .action-btn:hover { transform: rotate(15deg) scale(1.1); }
+    </style>
+@endpush
+
+{{-- 2. HERO SECTION --}}
+<section class="relative pt-36 pb-24 bg-slate-900 overflow-hidden">
+    {{-- Background Animated --}}
+    <div class="absolute inset-0 z-0">
+        <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse"></div>
+        <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-yellow-500/10 rounded-full blur-[100px]" style="animation-delay: 1.5s"></div>
     </div>
 
-    {{-- Content --}}
-    <div class="container mx-auto px-6 relative z-10 text-center content-3d-tilt">
-        <div class="transform translate-z-10">
-            <span class="inline-block py-1 px-3 rounded-full bg-blue-900/50 border border-blue-500/30 text-blue-300 text-xs font-bold tracking-wider mb-4 animate-fade-in-down shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-                ✨ KARYA WARGA BINAAN
+    <div class="container mx-auto px-6 relative z-10 text-center">
+        <div data-aos="fade-down" class="mb-8">
+            <span class="inline-flex items-center gap-2 py-1 px-4 rounded-full bg-slate-800 border border-slate-700 text-yellow-400 text-sm font-bold tracking-wider shadow-[0_0_15px_rgba(250,204,21,0.3)]">
+                <i class="fas fa-star animate-spin-slow"></i> KARYA WARGA BINAAN
             </span>
         </div>
 
-        <h1 class="text-4xl md:text-6xl font-black text-white mb-6 animate-fade-in-up drop-shadow-2xl">
-            Galeri 
-            <span class="text-gradient-moving font-extrabold relative inline-block">
-                Bimker
-                <span class="absolute inset-0 bg-yellow-500/20 blur-xl -z-10"></span>
-            </span> 
-            Lapas
+        <h1 class="text-4xl md:text-7xl font-black text-white mb-8 leading-tight drop-shadow-2xl" data-aos="zoom-in">
+            Galeri <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-400 to-yellow-300 animate-gradient">Bimker</span> Lapas
         </h1>
 
-        <p class="text-lg text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in-up transform translate-z-20" style="animation-delay: 0.1s">
-            Setiap produk adalah bukti kreativitas tanpa batas di balik jeruji. Dukung kemandirian mereka dengan membeli produk berkualitas asli buatan Lapas Kelas IIB Jombang.
+        <p class="text-lg text-slate-300 max-w-2xl mx-auto mb-12" data-aos="fade-up">
+            Temukan produk kerajinan tangan berkualitas premium.
+            <br>Belanja mudah melalui marketplace favorit Anda.
         </p>
 
-        {{-- MARKETPLACE BUTTONS --}}
-        <div class="flex flex-wrap justify-center gap-4 animate-fade-in-up transform translate-z-30" style="animation-delay: 0.2s">
+        {{-- BUTTONS MARKETPLACE (DESAIN BARU & MENARIK) --}}
+        <div class="flex flex-col md:flex-row justify-center gap-6 w-full max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="200">
             
-            {{-- Shopee --}}
-            <a href="{{ $links['shopee'] ?? '#' }}" target="_blank" class="group relative px-8 py-3 bg-white text-slate-900 rounded-xl font-bold hover:bg-orange-50 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-orange-500/40 flex items-center gap-3 overflow-hidden ring-2 ring-transparent hover:ring-orange-400">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fe/Shopee.svg" alt="Shopee" class="h-6 w-auto drop-shadow-sm">
-                <span class="group-hover:text-orange-600 transition-colors">Official Shopee</span>
-                <i class="fas fa-external-link-alt text-xs ml-1 text-slate-400 group-hover:text-orange-500"></i>
+            {{-- Shopee Button --}}
+            <a href="{{ $shopeeLink }}" target="_blank" class="btn-market-pro btn-shopee-pro group w-full md:w-auto px-8 py-5 rounded-2xl flex items-center justify-center md:justify-start gap-5 text-white">
+                {{-- Icon Container (Glass Effect) --}}
+                <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl border border-white/30 group-hover:rotate-6 transition-transform duration-300">
+                    <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.8 7.3C18.4 4.5 16.4 2.8 13.9 2.8C10.6 2.8 9.3 5.4 9.3 5.4C5.6 5.8 2.6 8.5 2.6 12.8C2.6 16.5 4.9 20.3 8.8 20.3C12 20.3 14 18.2 14 18.2V18.7H18.3V12.6C18.3 10.3 19.3 8.3 18.8 7.3ZM12.9 14.5C12.3 15.6 11.1 16.2 9.8 16.2C7.9 16.2 6.6 14.8 6.6 12.9C6.6 11.2 7.8 9.7 9.5 9.4C9.5 9.4 9.7 7.1 12 6.5C12.6 6.3 13.6 6.3 14 7.6C14.3 8.8 13.9 10.3 13.9 10.3C13.9 10.3 12.4 10.3 11.4 10.9C10.8 11.3 10.6 12 10.7 12.6C10.7 12.6 11.8 12 12.9 12.5C13.8 12.9 14.1 13.8 14 14.1C13.9 14.3 13.6 14.2 12.9 14.5Z"/></svg>
+                </div>
+                {{-- Text --}}
+                <div class="text-left">
+                    <div class="flex items-center gap-2">
+                        <p class="text-[10px] md:text-xs opacity-90 uppercase tracking-[0.2em] font-bold">Official Store</p>
+                        <i class="fas fa-external-link-alt text-[10px] opacity-60"></i>
+                    </div>
+                    <p class="text-2xl md:text-3xl font-black font-sans tracking-tight">Shopee</p>
+                </div>
             </a>
-            
-            {{-- Tokopedia (FIXED ICON: Menggunakan SVG Inline) --}}
-            <a href="{{ $links['tokopedia'] ?? '#' }}" target="_blank" class="group relative px-8 py-3 bg-white text-slate-900 rounded-xl font-bold hover:bg-green-50 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-green-500/40 flex items-center gap-3 overflow-hidden ring-2 ring-transparent hover:ring-green-400">
-                {{-- SVG Tokopedia Hijau Original --}}
-                <svg class="h-6 w-auto drop-shadow-sm" viewBox="0 0 156 142" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M129.5 45.9C128.7 44.5 127.6 43.3 126.3 42.4L103.4 27.2C103.4 27.2 103.4 27.2 103.3 27.2C101.9 26.2 100.1 26.3 98.8 27.4C97.5 28.5 97.1 30.4 97.9 31.9L107.1 49.3C99.2 45.3 90.3 43 80.9 43C70.6 43 60.9 45.8 52.6 50.6L63.2 31.9C64 30.4 63.6 28.5 62.3 27.4C61 26.3 59.2 26.2 57.8 27.2L34.8 42.4C33.5 43.3 32.4 44.5 31.6 45.9C26.1 55.4 22.9 66.4 22.9 78.1C22.9 113.3 51.4 141.8 86.6 141.8C121.8 141.8 150.3 113.3 150.3 78.1C150.3 65.7 146.7 54.1 140.5 44.2C138.2 40.2 134.4 40.2 134.4 40.2C132.3 41.8 130.6 43.8 129.5 45.9Z" fill="#00AA5B"/>
-                    <path d="M49.6001 77.1C49.6001 73.1 52.8001 69.9 56.8001 69.9C60.8001 69.9 64.0001 73.1 64.0001 77.1C64.0001 81.1 60.8001 84.3 56.8001 84.3C52.9001 84.3 49.6001 81.1 49.6001 77.1Z" fill="white"/>
-                    <path d="M96.1001 77.1C96.1001 73.1 99.3001 69.9 103.3 69.9C107.3 69.9 110.5 73.1 110.5 77.1C110.5 81.1 107.3 84.3 103.3 84.3C99.4001 84.3 96.1001 81.1 96.1001 77.1Z" fill="white"/>
-                </svg>
-                
-                <span class="group-hover:text-green-600 transition-colors">Official Tokopedia</span>
-                <i class="fas fa-external-link-alt text-xs ml-1 text-slate-400 group-hover:text-green-500"></i>
+
+            {{-- Tokopedia Button --}}
+            <a href="{{ $tokpedLink }}" target="_blank" class="btn-market-pro btn-tokped-pro group w-full md:w-auto px-8 py-5 rounded-2xl flex items-center justify-center md:justify-start gap-5 text-white">
+                {{-- Icon Container (Glass Effect) --}}
+                <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl border border-white/30 group-hover:-rotate-6 transition-transform duration-300">
+                    <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.8 6.4C19.2 5.3 18.1 4.5 16.8 4L13.7 2.4C13.2 2.1 12.6 2 12 2C11.4 2 10.8 2.1 10.3 2.4L7.2 4C5.9 4.5 4.8 5.3 4.2 6.4C3.6 7.5 3.4 8.7 3.6 10L4.5 15.3C4.8 17.5 6.1 19.4 8 20.6L11.1 22.4C11.4 22.6 11.7 22.7 12 22.7C12.3 22.7 12.6 22.6 12.9 22.4L16 20.6C17.9 19.4 19.2 17.5 19.5 15.3L20.4 10C20.6 8.7 20.4 7.5 19.8 6.4ZM12 13C10.9 13 10 12.1 10 11C10 9.9 10.9 9 12 9C13.1 9 14 9.9 14 11C14 12.1 13.1 13 12 13Z"/><path d="M8.5 9.5C8.5 9.5 9.5 8 12 8C14.5 8 15.5 9.5 15.5 9.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                {{-- Text --}}
+                <div class="text-left">
+                    <div class="flex items-center gap-2">
+                        <p class="text-[10px] md:text-xs opacity-90 uppercase tracking-[0.2em] font-bold">Official Store</p>
+                        <i class="fas fa-check-circle text-[10px] opacity-80"></i>
+                    </div>
+                    <p class="text-2xl md:text-3xl font-black font-sans tracking-tight">Tokopedia</p>
+                </div>
             </a>
         </div>
+
     </div>
 </section>
 
-{{-- PRODUCT GRID --}}
-<section class="py-20 bg-slate-50 min-h-screen">
+{{-- 3. PRODUCT GRID --}}
+<section class="py-24 bg-slate-50 min-h-screen">
     <div class="container mx-auto px-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             
-            @foreach($products as $index => $product)
-            <div class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden group card-3d card-hover-scale relative animate-fade-in-up" style="animation-delay: {{ $index * 0.1 }}s">
+            @foreach($products as $i => $item)
+            <div class="product-card rounded-3xl overflow-hidden relative group" data-aos="fade-up" data-aos-delay="{{ $i * 100 }}">
                 
-                {{-- Image Container --}}
-                <div class="relative h-64 overflow-hidden bg-slate-200">
-                    <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                {{-- Gambar Produk (Trigger Swing Alert saat diklik) --}}
+                <div class="relative h-72 overflow-hidden cursor-pointer swing-trigger" 
+                     data-img="{{ $item['image'] }}" 
+                     data-title="{{ $item['name'] }}">
                     
-                    {{-- Badge --}}
-                    <div class="absolute top-4 left-4">
-                        <span class="bg-white/90 backdrop-blur text-slate-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-                            {{ $product['category'] }}
+                    <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                    
+                    {{-- Overlay Badge --}}
+                    <div class="absolute top-4 left-4 z-10">
+                        <span class="bg-white/95 backdrop-blur text-slate-900 text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
+                            {{ $item['cat'] }}
                         </span>
+                    </div>
+
+                    {{-- Hover Hint --}}
+                    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <i class="fas fa-expand text-white text-4xl drop-shadow-lg transform scale-0 group-hover:scale-100 transition-transform duration-300"></i>
                     </div>
                 </div>
 
-                {{-- Content --}}
-                <div class="p-6 relative">
-                    <h3 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
-                        {{ $product['name'] }}
-                    </h3>
-                    <p class="text-sm text-slate-500 mb-4 line-clamp-2 min-h-[2.5rem]">
-                        {{ $product['description'] }}
-                    </p>
+                {{-- Info Produk --}}
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl font-bold text-slate-800 leading-tight">{{ $item['name'] }}</h3>
+                    </div>
                     
-                    <div class="flex items-center justify-between pt-4 border-t border-slate-100 mt-2">
-                        <div>
-                            <p class="text-xs text-slate-400 font-bold uppercase">Harga Mulai</p>
-                            <p class="text-lg font-black text-yellow-600">{{ $product['price'] }}</p>
-                        </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <p class="text-xl font-black text-slate-700">{{ $item['price'] }}</p>
                         
-                        {{-- Dropdown Beli --}}
-                        <div x-data="{ openBuy: false }" class="relative">
-                            <button @click="openBuy = !openBuy" @click.outside="openBuy = false" class="bg-slate-900 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors shadow-lg hover:shadow-blue-500/30 transform active:scale-95">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                            </button>
-
-                            <div x-show="openBuy" 
-                                 x-transition:enter="transition ease-out duration-200"
-                                 x-transition:enter-start="opacity-0 scale-95 translate-y-2"
-                                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                                 class="absolute bottom-full right-0 mb-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 p-2 z-20"
-                                 style="display: none;">
-                                <p class="text-xs text-slate-400 font-bold px-2 py-1 mb-1">Beli via:</p>
-                                <a href="{{ $links['shopee'] }}" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-orange-50 text-slate-700 text-sm font-medium transition-colors">
-                                    <span class="text-orange-500"><i class="fa-solid fa-bag-shopping"></i></span> Shopee
-                                </a>
-                                <a href="{{ $links['tokopedia'] }}" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-green-50 text-slate-700 text-sm font-medium transition-colors">
-                                    <span class="text-green-500"><i class="fa-solid fa-store"></i></span> Tokopedia
-                                </a>
-                            </div>
+                        {{-- Mini Buttons Marketplace --}}
+                        <div class="flex gap-2">
+                            <a href="{{ $shopeeLink }}" target="_blank" class="action-btn w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shadow-sm hover:bg-orange-600 hover:text-white hover:shadow-orange-500/50" title="Beli di Shopee">
+                                <i class="fas fa-shopping-bag"></i>
+                            </a>
+                            <a href="{{ $tokpedLink }}" target="_blank" class="action-btn w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center shadow-sm hover:bg-green-600 hover:text-white hover:shadow-green-500/50" title="Beli di Tokopedia">
+                                <i class="fas fa-store"></i>
+                            </a>
+                            <a href="https://wa.me/6281234567890" target="_blank" class="action-btn w-10 h-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center shadow-sm hover:bg-slate-800 hover:text-white" title="Tanya WA">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -144,49 +198,72 @@
     </div>
 </section>
 
-{{-- SECTION BARU: LIHAT LEBIH BANYAK --}}
-<section class="py-16 bg-blue-50 border-t border-slate-200">
-    <div class="container mx-auto px-6 text-center">
-        <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-3">
-            Ingin melihat lebih banyak barang?
-        </h2>
-        <p class="text-slate-600 mb-8 max-w-2xl mx-auto">
-            Kunjungi toko online resmi kami untuk melihat koleksi lengkap hasil karya warga binaan yang terus diperbarui.
-        </p>
-        
-        <div class="flex flex-wrap justify-center gap-4">
-            <a href="{{ $links['shopee'] ?? '#' }}" target="_blank" class="flex items-center gap-2 px-6 py-3 bg-white border border-orange-200 text-orange-600 rounded-full font-bold hover:bg-orange-600 hover:text-white transition-all duration-300 shadow-sm hover:shadow-orange-500/30">
-                <i class="fa-solid fa-bag-shopping"></i> Kunjungi Shopee
-            </a>
-            <a href="{{ $links['tokopedia'] ?? '#' }}" target="_blank" class="flex items-center gap-2 px-6 py-3 bg-white border border-green-200 text-green-600 rounded-full font-bold hover:bg-green-600 hover:text-white transition-all duration-300 shadow-sm hover:shadow-green-500/30">
-                <i class="fa-solid fa-store"></i> Kunjungi Tokopedia
-            </a>
-        </div>
-    </div>
-</section>
-
-{{-- CUSTOM ORDER CTA --}}
+{{-- 4. CUSTOM ORDER CTA (SESUAI REQUEST) --}}
 <section class="py-20 bg-white border-t border-slate-200">
     <div class="container mx-auto px-6">
-        <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden text-center card-3d transform transition-transform hover:-translate-y-2">
+        <div class="bg-gradient-to-br from-blue-800 to-slate-900 rounded-[2.5rem] p-10 md:p-16 text-center relative overflow-hidden shadow-2xl" data-aos="zoom-in-up">
+            
+            {{-- Background Elements --}}
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
-            <div class="absolute bottom-0 left-0 w-64 h-64 bg-yellow-400/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 animate-pulse" style="animation-delay: 1.5s"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-yellow-400/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
-            <div class="relative z-10 max-w-3xl mx-auto">
-                <div class="inline-flex items-center justify-center p-3 bg-white/10 rounded-full mb-6 text-yellow-300">
-                    <i class="fa-solid fa-wand-magic-sparkles text-2xl"></i>
-                </div>
-                <h2 class="text-3xl md:text-4xl font-black text-white mb-4">Ingin Pesan Custom?</h2>
-                <p class="text-blue-100 text-lg mb-8">
-                    Kami melayani pemesanan souvenir kantor, plakat, seragam, atau kerajinan tangan custom lainnya untuk kebutuhan instansi maupun pribadi.
+            <div class="relative z-10">
+                <h2 class="text-3xl md:text-5xl font-black text-white mb-6">Punya Desain Sendiri?</h2>
+                <p class="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
+                    Kami menerima pesanan custom (kustomisasi) untuk souvenir kantor, plakat, furniture, hingga kerajinan tangan sesuai keinginan Anda.
                 </p>
-                <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center gap-2 bg-white text-blue-700 font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-white/20 hover:scale-105 transition-all duration-300">
-                    <i class="fab fa-whatsapp text-2xl text-green-500"></i>
-                    <span>Hubungi Admin Bimker</span>
+                <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center gap-3 bg-yellow-500 text-slate-900 font-bold py-4 px-10 rounded-full shadow-[0_0_20px_rgba(234,179,8,0.4)] hover:shadow-[0_0_30px_rgba(234,179,8,0.6)] hover:bg-yellow-400 hover:scale-105 transition-all duration-300">
+                    <i class="fab fa-whatsapp text-2xl"></i>
+                    <span>Konsultasi Gratis via WA</span>
                 </a>
             </div>
+
         </div>
     </div>
 </section>
 
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<script>
+    AOS.init({ once: true, duration: 800 });
+
+    // --- SWING ALERT LOGIC (KLIK GAMBAR) ---
+    document.querySelectorAll('.swing-trigger').forEach(item => {
+        item.addEventListener('click', function() {
+            let img = this.dataset.img;
+            let title = this.dataset.title;
+
+            Swal.fire({
+                title: `<span class="text-2xl font-bold">${title}</span>`,
+                imageUrl: img,
+                imageWidth: 400,
+                imageAlt: title,
+                showConfirmButton: false,
+                showCloseButton: true,
+                // ANIMASI SWING
+                showClass: { popup: 'animate__animated animate__swing animate__fast' },
+                hideClass: { popup: 'animate__animated animate__fadeOutUp animate__faster' },
+                customClass: {
+                    popup: 'rounded-2xl overflow-hidden',
+                    image: 'rounded-lg mt-4 shadow-lg border border-slate-200'
+                },
+                // FOOTER TOMBOL
+                footer: `
+                    <div class="flex justify-center gap-3 w-full pb-2">
+                        <a href="{{ $shopeeLink }}" target="_blank" class="px-5 py-2 bg-[#ff5722] text-white rounded-full font-bold shadow hover:bg-orange-700 transition">
+                            <i class="fas fa-shopping-bag mr-1"></i> Shopee
+                        </a>
+                        <a href="{{ $tokpedLink }}" target="_blank" class="px-5 py-2 bg-[#00bfa5] text-white rounded-full font-bold shadow hover:bg-teal-700 transition">
+                            <i class="fas fa-store mr-1"></i> Tokopedia
+                        </a>
+                    </div>
+                `
+            });
+        });
+    });
+</script>
+@endpush
