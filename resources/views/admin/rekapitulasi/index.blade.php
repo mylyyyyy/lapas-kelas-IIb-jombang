@@ -9,18 +9,29 @@
         </p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {{-- Gender Chart --}}
-        <div class="lg:col-span-1 glass-panel p-6 rounded-2xl shadow-sm">
-            <h3 class="text-xl font-bold text-slate-800 mb-4">Demografi Pengunjung Utama</h3>
+        <div class="glass-panel p-6 rounded-2xl shadow-sm">
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Demografi Pengunjung Utama</h3>
             <p class="text-sm text-slate-500 mb-6">Berdasarkan gender pendaftar (tidak termasuk pengikut).</p>
             <div class="h-80 w-full">
                 <canvas id="genderChart"></canvas>
             </div>
         </div>
 
+        {{-- Busiest Session Chart --}}
+        <div class="glass-panel p-6 rounded-2xl shadow-sm">
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Sesi Kunjungan Terpadat</h3>
+            <p class="text-sm text-slate-500 mb-6">Berdasarkan jumlah pendaftar yang disetujui per sesi.</p>
+            <div class="h-80 w-full">
+                <canvas id="busiestSessionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8">
         {{-- Most Visited WBP Table --}}
-        <div class="lg:col-span-2 glass-panel p-6 rounded-2xl shadow-sm">
+        <div class="glass-panel p-6 rounded-2xl shadow-sm">
             <h3 class="text-xl font-bold text-slate-800 mb-4">Top 10 WBP Paling Sering Dikunjungi</h3>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-200">
@@ -62,6 +73,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // Chart 1: Gender
     const genderChartCtx = document.getElementById('genderChart')?.getContext('2d');
     if (genderChartCtx) {
         new Chart(genderChartCtx, {
@@ -90,15 +102,44 @@ document.addEventListener('DOMContentLoaded', () => {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            font: {
-                                size: 14,
-                                family: "'Inter', sans-serif"
-                            },
+                            font: { size: 14, family: "'Inter', sans-serif" },
                             padding: 20
                         }
                     },
                 },
                 cutout: '60%'
+            }
+        });
+    }
+
+    // Chart 2: Busiest Sessions
+    const busiestSessionCtx = document.getElementById('busiestSessionChart')?.getContext('2d');
+    if (busiestSessionCtx) {
+        new Chart(busiestSessionCtx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($sessionCounts->keys()) !!},
+                datasets: [{
+                    label: 'Jumlah Kunjungan',
+                    data: {!! json_encode($sessionCounts->values()) !!},
+                    backgroundColor: 'rgba(22, 163, 74, 0.7)',
+                    borderColor: 'rgba(22, 163, 74, 1)',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 }
+                    }
+                }
             }
         });
     }

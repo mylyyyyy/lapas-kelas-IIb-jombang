@@ -221,6 +221,20 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
-        return view('admin.rekapitulasi.index', compact('visitorGender', 'mostVisitedWbp'));
+        // 3. Busiest Visit Sessions
+        $sessionCounts = Kunjungan::where('status', 'approved')
+            ->get()
+            ->mapToGroups(function ($item) {
+                // Use Carbon for reliable day translation
+                $dayName = Carbon::parse($item->tanggal_kunjungan)->getTranslatedDayName();
+                $session = ucfirst($item->sesi);
+                return ["$dayName ($session)" => 1];
+            })
+            ->map(function ($group) {
+                return $group->count();
+            })
+            ->sortDesc();
+
+        return view('admin.rekapitulasi.index', compact('visitorGender', 'mostVisitedWbp', 'sessionCounts'));
     }
 }
