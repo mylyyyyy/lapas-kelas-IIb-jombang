@@ -60,7 +60,7 @@
                 <p class="text-base sm:text-lg text-gray-200 max-w-4xl mx-auto leading-relaxed drop-shadow-sm">
                     Mohon pelajari <strong class="text-yellow-300 underline decoration-yellow-400">Jadwal</strong>, <strong class="text-yellow-300 underline decoration-yellow-400">Alur Layanan</strong>, dan <strong class="text-yellow-300 underline decoration-yellow-400">Ketentuan Barang</strong> di bawah ini sebelum mengisi formulir pendaftaran demi kelancaran kunjungan Anda.
                 </p>
-                <div class="mt-8 flex justify-center gap-4">
+                <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                     <div class="bg-white bg-opacity-10 backdrop-blur-sm border border-white border-opacity-20 px-4 py-2 rounded-full text-white text-sm font-medium">
                         <i class="fa-solid fa-shield-alt mr-2"></i> Aman & Terpercaya
                     </div>
@@ -71,14 +71,15 @@
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-16 relative z-20">
 
             {{-- BADGE KEMENTERIAN --}}
             <div class="text-center mb-8">
-                <div class="inline-flex items-center gap-3 bg-gradient-to-r from-blue-950 to-blue-900 text-yellow-400 px-6 py-3 rounded-full font-bold text-sm shadow-2xl border-2 border-yellow-500 border-opacity-50">
-                    <i class="fa-solid fa-landmark text-lg"></i>
-                    KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN RI
-                    <i class="fa-solid fa-scale-balanced text-lg"></i>
+                <div class="inline-flex items-center text-center gap-2 sm:gap-3 bg-gradient-to-r from-blue-950 to-blue-900 text-yellow-400 px-4 py-3 sm:px-6 rounded-full font-bold shadow-2xl border-2 border-yellow-500 border-opacity-50 text-xs sm:text-sm">
+                    <i class="fa-solid fa-landmark text-base sm:text-lg"></i>
+                    <span class="sm:hidden">KEMENKUMHAM RI</span>
+                    <span class="hidden sm:inline">KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN RI</span>
+                    <i class="fa-solid fa-scale-balanced text-base sm:text-lg"></i>
                 </div>
             </div>
 
@@ -338,9 +339,9 @@
                 </div>
 
                 <button @click="showForm = true; window.scrollTo({top: 0, behavior: 'smooth'})"
-                    class="group relative inline-flex items-center justify-start overflow-hidden rounded-full bg-gradient-to-r from-blue-950 to-black px-12 py-6 font-bold text-white transition-all duration-300 hover:from-black hover:to-blue-950 hover:scale-105 shadow-2xl hover:shadow-blue-900/50 border-2 border-yellow-500 border-opacity-50">
+                    class="group relative inline-flex items-center justify-start overflow-hidden rounded-full bg-gradient-to-r from-blue-950 to-black px-8 py-4 sm:px-12 sm:py-6 font-bold text-white transition-all duration-300 hover:from-black hover:to-blue-950 hover:scale-105 shadow-2xl hover:shadow-blue-900/50 border-2 border-yellow-500 border-opacity-50">
                     <span class="absolute right-0 -mt-12 h-32 w-8 translate-x-12 rotate-12 bg-gradient-to-b from-yellow-500 to-yellow-600 opacity-30 transition-all duration-1000 ease-out group-hover:-translate-x-40"></span>
-                    <span class="relative flex items-center gap-3 text-lg tracking-wide">
+                    <span class="relative flex items-center gap-3 text-base sm:text-lg tracking-wide">
                         <i class="fa-solid fa-file-signature text-yellow-400"></i>
                         ISI FORMULIR PENDAFTARAN
                         <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
@@ -410,7 +411,7 @@
                     @csrf
 
                     {{-- Data Pengunjung --}}
-                    <div class="bg-gradient-to-r from-blue-50 to-gray-50 p-6 rounded-2xl border border-blue-100 animate-slide-up">
+                    <div class="bg-gradient-to-r from-blue-50 to-gray-50 p-4 sm:p-6 rounded-2xl border border-blue-100 animate-slide-up">
                         <h3 class="text-base sm:text-lg font-bold text-slate-800 border-b-2 border-blue-200 pb-3 mb-6 flex items-center gap-3">
                             <span class="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-extrabold px-3 py-1.5 rounded-full shadow-md flex items-center gap-1 animate-pulse">
                                 <i class="fa-solid fa-user"></i> 1
@@ -513,7 +514,7 @@
                     </div>
 
                     {{-- Data WBP (AUTOCOMPLETE FIX) --}}
-                    <div class="mt-8 bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-2xl border border-yellow-100 animate-slide-up-delay">
+                    <div class="mt-8 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 sm:p-6 rounded-2xl border border-yellow-100 animate-slide-up-delay">
                         <h3 class="text-base sm:text-lg font-bold text-slate-800 border-b-2 border-yellow-200 pb-3 mb-6 flex items-center gap-3">
                             <span class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 text-xs font-extrabold px-3 py-1.5 rounded-full shadow-md flex items-center gap-1 animate-pulse">
                                 <i class="fa-solid fa-users"></i> 2
@@ -673,7 +674,7 @@
                     </div>
 
                    {{-- DATA PENGIKUT (DINAMIS DENGAN FOTO & DETAIL) --}}
-                    <div class="mt-8 bg-gradient-to-r from-emerald-50 to-green-50 p-6 rounded-2xl border border-emerald-100 animate-slide-up-delay" 
+                    <div class="mt-8 bg-gradient-to-r from-emerald-50 to-green-50 p-4 sm:p-6 rounded-2xl border border-emerald-100 animate-slide-up-delay" 
                          x-data="{ 
                              followers: []
                          }">
@@ -768,12 +769,12 @@
                     </div>
 
                     {{-- Tombol Kirim --}}
-                    <div class="pt-8 border-t-2 border-gray-200 flex items-center justify-between gap-4 bg-gradient-to-r from-gray-50 to-blue-50 p-6 rounded-2xl">
-                        <button type="button" @click="showForm = false" class="px-8 py-3 text-slate-600 font-bold hover:text-slate-900 transition bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center gap-2">
+                    <div class="pt-8 border-t-2 border-gray-200 flex flex-col-reverse sm:flex-row sm:justify-between items-stretch sm:items-center gap-4 bg-gradient-to-r from-gray-50 to-blue-50 p-4 sm:p-6 rounded-2xl">
+                        <button type="button" @click="showForm = false" class="w-full sm:w-auto px-6 py-3 text-slate-600 font-bold hover:text-slate-900 transition bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center gap-2">
                             <i class="fa-solid fa-arrow-left"></i> Kembali
                         </button>
-                        <button type="submit" class="bg-gradient-to-r from-yellow-50 to-yellow-700 text-slate-900 font-bold px-12 py-4 rounded-xl shadow-xl hover:scale-105 transition transform flex items-center gap-3 text-lg">
-                            <i class="fa-solid fa-paper-plane text-xl"></i> KIRIM
+                        <button type="submit" class="w-full sm:w-auto bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 font-bold px-8 py-4 rounded-xl shadow-xl hover:scale-105 transition transform flex items-center justify-center gap-3 text-base sm:text-lg">
+                            <i class="fa-solid fa-paper-plane sm:text-xl"></i> KIRIM
                         </button>
                     </div>
                 </form>

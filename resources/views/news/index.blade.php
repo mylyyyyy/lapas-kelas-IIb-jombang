@@ -46,7 +46,7 @@
             <i class="fas fa-newspaper mr-2"></i>
             Berita & Informasi
         </div>
-        <h1 class="text-4xl md:text-6xl font-black mb-6 tracking-tight">
+        <h1 class="text-3xl sm:text-4xl md:text-6xl font-black mb-6 tracking-tight">
             Berita <span class="bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent animate-text-shimmer">Terbaru</span>
         </h1>
         <p class="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed mb-8">

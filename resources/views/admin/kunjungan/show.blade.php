@@ -64,7 +64,7 @@
     {{-- HEADER --}}
     <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate__animated animate__fadeInDown">
         <div>
-            <h1 class="text-4xl font-extrabold text-gradient">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gradient">
                 Detail Kunjungan
             </h1>
             <p class="text-slate-500 mt-2 font-medium">Informasi lengkap & tiket antrian.</p>

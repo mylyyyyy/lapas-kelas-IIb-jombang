@@ -50,7 +50,7 @@
                 <div class="inline-flex items-center px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold uppercase tracking-wider mb-3 text-blue-200">
                     <i class="fas fa-layer-group mr-2"></i> Dashboard Admin
                 </div>
-                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
                     Halo, <span class="text-gradient">{{ Auth::user()->name }}</span>! 👋
                 </h1>
                 <p class="text-blue-100/80 mt-3 text-lg font-light max-w-xl leading-relaxed">
@@ -238,7 +238,7 @@
                 <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
                     <i class="fas fa-rocket text-blue-500"></i> Akses Cepat
                 </h3>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     @php $userRole = Auth::user()->role ?? 'user'; @endphp
                     @if(in_array($userRole, ['super_admin', 'admin_humas']))
                     <a href="{{ route('news.create') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-blue-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">

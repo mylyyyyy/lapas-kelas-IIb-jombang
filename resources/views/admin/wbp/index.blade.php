@@ -9,7 +9,7 @@
             <h1 class="text-2xl font-bold text-slate-800">🗂️ Database Warga Binaan</h1>
             <p class="text-slate-500 text-sm mt-1">Kelola data WBP, lokasi sel, dan masa tahanan.</p>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
             <div class="bg-white border border-slate-200 px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-3 transform hover:-translate-y-1 transition-transform duration-300">
                 <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
                     <i class="fa-solid fa-users text-lg"></i>
@@ -19,7 +19,7 @@
                     <p class="text-2xl font-black text-slate-800">{{ $wbps->total() }}</p>
                 </div>
             </div>
-            <a href="{{ route('admin.wbp.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-5 rounded-xl shadow-lg hover:shadow-indigo-500/50 font-semibold flex items-center gap-2 transform hover:-translate-y-1 transition-all duration-300">
+            <a href="{{ route('admin.wbp.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-5 rounded-xl shadow-lg hover:shadow-indigo-500/50 font-semibold flex items-center justify-center gap-2 transform hover:-translate-y-1 transition-all duration-300">
                 <i class="fa-solid fa-plus"></i>
                 <span>Tambah WBP</span>
             </a>

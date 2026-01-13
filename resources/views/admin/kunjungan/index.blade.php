@@ -38,24 +38,24 @@
     {{-- HEADER --}}
     <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate__animated animate__fadeInDown">
         <div>
-            <h1 class="text-4xl font-extrabold text-gradient">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gradient">
                 Pendaftaran Kunjungan
             </h1>
             <p class="text-slate-500 mt-2 font-medium">Manajemen data kunjungan real-time.</p>
         </div>
-        <div class="flex items-center gap-3">
-            <button onclick="window.print()" class="group flex items-center gap-2 bg-white text-slate-600 font-bold px-5 py-2.5 rounded-xl shadow-sm border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all active:scale-95">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+            <button onclick="window.print()" class="group flex items-center justify-center gap-2 bg-white text-slate-600 font-bold px-5 py-2.5 rounded-xl shadow-sm border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all active:scale-95">
                 <i class="fas fa-print text-slate-400 group-hover:text-slate-600"></i>
                 <span>Cetak</span>
             </button>
             
             {{-- Export Button (Triggers Modal) --}}
-            <button type="button" id="openExportModal" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all hover:-translate-y-0.5 active:scale-95">
+            <button type="button" id="openExportModal" class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all hover:-translate-y-0.5 active:scale-95">
                 <i class="fas fa-file-export"></i>
                 <span>Export Data</span>
             </button>
 
-            <a href="{{ route('admin.kunjungan.verifikasi') }}" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:-translate-y-0.5 active:scale-95">
+            <a href="{{ route('admin.kunjungan.verifikasi') }}" class="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all hover:-translate-y-0.5 active:scale-95">
                 <i class="fas fa-qrcode"></i>
                 <span>Scan QR</span>
             </a>

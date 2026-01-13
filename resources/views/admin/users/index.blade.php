@@ -40,7 +40,7 @@
     {{-- HEADER --}}
     <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate__animated animate__fadeInDown">
         <div>
-            <h1 class="text-4xl font-extrabold text-gradient">Manajemen Pengguna</h1>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gradient">Manajemen Pengguna</h1>
             <p class="text-slate-500 mt-2 font-medium">Kelola akses dan data pengguna sistem.</p>
         </div>
         <a href="{{ route('admin.users.create') }}" class="group inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-1 active:scale-95">
