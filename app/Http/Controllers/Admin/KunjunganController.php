@@ -211,12 +211,31 @@ class KunjunganController extends Controller
                 $message = 'Kunjungan berhasil disetujui secara otomatis!';
             }
 
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => $message,
+                    'kunjungan' => [
+                        'nama_pengunjung' => $kunjungan->nama_pengunjung,
+                        'wbp_nama' => $kunjungan->wbp->nama ?? '-',
+                        'tanggal_kunjungan' => \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y'),
+                    ]
+                ]);
+            }
+
             return view('admin.kunjungan.verifikasi', [
                 'kunjungan' => $kunjungan,
                 'status_verifikasi' => 'success',
-                'verification_message' => $message
+                'approval_message' => $message
             ]);
         } else {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Token QR Code tidak valid atau tidak ditemukan.'
+                ], 404);
+            }
+            
             return view('admin.kunjungan.verifikasi', [
                 'kunjungan' => null,
                 'status_verifikasi' => 'failed'

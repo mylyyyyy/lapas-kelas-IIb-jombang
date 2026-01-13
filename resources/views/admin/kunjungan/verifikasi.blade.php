@@ -253,105 +253,130 @@
         const startBtn = document.getElementById('start-scan-btn');
         const scannerPlaceholder = document.getElementById('scanner-placeholder');
         const scannerLaser = document.getElementById('scanner-laser');
-        const tokenInput = document.getElementById('qr_token'); // Mengarah ke input form manual
-        const verificationForm = document.getElementById('verification-form'); // Mengarah ke form manual
-        let html5QrcodeScanner = null;
+        const verificationForm = document.getElementById('verification-form');
+        let html5Qrcode = null;
 
-        // Cek Keamanan
-        function isSecureOrigin() {
-            return window.location.protocol === 'https:' || 
-                   window.location.hostname === 'localhost' || 
-                   window.location.hostname === '127.0.0.1';
-        }
-
-        if (startBtn) {
-            startBtn.addEventListener('click', function() {
-                if (!isSecureOrigin()) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Koneksi Tidak Aman',
-                        text: 'Kamera memerlukan HTTPS atau Localhost.',
-                        customClass: { confirmButton: 'bg-blue-600 text-white px-6 py-2 rounded-lg' }
-                    });
-                    return;
-                }
-
-                // UI Updates
-                scannerPlaceholder.classList.add('hidden');
-                scannerLaser.classList.remove('hidden');
-
-                // Init Library
-                html5QrcodeScanner = new Html5Qrcode("qr-reader");
-
-                // Cek Kamera
-                Html5Qrcode.getCameras().then(devices => {
-                    if (devices && devices.length) {
-                        let cameraId = devices[0].id;
-                        // Prioritaskan kamera belakang
-                        const backCamera = devices.find(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('environment') || d.label.toLowerCase().includes('belakang'));
-                        if(backCamera) cameraId = backCamera.id;
-
-                        // Start Scanning
-                        html5QrcodeScanner.start(
-                            cameraId, 
-                            { 
-                                fps: 15, 
-                                qrbox: { width: 250, height: 250 },
-                                aspectRatio: 1.0 
-                            },
-                            onScanSuccess,
-                            onScanFailure
-                        ).catch(err => {
-                            console.error("Error start:", err);
-                            showError("Gagal Membuka Kamera", "Izin kamera diperlukan.");
-                        });
-                    } else {
-                        showError("Kamera Tidak Ditemukan", "Tidak ada perangkat kamera terdeteksi.");
-                    }
-                }).catch(err => {
-                    showError("Izin Ditolak", "Izinkan akses kamera di browser Anda.");
-                });
-            });
-        }
-
+        // Function to show errors using SweetAlert
         function showError(title, text) {
-            Swal.fire({ icon: 'error', title: title, text: text });
+            Swal.fire({
+                icon: 'error',
+                title: title,
+                text: text,
+                customClass: { confirmButton: 'bg-blue-600 text-white px-6 py-2 rounded-lg' }
+            });
             scannerPlaceholder.classList.remove('hidden');
             scannerLaser.classList.add('hidden');
         }
 
-        function onScanSuccess(decodedText, decodedResult) {
-            console.log("QR Terbaca:", decodedText);
-            
-            // 1. Masukkan hasil ke input manual (Agar user bisa lihat apa yang terscan)
-            tokenInput.value = decodedText.trim(); // Trim spasi
-            
-            // 2. Beri efek visual pada input
-            tokenInput.style.backgroundColor = "#d1fae5"; // Hijau muda
-            tokenInput.style.borderColor = "#10b981"; // Hijau
+        // --- Scan Success Callback ---
+        async function onScanSuccess(decodedText, decodedResult) {
+            // Stop Scanner to prevent multiple scans
+            if (html5Qrcode && html5Qrcode.isScanning) {
+                try {
+                    await html5Qrcode.stop();
+                    console.log("Scanner stopped.");
+                } catch (err) {
+                    console.error("Failed to stop scanner.", err);
+                }
+            }
 
-            // 3. Stop Scanner
-            html5QrcodeScanner.stop().then(() => {
-                // 4. Tampilkan Loading & Submit
-                Swal.fire({
-                    title: 'QR Code Terbaca!',
-                    text: 'Memverifikasi data...',
-                    timer: 800,
-                    showConfirmButton: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                        // 5. Submit Form Manual (Cara paling aman)
-                        setTimeout(() => { verificationForm.submit(); }, 300);
+            // Show loading pop-up
+            Swal.fire({
+                title: 'QR Code Terbaca!',
+                text: 'Memverifikasi data...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // --- AJAX Submission ---
+            try {
+                const formData = new FormData();
+                formData.append('qr_token', decodedText.trim());
+                // Get CSRF token from meta tag
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                formData.append('_token', csrfToken);
+
+                const response = await fetch('{{ route("admin.kunjungan.verifikasi.submit") }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
                     }
                 });
-            }).catch(err => {
-                // Jika gagal stop, paksa submit saja
-                verificationForm.submit();
-            });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Verifikasi Berhasil!',
+                        html: `Pengunjung: <b>${data.kunjungan.nama_pengunjung}</b><br>Tujuan: <b>${data.kunjungan.wbp_nama}</b>`,
+                        confirmButtonText: 'Scan Lagi'
+                    }).then(() => {
+                        startBtn.click(); // Restart scanner
+                    });
+                } else {
+                    throw data; // Trigger catch block for failed responses
+                }
+
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Verifikasi Gagal!',
+                    text: error.message || 'Token tidak valid atau tidak ditemukan.',
+                    confirmButtonText: 'Coba Lagi'
+                }).then(() => {
+                    startBtn.click(); // Restart scanner on failure
+                });
+            }
+        }
+        
+        function onScanFailure(error) {
+            // This function is called frequently, keep it empty or log sparingly.
         }
 
-        function onScanFailure(error) {
-            // Biarkan scanning berjalan terus
+        // --- Start Scanner Button Logic ---
+        if (startBtn) {
+            startBtn.addEventListener('click', function() {
+                // Check for secure context
+                if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                    showError('Koneksi Tidak Aman', 'Fitur kamera pemindai QR Code memerlukan koneksi HTTPS yang aman atau harus dijalankan di lingkungan localhost.');
+                    return;
+                }
+
+                scannerPlaceholder.classList.add('hidden');
+                scannerLaser.classList.remove('hidden');
+
+                html5Qrcode = new Html5Qrcode("qr-reader");
+
+                Html5Qrcode.getCameras().then(devices => {
+                    if (devices && devices.length) {
+                        let cameraId = devices[0].id;
+                        const backCamera = devices.find(d => d.label.toLowerCase().includes('back'));
+                        if (backCamera) {
+                            cameraId = backCamera.id;
+                        }
+                        
+                        html5Qrcode.start(
+                            { deviceId: { exact: cameraId } },
+                            { fps: 10, qrbox: { width: 250, height: 250 } },
+                            onScanSuccess,
+                            onScanFailure
+                        ).catch((err) => {
+                            showError('Error Kamera', 'Gagal memulai kamera. Pastikan Anda telah memberikan izin akses kamera di browser.');
+                            console.error("Camera start error:", err);
+                        });
+                    } else {
+                        showError('Kamera Tidak Ditemukan', 'Tidak ada perangkat kamera yang terdeteksi di perangkat Anda.');
+                    }
+                }).catch(err => {
+                    showError('Izin Kamera Ditolak', 'Akses ke kamera diperlukan untuk memindai QR Code. Mohon izinkan akses pada browser Anda.');
+                    console.error("Camera permission error:", err);
+                });
+            });
         }
     });
 </script>
