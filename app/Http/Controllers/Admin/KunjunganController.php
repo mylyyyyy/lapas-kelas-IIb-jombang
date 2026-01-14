@@ -376,6 +376,12 @@ class KunjunganController extends Controller
             'barang_bawaan' => 'nullable|string',
         ]);
 
+        // Custom validation for total pengikut
+        $totalPengikut = ($request->pengikut_laki ?? 0) + ($request->pengikut_perempuan ?? 0) + ($request->pengikut_anak ?? 0);
+        if ($totalPengikut > 4) {
+            return redirect()->back()->withInput()->withErrors(['total_pengikut' => 'Jumlah total pengikut tidak boleh melebihi 4 orang.']);
+        }
+
         $tanggalKunjungan = Carbon::parse($request->tanggal_kunjungan);
 
         // Cek Kuota Offline (maksimal 20 per hari)

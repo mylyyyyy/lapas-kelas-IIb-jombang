@@ -213,6 +213,10 @@ function queueControl() {
                 this.finishing.push(id);
                 const response = await this.postData(`{{ url('api/admin/antrian') }}/${id}/finish`);
                 if (response.success) {
+                    const finishedKunjungan = this.queues.in_progress.find(k => k.id === id);
+                    if (finishedKunjungan) {
+                        this.speakNotification(finishedKunjungan);
+                    }
                     delete this.timers[id];
                 } else {
                     Swal.fire('Gagal', response.error || 'Gagal menyelesaikan kunjungan.', 'error');
@@ -223,6 +227,26 @@ function queueControl() {
                 Swal.fire('Error', `Terjadi kesalahan koneksi: ${error.message}`, 'error');
             } finally {
                 this.finishing = this.finishing.filter(i => i !== id);
+            }
+        },
+
+        speakNotification(kunjungan) {
+            if ('speechSynthesis' in window) {
+                const visitorName = kunjungan.nama_pengunjung;
+                const queueNumber = kunjungan.nomor_antrian_harian;
+                const wbpName = kunjungan.wbp ? kunjungan.wbp.nama : 'Warga Binaan';
+                const message = `Kunjungan atas nama ${visitorName} nomor antrian ${queueNumber}, nama WBP ${wbpName} telah selesai, silahkan meninggalkan tempat kunjungan.`;
+
+                const utterance = new SpeechSynthesisUtterance(message);
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.9;
+                if (this.voices.length > 0) {
+                    utterance.voice = this.voices[0];
+                }
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.warn('Browser does not support speech synthesis for notifications.');
             }
         },
 
