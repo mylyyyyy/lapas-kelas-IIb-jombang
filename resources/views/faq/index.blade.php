@@ -29,8 +29,8 @@
         
         /* Efek Hover: Naik sedikit + Bayangan + Border berwarna sesuai tema icon */
         .faq-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-8px) rotateX(2deg) scale(1.02); /* Lebih 'pop out' */
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Bayangan lebih dalam */
             border-color: #e2e8f0;
         }
 
@@ -42,6 +42,36 @@
         /* --- 3. CUSTOM SCROLLBAR --- */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* --- 4. BLOB ANIMATION (for Hero Section) --- */
+        @keyframes blob {
+            0%, 100% { transform: scale(1) translate(0, 0); }
+            33% { transform: scale(1.1) translate(30px, -20px); }
+            66% { transform: scale(0.9) translate(-20px, 30px); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite cubic-bezier(0.6, 0.01, 0.3, 0.95);
+        }
+
+        /* Custom animation delays */
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+        .animation-delay-6000 { animation-delay: 6s; }
+
+        /* --- 5. Custom Pulse Animation for Buttons --- */
+        @keyframes pulse-light {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            }
+            50% {
+                transform: scale(1.01);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            }
+        }
+        .animate-pulse-light {
+            animation: pulse-light 2s infinite ease-in-out;
+        }
     </style>
 @endpush
 
@@ -59,6 +89,13 @@
     {{-- Floating Elements --}}
     <div class="absolute top-20 left-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
     <div class="absolute bottom-20 right-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1.5s;"></div>
+    
+    {{-- NEW: Abstract 3D-like Shape --}}
+    <div class="absolute inset-0 flex items-center justify-center z-0">
+        <div class="w-64 h-64 bg-purple-500/10 rounded-full blur-[100px] animate-blob animation-delay-4000"></div>
+        <div class="w-72 h-72 bg-pink-500/10 rounded-full blur-[100px] animate-blob animation-delay-2000"></div>
+        <div class="w-80 h-80 bg-blue-500/10 rounded-full blur-[100px] animate-blob animation-delay-6000"></div>
+    </div>
 
     <div class="container mx-auto px-6 text-center relative z-10" data-aos="fade-down">
         
@@ -110,8 +147,10 @@
                         class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
                     <div class="flex items-center gap-5">
                         {{-- Icon Box --}}
-                        <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 shadow-sm">
-                            <i class="fas fa-globe text-xl"></i>
+                        <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 shadow-lg relative
+                                    before:content-[''] before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-transparent before:via-white/20 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
+                                    transform hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-globe text-xl relative z-10 drop-shadow-md"></i>
                         </div>
                         <span class="text-lg font-bold text-slate-800 group-hover:text-blue-600 transition-colors">Apa itu sistem pendaftaran kunjungan online?</span>
                     </div>
@@ -145,8 +184,10 @@
                 <button @click="open = !open; if(open) showSwingAlert('Panduan', 'Cara daftar kunjungan')" 
                         class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
                     <div class="flex items-center gap-5">
-                        <div class="w-12 h-12 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center shrink-0 shadow-sm">
-                            <i class="fas fa-desktop text-xl"></i>
+                        <div class="w-12 h-12 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center shrink-0 shadow-lg relative
+                                    before:content-[''] before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-transparent before:via-white/20 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
+                                    transform hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-desktop text-xl relative z-10 drop-shadow-md"></i>
                         </div>
                         <span class="text-lg font-bold text-slate-800">Bagaimana cara mendaftar kunjungan?</span>
                     </div>
@@ -178,8 +219,10 @@
                 <button @click="open = !open; if(open) showSwingAlert('Syarat', 'Dokumen yang diperlukan')" 
                         class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
                     <div class="flex items-center gap-5">
-                        <div class="w-12 h-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0 shadow-sm">
-                            <i class="fas fa-id-card text-xl"></i>
+                        <div class="w-12 h-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0 shadow-lg relative
+                                    before:content-[''] before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-transparent before:via-white/20 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
+                                    transform hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-id-card text-xl relative z-10 drop-shadow-md"></i>
                         </div>
                         <span class="text-lg font-bold text-slate-800">Apa saja syarat berkunjung?</span>
                     </div>
@@ -210,8 +253,10 @@
                 <button @click="open = !open; if(open) showSwingAlert('Aturan', 'Maksimal 4 orang')" 
                         class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
                     <div class="flex items-center gap-5">
-                        <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center shrink-0 shadow-sm">
-                            <i class="fas fa-users text-xl"></i>
+                        <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center shrink-0 shadow-lg relative
+                                    before:content-[''] before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-transparent before:via-white/20 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
+                                    transform hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-users text-xl relative z-10 drop-shadow-md"></i>
                         </div>
                         <span class="text-lg font-bold text-slate-800">Berapa maksimal jumlah pengunjung?</span>
                     </div>
@@ -236,8 +281,10 @@
                 <button @click="open = !open; if(open) showSwingAlert('Peringatan', 'Barang terlarang!')" 
                         class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
                     <div class="flex items-center gap-5">
-                        <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0 shadow-sm">
-                            <i class="fas fa-ban text-xl"></i>
+                        <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0 shadow-lg relative
+                                    before:content-[''] before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-transparent before:via-white/20 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
+                                    transform hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-ban text-xl relative z-10 drop-shadow-md"></i>
                         </div>
                         <span class="text-lg font-bold text-slate-800">Barang apa saja yang dilarang?</span>
                     </div>
@@ -277,8 +324,10 @@
                 <button @click="open = !open; if(open) showSwingAlert('Verifikasi', 'Maksimal 1x24 Jam')" 
                         class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
                     <div class="flex items-center gap-5">
-                        <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 shadow-sm">
-                            <i class="fas fa-check-double text-xl"></i>
+                        <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 shadow-lg relative
+                                    before:content-[''] before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-transparent before:via-white/20 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
+                                    transform hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-check-double text-xl relative z-10 drop-shadow-md"></i>
                         </div>
                         <span class="text-lg font-bold text-slate-800">Berapa lama proses verifikasi?</span>
                     </div>
@@ -303,8 +352,10 @@
                 <button @click="open = !open; if(open) showSwingAlert('Pembatalan', 'Hubungi Admin')" 
                         class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
                     <div class="flex items-center gap-5">
-                        <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 shadow-sm">
-                            <i class="fas fa-times-circle text-xl"></i>
+                        <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 shadow-lg relative
+                                    before:content-[''] before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-transparent before:via-white/20 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
+                                    transform hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-times-circle text-xl relative z-10 drop-shadow-md"></i>
                         </div>
                         <span class="text-lg font-bold text-slate-800">Bisakah membatalkan jadwal?</span>
                     </div>
@@ -329,8 +380,10 @@
                 <button @click="open = !open; if(open) showSwingAlert('Waktu', 'Senin - Sabtu')" 
                         class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
                     <div class="flex items-center gap-5">
-                        <div class="w-12 h-12 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shrink-0 shadow-sm">
-                            <i class="fas fa-clock text-xl"></i>
+                        <div class="w-12 h-12 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shrink-0 shadow-lg relative
+                                    before:content-[''] before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-transparent before:via-white/20 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
+                                    transform hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-clock text-xl relative z-10 drop-shadow-md"></i>
                         </div>
                         <span class="text-lg font-bold text-slate-800">Kapan jam layanan kunjungan?</span>
                     </div>
@@ -369,10 +422,10 @@
                     </p>
                     
                     <div class="flex flex-col sm:flex-row justify-center gap-4">
-                        <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold transition-all shadow-lg hover:shadow-green-500/40 transform hover:-translate-y-1">
+                        <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold transition-all shadow-lg hover:shadow-green-500/40 transform hover:-translate-y-1 animate-pulse-light">
                             <i class="fab fa-whatsapp text-2xl"></i> Chat WhatsApp
                         </a>
-                        <button onclick="showContactModal()" class="inline-flex items-center justify-center gap-3 bg-white hover:bg-slate-100 text-slate-900 border border-transparent px-8 py-4 rounded-full font-bold transition-all shadow-lg hover:shadow-white/20 transform hover:-translate-y-1">
+                        <button onclick="showContactModal()" class="inline-flex items-center justify-center gap-3 bg-white hover:bg-gradient-to-r from-blue-50 to-cyan-50 text-slate-900 border border-transparent px-8 py-4 rounded-full font-bold transition-all shadow-lg hover:shadow-blue-500/40 transform hover:-translate-y-1 animate-pulse-light">
                             <i class="fas fa-envelope text-2xl text-blue-600"></i> Hubungi Kami
                         </button>
                     </div>
