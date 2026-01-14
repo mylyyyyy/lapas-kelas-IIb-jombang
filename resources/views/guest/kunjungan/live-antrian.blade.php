@@ -45,10 +45,27 @@
             nomorPagi: '...',
             nomorSiang: '...',
             init() {
-                this.fetchStatus();
-                setInterval(() => {
+                // Listen for AntrianUpdated event via Laravel Echo
+                if (window.Echo) {
+                    window.Echo.channel('antrian-channel')
+                        .listen('.antrian.updated', (e) => {
+                            console.log('AntrianUpdated event received:', e);
+                            if (e.sesi === 'pagi') {
+                                this.nomorPagi = e.nomor_terpanggil;
+                            } else if (e.sesi === 'siang') {
+                                this.nomorSiang = e.nomor_terpanggil;
+                            }
+                        });
+                } else {
+                    console.warn('Laravel Echo is not initialized. Falling back to polling.');
                     this.fetchStatus();
-                }, 7000); // Poll every 7 seconds
+                    setInterval(() => {
+                        this.fetchStatus();
+                    }, 7000); // Fallback to polling every 7 seconds
+                }
+
+                // Initial fetch to get the current status if Echo is not available or for initial display
+                this.fetchStatus();
             },
             async fetchStatus() {
                 try {

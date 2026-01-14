@@ -7,6 +7,7 @@ use App\Models\AntrianStatus;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use App\Events\AntrianUpdated;
 
 class AntrianController extends Controller
 {
@@ -29,6 +30,8 @@ class AntrianController extends Controller
         $antrian = $this->getStatusForSesi($sesi);
         $antrian->increment('nomor_terpanggil');
 
+        AntrianUpdated::dispatch($sesi, $antrian->nomor_terpanggil);
+
         return response()->json([
             'sesi' => $sesi,
             'nomor_terpanggil' => $antrian->nomor_terpanggil,
@@ -42,6 +45,8 @@ class AntrianController extends Controller
 
         $antrian = $this->getStatusForSesi($sesi);
         $antrian->update(['nomor_terpanggil' => 0]);
+
+        AntrianUpdated::dispatch($sesi, 0);
 
         return response()->json([
             'sesi' => $sesi,
