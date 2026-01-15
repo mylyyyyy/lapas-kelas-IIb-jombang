@@ -5,21 +5,21 @@
 @php
     // DATA DUMMY (Sama seperti sebelumnya)
     $level2 = [
-        ['nama' => '[Nama Pejabat]', 'jabatan' => 'Ka. KPLP', 'seksi' => 'Kesatuan Pengamanan Lapas'],
-        ['nama' => '[Nama Pejabat]', 'jabatan' => 'Kasubag Tata Usaha', 'seksi' => 'Sub Bagian Tata Usaha'],
-        ['nama' => 'Rd Epa Fatimah', 'jabatan' => 'Kasi Binadik & Giatja', 'seksi' => 'Bimbingan & Kegiatan Kerja'],
-        ['nama' => '[Nama Pejabat]', 'jabatan' => 'Kasi Adm. Kamtib', 'seksi' => 'Administrasi Keamanan & Tata Tertib'],
+        ['nama' => 'MOCH. ARIEF KAFANIE, A.Md.P., S.H', 'jabatan' => 'Ka. KPLP', 'seksi' => 'Kesatuan Pengamanan Lapas'],
+        ['nama' => 'AFIF EKO SUHARIYANTO, S.H., M.H', 'jabatan' => 'Kasubag Tata Usaha', 'seksi' => 'Sub Bagian Tata Usaha'],
+        ['nama' => 'RD EPA FATIMAH, A.Md.IP.,S.H', 'jabatan' => 'Kasi Binadik & Giatja', 'seksi' => 'Bimbingan & Kegiatan Kerja'],
+        ['nama' => 'HENDRI KURNIAWAN, S.H', 'jabatan' => 'Kasi Adm. Kamtib', 'seksi' => 'Administrasi Keamanan & Tata Tertib'],
     ];
 
     $level3 = [
-        ['nama' => '[Nama Pejabat]', 'jabatan' => 'Kaur Kepeg & Keu'],
-        ['nama' => '[Nama Pejabat]', 'jabatan' => 'Kaur Umum'],
-        ['nama' => '[Nama Pejabat]', 'jabatan' => 'Kasubsi Registrasi'],
-        ['nama' => '[Nama Pejabat]', 'jabatan' => 'Kasubsi Bimkemaswat'],
+        ['nama' => 'DANANG PANDU WINOTO, S.Sos', 'jabatan' => 'Kaur Kepeg & Keu'],
+        ['nama' => 'LATIFA ISNA DAMAYANTI, S.H', 'jabatan' => 'Kaur Umum'],
+        ['nama' => 'GUSTIANSYAH SURYA W, P,S.Tr.Pas.', 'jabatan' => 'Kasubsi Registrasi'],
+        ['nama' => 'MOCHAMAD MACHMUDA HARIS, S.H', 'jabatan' => 'Kasubsi Bimkemaswat'],
         ['nama' => '[Nama Pejabat]', 'jabatan' => 'Kasubsi Binker'],
         ['nama' => '[Nama Pejabat]', 'jabatan' => 'Kasubsi PHK'],
         ['nama' => '[Nama Pejabat]', 'jabatan' => 'Kasubsi Portatib'],
-        ['nama' => '[Nama Pejabat]', 'jabatan' => 'Kasubsi Keamanan'],
+        ['nama' => 'SAMUD, S.H', 'jabatan' => 'Kasubsi Keamanan'],
     ];
 @endphp
 
@@ -119,7 +119,7 @@
 
                 {{-- Foto Wrapper --}}
                 <div class="relative group cursor-pointer swing-trigger-foto flex-shrink-0" 
-                     data-nama="Rino Soleh Sumitro" 
+                     data-nama="RINO SOLEH SUMITRO, A.Md.IP, S.H. M.H." 
                      data-jabatan="Kepala Lapas Kelas IIB Jombang"
                      data-img="{{ asset('img/kalapas.png') }}">
                     <div class="w-48 h-48 md:w-56 md:h-56 rounded-full p-1.5 bg-gradient-to-br from-yellow-400 via-yellow-200 to-blue-600 shadow-2xl animate-spin-slow-stop">
@@ -136,7 +136,7 @@
                     <div class="inline-block px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold tracking-widest uppercase mb-3 border border-blue-100">
                         Pimpinan Tertinggi
                     </div>
-                    <h2 class="text-3xl md:text-4xl font-black text-slate-900 mb-1">Rino Soleh Sumitro</h2>
+                    <h2 class="text-3xl md:text-4xl font-black text-slate-900 mb-1"> RINO SOLEH SUMITRO, A.Md.IP, S.H. M.H.</h2>
                     <p class="text-lg text-slate-500 font-medium mb-5">Kepala Lapas Kelas IIB Jombang</p>
                     <div class="relative">
                         <i class="fas fa-quote-left text-3xl text-slate-100 absolute -top-4 -left-2"></i>
