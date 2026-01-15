@@ -25,8 +25,7 @@ class HomeController extends Controller
      */
     public function profile()
     {
-        // Placeholder: A proper view should be created for this.
-        return "Profile page is under construction.";
+        return view('profile.index');
     }
 
     /**
