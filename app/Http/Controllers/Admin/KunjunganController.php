@@ -212,6 +212,11 @@ class KunjunganController extends Controller
                 $kunjungan->status = KunjunganStatus::APPROVED;
                 $kunjungan->save();
                 $message = 'Kunjungan berhasil disetujui secara otomatis!';
+                
+                // Redirect to print page if not an AJAX request
+                if (!$request->wantsJson()) {
+                    return redirect()->route('kunjungan.print', $kunjungan->id);
+                }
             }
 
             if ($request->wantsJson()) {

@@ -122,8 +122,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // =========================================================================
 // 4. ADMIN PANEL (DASHBOARD & MANAJEMEN)
 // =========================================================================
-// Semua route di dalam grup ini wajib LOGIN dan punya role ADMIN
-Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
+// Semua route di dalam grup ini wajib LOGIN dan punya role ADMIN/SUPERADMIN
+Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function () {
 
     // A. DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

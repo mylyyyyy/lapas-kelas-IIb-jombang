@@ -57,7 +57,7 @@ class KunjunganStatusMail extends Mailable implements ShouldQueue
             default: // pending
                 $subject = '⏳ Pendaftaran Kunjungan Diterima - Lapas Kelas IIB Jombang';
                 $headline = 'Terima Kasih, Pendaftaran Diterima';
-                $message = 'Terima kasih sudah mendaftar kunjungan. Pendaftaran Anda telah kami terima. Mohon tunggu verifikasi dari admin. Berikut adalah data lengkap pendaftaran Anda.';
+                $message = 'Terima kasih sudah mendaftar kunjungan. Pendaftaran Anda telah kami terima. Silahkan tunjukan email ini kepada petugas kami. Berikut adalah data lengkap pendaftaran Anda.';
                 $color = '#F59E0B'; // Kuning/Orange
                 break;
         }

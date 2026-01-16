@@ -66,8 +66,9 @@ class User extends Authenticatable
     /**
      * Get the user's visitor profile.
      */
-    public function profilPengunjung()
+    public function isSuperAdmin(): bool
     {
-        return $this->hasOne(ProfilPengunjung::class);
+        return $this->role === 'superadmin';
     }
+
 }
