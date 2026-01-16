@@ -242,28 +242,27 @@
                             <h4 class="text-sm font-bold text-blue-600 uppercase tracking-widest">Data Pengunjung</h4>
                         </div>
                         <div><p class="data-label">Nama Lengkap</p><p class="data-value">{{ $kunjungan->nama_pengunjung }}</p></div>
-                        {{-- UPDATED: nik_ktp --}}
+                        
                         <div><p class="data-label">NIK</p><p class="data-value font-mono bg-slate-100 px-2 rounded inline-block text-sm">{{ $kunjungan->nik_ktp }}</p></div>
                         <div>
                             <p class="data-label">Kontak</p>
                             <div class="flex flex-col gap-1">
-                                {{-- UPDATED: no_wa_pengunjung --}}
                                 <span class="data-value text-sm flex items-center gap-2"><i class="fab fa-whatsapp text-green-500"></i> {{ $kunjungan->no_wa_pengunjung }}</span>
                             </div>
                         </div>
-                        {{-- UPDATED: Alamat --}}
+                        
                         <div><p class="data-label">Alamat</p><p class="data-value text-sm text-slate-600 leading-relaxed">{{ $kunjungan->alamat_pengunjung }}</p></div>
                         
-                        {{-- UPDATED: Foto KTP --}}
-                        @if($kunjungan->foto_ktp)
+                        {{-- FOTO KTP (Base64 Logic) --}}
+                        @if(!empty($kunjungan->foto_ktp))
                         <div>
                             <p class="data-label">Foto KTP</p>
                             <div class="relative group">
-                                <a href="{{ asset('storage/' . $kunjungan->foto_ktp) }}" target="_blank" class="block w-full">
-                                    <img src="{{ asset('storage/' . $kunjungan->foto_ktp) }}" class="w-full h-32 object-cover rounded-lg border border-slate-200 hover:opacity-90 transition shadow-sm">
+                                <a href="{{ $kunjungan->foto_ktp }}" target="_blank" class="block w-full">
+                                    <img src="{{ $kunjungan->foto_ktp }}" class="w-full h-32 object-cover rounded-lg border border-slate-200 hover:opacity-90 transition shadow-sm">
                                 </a>
                                 <div class="mt-2 text-center">
-                                    <a href="{{ asset('storage/' . $kunjungan->foto_ktp) }}" download class="text-xs text-blue-600 font-bold hover:underline flex items-center justify-center gap-1">
+                                    <a href="{{ $kunjungan->foto_ktp }}" download="KTP_{{ $kunjungan->nama_pengunjung }}.png" class="text-xs text-blue-600 font-bold hover:underline flex items-center justify-center gap-1">
                                         <i class="fas fa-download"></i> Download KTP
                                     </a>
                                 </div>
@@ -277,14 +276,13 @@
                         <div class="border-b border-slate-100 pb-2 mb-4">
                             <h4 class="text-sm font-bold text-purple-600 uppercase tracking-widest">Data Warga Binaan</h4>
                         </div>
-                        {{-- UPDATED: Relasi WBP --}}
                         <div><p class="data-label">Nama WBP Dituju</p><p class="data-value text-lg">{{ $kunjungan->wbp->nama ?? 'Data Terhapus' }}</p></div>
                         <div><p class="data-label">Hubungan</p><span class="inline-flex items-center px-3 py-1 rounded-lg bg-slate-100 text-slate-700 text-sm font-bold border border-slate-200">{{ $kunjungan->hubungan }}</span></div>
                     </div>
                 </div>
             </div>
 
-            {{-- CARD 3: DATA PENGIKUT (NEW SECTION) --}}
+            {{-- CARD 3: DATA PENGIKUT --}}
             <div class="card-3d bg-white rounded-[2rem] shadow-lg border border-slate-100 overflow-hidden">
                 <div class="glass-header p-6 flex items-center gap-4 bg-slate-50/50">
                     <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm">
@@ -303,9 +301,9 @@
                             <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
                                 {{-- Foto Pengikut --}}
                                 <div class="flex-shrink-0">
-                                    @if($pengikut->foto_ktp)
-                                        <a href="{{ asset('storage/' . $pengikut->foto_ktp) }}" target="_blank">
-                                            <img src="{{ asset('storage/' . $pengikut->foto_ktp) }}" class="w-12 h-12 rounded-full object-cover border border-slate-300">
+                                    @if(!empty($pengikut->foto_ktp))
+                                        <a href="{{ $pengikut->foto_ktp }}" target="_blank">
+                                            <img src="{{ $pengikut->foto_ktp }}" class="w-12 h-12 rounded-full object-cover border border-slate-300 shadow-sm hover:scale-110 transition-transform">
                                         </a>
                                     @else
                                         <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-400">
@@ -324,8 +322,8 @@
                                         </span>
                                         @endif
                                     </div>
-                                    @if($pengikut->foto_ktp)
-                                    <a href="{{ asset('storage/' . $pengikut->foto_ktp) }}" download class="text-[10px] text-blue-600 hover:underline mt-1 block">
+                                    @if(!empty($pengikut->foto_ktp))
+                                    <a href="{{ $pengikut->foto_ktp }}" download="Pengikut_{{ $pengikut->nama }}.png" class="text-[10px] text-blue-600 hover:underline mt-1 block">
                                         Download KTP
                                     </a>
                                     @endif
@@ -366,7 +364,6 @@
         <p style="font-family: monospace; font-size: 16px; letter-spacing: 2px;">{{ $kunjungan->qr_token }}</p>
         <div style="text-align: left; margin-top: 30px;">
             <p><strong>Nama Pengunjung:</strong> {{ $kunjungan->nama_pengunjung }}</p>
-            {{-- UPDATED --}}
             <p><strong>Mengunjungi:</strong> {{ $kunjungan->wbp->nama ?? '-' }}</p> 
             <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y') }}</p>
         </div>

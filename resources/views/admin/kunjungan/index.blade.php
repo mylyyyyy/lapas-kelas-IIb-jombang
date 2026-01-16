@@ -190,9 +190,18 @@
                             <div class="font-bold text-slate-800">{{ $kunjungan->nama_pengunjung }}</div>
                             <div class="text-xs text-slate-500">NIK: {{ $kunjungan->nik_ktp }}</div>
                             
-                            {{-- BUTTON LIHAT FOTO KTP --}}
-                            @if($kunjungan->foto_ktp)
-                                <button type="button" onclick="showKtp('{{ asset('storage/' . $kunjungan->foto_ktp) }}', '{{ $kunjungan->nama_pengunjung }}')" 
+                            {{-- BUTTON LIHAT FOTO KTP (BASE 64 FIX) --}}
+                            @if(!empty($kunjungan->foto_ktp))
+                                {{-- 
+                                    Perbaikan: 
+                                    1. Hapus asset('storage/...')
+                                    2. Gunakan onclick dengan parameter Base64 string langsung.
+                                    3. Karena string Base64 sangat panjang, kita simpan di data-attribute untuk diambil JS
+                                --}}
+                                <button type="button" 
+                                        data-foto="{{ $kunjungan->foto_ktp }}" 
+                                        data-nama="{{ $kunjungan->nama_pengunjung }}"
+                                        onclick="showKtpFromBase64(this)" 
                                         class="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline mt-1 flex items-center gap-1">
                                     <i class="fas fa-id-card"></i> Lihat Foto KTP
                                 </button>
@@ -309,7 +318,7 @@
                 </div>
             </div>
             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
-                <a id="downloadLink" href="#" download class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                <a id="downloadLink" href="#" download="ktp.png" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
                     <i class="fas fa-download mr-2 mt-1"></i> Download
                 </a>
                 <button type="button" onclick="closeKtp()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
@@ -380,16 +389,24 @@
 {{-- SCRIPT --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-// --- LOGIC KTP MODAL ---
-function showKtp(url, nama) {
-    document.getElementById('ktpImage').src = url;
+// --- LOGIC KTP MODAL (UPDATED FOR BASE64) ---
+function showKtpFromBase64(element) {
+    const base64Data = element.getAttribute('data-foto');
+    const nama = element.getAttribute('data-nama');
+    
+    document.getElementById('ktpImage').src = base64Data;
     document.getElementById('ktpNama').innerText = nama;
-    document.getElementById('downloadLink').href = url;
+    document.getElementById('downloadLink').href = base64Data;
+    document.getElementById('downloadLink').download = "KTP_" + nama + ".png"; // Nama file saat didownload
     document.getElementById('ktpModal').classList.remove('hidden');
 }
 
 function closeKtp() {
     document.getElementById('ktpModal').classList.add('hidden');
+    // Clear src to free memory
+    setTimeout(() => {
+        document.getElementById('ktpImage').src = '';
+    }, 300);
 }
 
 // --- 3. LOGIC SINGLE ACTION ---
@@ -572,6 +589,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-
-
 @endsection
