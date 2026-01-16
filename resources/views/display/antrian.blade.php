@@ -161,21 +161,83 @@
         .visiting-item .visitor { font-weight: 700; text-transform: uppercase; color: var(--text-color); }
         .visiting-item .wbp { font-weight: 400; color: #B0B0B0; font-size: 1.2rem; } /* Slightly darker gray */
 
-        .footer {
-            grid-area: footer; background-color: var(--primary-color); color: #1a1a1a; /* Ensure good contrast */
-            font-size: 2.5rem; font-weight: 700; padding: 0.7rem;
-            white-space: nowrap; overflow: hidden; box-shadow: 0 0 20px var(--glow-color-primary); /* Softer shadow */
-            z-index: 10;
+                .footer {
+                    grid-area: footer; background-color: var(--bg-color); /* Darker background */
+                    color: var(--text-color); /* White text for contrast */
+                    padding: 2rem 0; /* More vertical padding */
+                    z-index: 10;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: auto;
+                    overflow: visible;
+                    white-space: normal;
+                    box-shadow: 0 -5px 20px rgba(0,0,0,0.5); /* Shadow for separation */
+                }
+                .footer .marquee {
+                    width: 100%;
+                    margin-bottom: 1.5rem; /* More space */
+                    padding-left: 0;
+                    font-size: 1.8rem; /* Retain larger font for marquee */
+                    color: var(--primary-color); /* Marquee text in primary color */
+                    text-shadow: 0 0 10px var(--glow-color-primary);
+                    font-weight: 700;
+                .footer-content {
+            display: flex;
+            width: 90%;
+            max-width: 1200px;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            color: var(--text-color); /* Use text-color for overall section */
+            font-weight: 300;
+            font-size: 1rem; /* Smaller base font size */
+            text-shadow: none;
+            padding: 1rem 0; /* Add padding to content */
+            border-top: 1px solid rgba(255,255,255,0.1); /* Subtle separator */
         }
-        .marquee { 
-            display: inline-block; padding-left: 100%; 
-            animation: marquee 40s linear infinite; /* Adjusted speed */
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
-            color: #1a1a1a; /* Darker text for contrast */
+
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+            margin: 1rem;
+            text-align: left;
+            padding: 0.5rem; /* Add some padding */
         }
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
+
+        .footer-section h4 {
+            font-size: 1.4rem; /* Adjusted font size for titles */
+            color: var(--primary-color); /* Highlight titles with primary color */
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            text-shadow: 0 0 5px var(--glow-color-primary); /* Subtle glow for titles */
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.6rem; /* Slightly more space between list items */
+        }
+
+        .footer-section ul li a {
+            color: var(--text-color); /* Use text-color for links */
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.2s ease;
+            font-weight: 300;
+            display: inline-block; /* Allow transform */
+        }
+
+        .footer-section ul li a:hover {
+            color: var(--accent-color); /* Hover color */
+            text-decoration: underline;
+            transform: translateX(5px); /* Subtle slide on hover */
         }
     </style>
 </head>
@@ -225,6 +287,24 @@
         <footer class="footer">
             <div class="marquee">
                 <span>SELAMAT DATANG DI LAYANAN KUNJUNGAN LAPAS KELAS IIB JOMBANG. DILARANG MEMBAWA BARANG TERLARANG. PATUHI PROTOKOL KESEHATAN.</span>
+            </div>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Unit Utama</h4>
+                    <ul>
+                        <li><a href="https://www.kemenkumham.go.id/" target="_blank" rel="noopener noreferrer">Sekretariat Jenderal</a></li>
+                        <li><a href="http://www.ditjenpas.go.id/" target="_blank" rel="noopener noreferrer">Ditjen PAS</a></li>
+                        <li><a href="https://imigrasi.go.id/id/" target="_blank" rel="noopener noreferrer">Ditjen Imigrasi</a></li>
+                        <li><a href="#" target="_blank" rel="noopener noreferrer">Inspektorat Jenderal</a></li>
+                        <li><a href="https://bpsdm.kemenimipas.go.id/" target="_blank" rel="noopener noreferrer">BPSDM</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Internal Links</h4>
+                    <ul>
+                        <li><a href="{{ route('display.antrian') }}" target="_blank" rel="noopener noreferrer">Display Antrian</a></li>
+                    </ul>
+                </div>
             </div>
         </footer>
     </div>

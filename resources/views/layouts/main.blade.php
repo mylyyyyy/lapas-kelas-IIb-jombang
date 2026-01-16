@@ -411,79 +411,99 @@
                             </div>
                         </div>
         
-                        {{-- KOLOM KANAN: Informasi Kontak --}}
-                        <div class="flex flex-col justify-center space-y-8">
-        
-                            {{-- Logo & Judul --}}
-                            <div>
-                                <div class="flex items-center gap-3 mb-4">
-                                    <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-12 w-auto drop-shadow-lg">
-                                    <div>
-                                        <h3 class="text-xl font-bold text-white tracking-wide">KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN</h3>
-                                        <p class="text-xs text-yellow-500 font-semibold tracking-wider uppercase">Republik Indonesia</p>
-                                    </div>
-                                </div>
-                                <p class="text-slate-400 text-sm leading-relaxed max-w-md">
-                                    Melayani dengan sepenuh hati, mewujudkan pemasyarakatan yang PASTI (Profesional, Akuntabel, Sinergi, Transparan, dan Inovatif).
-                                </p>
-                            </div>
-        
-                            {{-- Detail Kontak --}}
-                            <div class="space-y-4">
-                                <div class="flex items-start gap-4 group">
-                                    <div class="bg-slate-800/50 p-3 rounded-lg text-yellow-500 group-hover:bg-yellow-500 group-hover:text-slate-900 transition-all duration-300 border border-slate-700/30">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-slate-400 font-bold uppercase mb-1">Alamat Kantor</p>
-                                        <p class="text-white font-medium leading-snug">
-                                            Jl. KH. Wahid Hasyim No.155<br>
-                                            Jombang, Jawa Timur 61419
-                                        </p>
-                                    </div>
-                                </div>
-        
-                                <div class="flex items-start gap-4 group">
-                                    <div class="bg-slate-800/50 p-3 rounded-lg text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300 border border-slate-700/30">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-slate-400 font-bold uppercase mb-1">Telepon & Fax</p>
-                                        <p class="text-white font-medium hover:text-yellow-400 transition-colors duration-300 cursor-pointer">
-                                            +62 321 861205
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-        
-                            {{-- Social Media Icons --}}
-                            <div class="mt-4">
-                                <p class="text-sm text-slate-300 font-bold uppercase mb-4">Ikuti Media Sosial Kami</p>
-                                <div class="flex flex-wrap gap-4">
-                                    <a href="https://www.facebook.com/humaslapasjombang/" aria-label="Facebook" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-[#1877F2] hover:text-white border border-slate-700/30 hover:border-[#1877F2] transition-all duration-300 transform hover:scale-110 shadow-lg">
-                                        <i class="fab fa-facebook-f text-xl"></i>
-                                    </a>
-                                    <a href="https://twitter.com/lapas_jombang" aria-label="Twitter" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-[#1DA1F2] hover:text-white border border-slate-700/30 hover:border-[#1DA1F2] transition-all duration-300 transform hover:scale-110 shadow-lg">
-                                        <i class="fab fa-twitter text-xl"></i>
-                                    </a>
-                                    <a href="https://www.instagram.com/lapas_jombang/" aria-label="Instagram" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-gradient-to-tr hover:from-yellow-500 hover:via-red-500 hover:to-purple-500 hover:text-white border border-slate-700/30 hover:border-pink-500 transition-all duration-300 transform hover:scale-110 shadow-lg">
-                                        <i class="fab fa-instagram text-xl"></i>
-                                    </a>
-                                    <a href="https://www.youtube.com/@humaslapasjombang" aria-label="YouTube" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-[#FF0000] hover:text-white border border-slate-700/30 hover:border-[#FF0000] transition-all duration-300 transform hover:scale-110 shadow-lg">
-                                        <i class="fab fa-youtube text-xl"></i>
-                                    </a>
-                                    <a href="https://www.tiktok.com/@lapas_jombang" aria-label="TikTok" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-black hover:text-white border border-slate-700/30 hover:border-slate-500 transition-all duration-300 transform hover:scale-110 shadow-lg">
-                                        <i class="fab fa-tiktok text-xl"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                                {{-- KOLOM KANAN: Informasi Kontak --}}
+                                                <div class="flex flex-col justify-center space-y-8">
+                        
+                                                    {{-- Logo & Judul --}}
+                                                    <div>
+                                                        <div class="flex items-center gap-3 mb-4">
+                                                            <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-12 w-auto drop-shadow-lg">
+                                                            <div class="min-h-12 flex flex-col justify-center">
+                                                                <h3 class="text-xl font-bold text-white tracking-wide">KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN</h3>
+                                                                <p class="text-xs text-yellow-500 font-semibold tracking-wider uppercase">Republik Indonesia</p>
+                                                            </div>
+                                                        </div>
+                                                        <p class="text-slate-400 text-sm leading-relaxed max-w-md">
+                                                            Melayani dengan sepenuh hati, mewujudkan pemasyarakatan yang PASTI (Profesional, Akuntabel, Sinergi, Transparan, dan Inovatif).
+                                                        </p>
+                                                    </div>
+                        
+                                                    {{-- NEW: Unit Utama and Internal Links --}}
+                                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                                                        <div>
+                                                            <h4 class="text-lg font-bold text-white mb-4">Unit Utama</h4>
+                                                            <ul class="space-y-2">
+                                                                <li><a href="https://www.kemenkumham.go.id/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Sekretariat Jenderal</a></li>
+                                                                <li><a href="http://www.ditjenpas.go.id/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Ditjen PAS</a></li>
+                                                                <li><a href="https://imigrasi.go.id/id/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Ditjen Imigrasi</a></li>
+                                                                <li><a href="#" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Inspektorat Jenderal</a></li>
+                                                                <li><a href="https://bpsdm.kemenimipas.go.id/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">BPSDM</a></li>
+                                                            </ul>
+                                                        </div>
+                                                        <div>
+                                                            <h4 class="text-lg font-bold text-white mb-4">Internal Links</h4>
+                                                            <ul class="space-y-2">
+                                                                <li><a href="{{ route('display.antrian') }}" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Display Antrian</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    {{-- END NEW --}}
+                        
+                                                    {{-- Detail Kontak --}}
+                                                    <div class="space-y-4">
+                                                        <div class="flex items-start gap-4 group">
+                                                            <div class="bg-slate-800/50 p-3 rounded-lg text-yellow-500 group-hover:bg-yellow-500 group-hover:text-slate-900 transition-all duration-300 border border-slate-700/30">
+                                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                                </svg>
+                                                            </div>
+                                                            <div>
+                                                                <p class="text-xs text-slate-400 font-bold uppercase mb-1">Alamat Kantor</p>
+                                                                <p class="text-white font-medium leading-snug">
+                                                                    Jl. KH. Wahid Hasyim No.155<br>
+                                                                    Jombang, Jawa Timur 61419
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                        
+                                                        <div class="flex items-start gap-4 group">
+                                                            <div class="bg-slate-800/50 p-3 rounded-lg text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300 border border-slate-700/30">
+                                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                                                </svg>
+                                                            </div>
+                                                            <div>
+                                                                <p class="text-xs text-slate-400 font-bold uppercase mb-1">Telepon & Fax</p>
+                                                                <p class="text-white font-medium hover:text-yellow-400 transition-colors duration-300 cursor-pointer">
+                                                                    +62 321 861205
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                        
+                                                    {{-- Social Media Icons --}}
+                                                    <div class="">
+                                                        <p class="text-sm text-slate-300 font-bold uppercase mb-4">Ikuti Media Sosial Kami</p>
+                                                        <div class="flex flex-wrap gap-4">
+                                                            <a href="https://www.facebook.com/humaslapasjombang/" aria-label="Facebook" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-[#1877F2] hover:text-white border border-slate-700/30 hover:border-[#1877F2] transition-all duration-300 transform hover:scale-110 shadow-lg">
+                                                                <i class="fab fa-facebook-f text-xl"></i>
+                                                            </a>
+                                                            <a href="https://twitter.com/lapas_jombang" aria-label="Twitter" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-[#1DA1F2] hover:text-white border border-slate-700/30 hover:border-[#1DA1F2] transition-all duration-300 transform hover:scale-110 shadow-lg">
+                                                                <i class="fab fa-twitter text-xl"></i>
+                                                            </a>
+                                                            <a href="https://www.instagram.com/lapas_jombang/" aria-label="Instagram" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-gradient-to-tr hover:from-yellow-500 hover:via-red-500 hover:to-purple-500 hover:text-white border border-slate-700/30 hover:border-pink-500 transition-all duration-300 transform hover:scale-110 shadow-lg">
+                                                                <i class="fab fa-instagram text-xl"></i>
+                                                            </a>
+                                                            <a href="https://www.youtube.com/@humaslapasjombang" aria-label="YouTube" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-[#FF0000] hover:text-white border border-slate-700/30 hover:border-[#FF0000] transition-all duration-300 transform hover:scale-110 shadow-lg">
+                                                                <i class="fab fa-youtube text-xl"></i>
+                                                            </a>
+                                                            <a href="https://www.tiktok.com/@lapas_jombang" aria-label="TikTok" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-black hover:text-white border border-slate-700/30 hover:border-slate-500 transition-all duration-300 transform hover:scale-110 shadow-lg">
+                                                                <i class="fab fa-tiktok text-xl"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>                    </div>
         
                     {{-- Copyright Bawah --}}
                     <div class="mt-12 pt-8 border-t border-slate-800/50 text-center text-slate-500 text-sm">
