@@ -394,5 +394,15 @@ class DashboardController extends Controller
 
         return view('admin.activity_logs.index', compact('activityLogs'));
     }
+
+    /**
+     * Menghapus semua log aktivitas sistem.
+     */
+    public function resetActivityLogs()
+    {
+        Activity::query()->truncate();
+
+        return redirect()->route('admin.activity_logs.index')->with('success', 'Semua log aktivitas berhasil dihapus!');
+    }
 }
 

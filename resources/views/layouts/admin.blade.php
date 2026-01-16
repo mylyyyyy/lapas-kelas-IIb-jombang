@@ -262,6 +262,32 @@
         });
     }
 
+    // =================================================================================
+    // RESET ACTIVITY LOGS CONFIRMATION
+    // =================================================================================
+    function confirmReset(event) {
+        event.preventDefault();
+        const form = event.target.closest('form');
+        
+        Swal.fire({
+            ...swalTheme,
+            title: 'Reset Log Aktivitas?',
+            text: "Semua log aktivitas akan dihapus secara permanen.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Reset!',
+            cancelButtonText: 'Batal',
+            customClass: { 
+                ...swalTheme.customClass,
+                confirmButton: 'px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all duration-200 mx-1.5 shadow-lg shadow-red-500/30 focus:outline-none focus:ring-4 focus:ring-red-300'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
     // Helper functions for alerts (Delete, Update, Bulk Actions)
     function confirmDelete(event) {
         event.preventDefault();

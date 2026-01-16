@@ -8,6 +8,12 @@
         <div class="col-lg-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="h3 mb-0 text-gray-800">Log Aktivitas Sistem</h1>
+                <form action="{{ route('admin.activity_logs.reset') }}" method="POST" onsubmit="confirmReset(event)">
+                    @csrf
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash-alt mr-1"></i> Reset Log Aktivitas
+                    </button>
+                </form>
             </div>
 
             <div class="card shadow mb-4">
