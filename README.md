@@ -69,7 +69,6 @@ composer install
 # Instal dependensi JavaScript
 npm install
 ```
-
 ### **3. Konfigurasi Lingkungan**
 Salin file `.env.example` dan buat file `.env` baru. Kemudian, generate application key.
 ```bash
