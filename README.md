@@ -107,7 +107,7 @@ Berikut adalah beberapa tampilan dari aplikasi Lapas Jombang:
 
 | Halaman Utama | Form Pendaftaran | Dashboard Admin |
 | :---: | :---: | :---: |
-| <img src="https/raw.githubusercontent.com/mlbbef/resource/main/home.png" alt="Halaman Utama" width="300"> | <img src="https://raw.githubusercontent.com/mlbbef/resource/main/form.png" alt="Form Pendaftaran" width="300"> | <img src="https://raw.githubusercontent.com/mlbbef/resource/main/admin.png" alt="Dashboard Admin" width="300"> |
+| <img src="/public/img/HomePage.png" alt="Halaman Utama" width="300"> | <img src="/public/img/PageDaftar.png" alt="Form Pendaftaran" width="300"> | <img src="./public/img/DashboardAdmin.png" alt="Dashboard Admin" width="300"> |
 
 ---
 
