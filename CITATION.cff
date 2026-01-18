@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Dian"
+  given-names: "Arya"
+  email: "aryadian003@gmail.com"
+title: "Sistem Informasi Manajemen Lapas Kelas IIB Jombang"
+version: 1.0.0
+date-released: 2026-01-18
+url: "https://github.com/aryadians/lapas-kelas-IIb-jombang"
+preferred-citation:
+  type: software
+  authors:
+  - family-names: "Dian"
+    given-names: "Arya"
+  title: "Sistem Transformasi Digital Pelayanan Publik Lapas Jombang"
+  year: 2026
