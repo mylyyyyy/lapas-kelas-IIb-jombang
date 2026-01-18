@@ -145,3 +145,23 @@ Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 <div align="center">
   <small>Dibuat dengan ❤️ untuk pelayanan publik yang lebih baik.</small>
 </div>
+
+--- 
+
+## 📄 Citation / Sitasi
+
+Jika Anda menggunakan source code ini sebagai referensi untuk Skripsi, Penelitian, atau Pengembangan Proyek, mohon cantumkan sitasi berikut:
+
+**APA Style:**
+> Dian, A. (2026). *Sistem Informasi Manajemen Lapas Kelas IIB Jombang* (Version 1.0.0) [Computer software]. https://github.com/aryadians/lapas-kelas-IIb-jombang
+
+**BibTeX (Untuk LaTeX/Jurnal):**
+```bibtex
+@software{lapas_jombang_2026,
+  author       = {Dian, Arya},
+  title        = {{Sistem Informasi Manajemen Lapas Kelas IIB Jombang}},
+  month        = jan,
+  year         = 2026,
+  version      = {1.0.0},
+  url          = {[https://github.com/aryadians/lapas-kelas-IIb-jombang](https://github.com/aryadians/lapas-kelas-IIb-jombang)}
+}
