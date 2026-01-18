@@ -1,0 +1,19 @@
+version: 2
+updates:
+  # Cek update untuk Laravel/PHP (Composer)
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    
+  # Cek update untuk Frontend/JS (NPM)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    
+  # Cek update untuk GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
