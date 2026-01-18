@@ -148,6 +148,19 @@ Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 
 --- 
 
+## ☕ Dukungan & Donasi
+
+Jika aplikasi ini bermanfaat untuk instansi atau pembelajaran Anda, Anda bisa mentraktir saya kopi melalui:
+
+| Metode | Detail Pembayaran |
+| :--- | :--- |
+| **🏦 Bank BRI** | **3128-01-008734-50-9**<br>a.n. Arya Dian Saputra |
+| **📱 DANA** | **0838-4552-9777**<br>a.n. Arya Dian Saputra |
+
+*Dukungan Anda sangat berarti untuk pengembangan fitur selanjutnya!* 🚀
+
+---
+
 ## 📄 Citation / Sitasi
 
 Jika Anda menggunakan source code ini sebagai referensi untuk Skripsi, Penelitian, atau Pengembangan Proyek, mohon cantumkan sitasi berikut:
@@ -163,5 +176,7 @@ Jika Anda menggunakan source code ini sebagai referensi untuk Skripsi, Penelitia
   month        = jan,
   year         = 2026,
   version      = {1.0.0},
-  url          = {[https://github.com/aryadians/lapas-kelas-IIb-jombang](https://github.com/aryadians/lapas-kelas-IIb-jombang)}
-}
+  url          = {[https://github.com/aryadians/lapas-kelas-IIb-jombang](https://github.com/aryadians/lapas-kelas-IIb-jombang)}}
+
+
+
