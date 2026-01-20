@@ -32,8 +32,10 @@
             height: 100vh; width: 100vw;
         }
                 .header {
-                    grid-area: header; display: flex; align-items: center; padding: 1.5rem 2.5rem;
-                    background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); z-index: 100;
+                    grid-area: header; display: flex; align-items: center; padding: 1.5rem 3rem; /* Increased padding */
+                    background: linear-gradient(to right, #1a202c, #0d1117); /* More solid gradient */
+                    z-index: 100;
+                    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7); /* Added prominent shadow */
                     animation: header-fade-in 1s ease-out;
                 }
                 @keyframes header-fade-in {
@@ -146,13 +148,19 @@
         }
         .visiting-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex: 1; }
         .visiting-item {
-            background-color: rgba(0, 191, 255, 0.1); /* Softer background color */
-            border-radius: 10px; /* Slightly smaller border-radius */
-            padding: 1rem 1.5rem; margin-bottom: 0.7rem; /* Adjusted padding and margin */
+            background-color: rgba(0, 191, 255, 0.1); /* Default background color */
+            border-radius: 10px;
+            padding: 1rem 1.5rem; margin-bottom: 0.7rem;
             font-size: 1.6rem; display: flex; justify-content: space-between;
-            border-left: 4px solid var(--accent-color); /* Thinner border */
-            box-shadow: 0 0 8px var(--glow-color-soft); /* Softer shadow */
+            border-left: 4px solid var(--accent-color);
+            box-shadow: 0 0 8px var(--glow-color-soft);
             transition: all 0.3s ease;
+        }
+        .visiting-item:nth-child(odd) {
+            background-color: rgba(0, 191, 255, 0.1);
+        }
+        .visiting-item:nth-child(even) {
+            background-color: rgba(0, 191, 255, 0.05); /* Slightly lighter/darker for contrast */
         }
         .visiting-item:hover {
             transform: translateX(3px) scale(1.005); /* Subtle lift and translate */
@@ -161,21 +169,121 @@
         .visiting-item .visitor { font-weight: 700; text-transform: uppercase; color: var(--text-color); }
         .visiting-item .wbp { font-weight: 400; color: #B0B0B0; font-size: 1.2rem; } /* Slightly darker gray */
 
-        .footer {
-            grid-area: footer; background-color: var(--primary-color); color: #1a1a1a; /* Ensure good contrast */
-            font-size: 2.5rem; font-weight: 700; padding: 0.7rem;
-            white-space: nowrap; overflow: hidden; box-shadow: 0 0 20px var(--glow-color-primary); /* Softer shadow */
-            z-index: 10;
+                .footer {
+                    grid-area: footer; background-color: var(--bg-color); /* Darker background */
+                    color: var(--text-color); /* White text for contrast */
+                    padding: 2rem 0; /* More vertical padding */
+                    z-index: 10;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: auto;
+                    overflow: visible;
+                    white-space: normal;
+                    box-shadow: 0 -5px 20px rgba(0,0,0,0.5); /* Shadow for separation */
+                }
+@keyframes marquee-scroll {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+                .footer .marquee span {
+                    display: inline-block; /* Essential for transform to work */
+                    padding-left: 100%; /* Start off-screen */
+                    animation: marquee-scroll 30s linear infinite; /* Adjust duration as needed */
+                }
+                .footer .marquee {
+                    width: 100%;
+                    margin-bottom: 1.5rem; /* More space */
+                    padding-left: 0;
+                    font-size: 1.8rem; /* Retain larger font for marquee */
+                    color: var(--primary-color); /* Marquee text in primary color */
+                    text-shadow: 0 0 10px var(--glow-color-primary);
+                    font-weight: 700;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    box-sizing: border-box; /* Ensures padding doesn't affect width calculation */
+                }
+                .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            width: 90%;
+            max-width: 1200px;
+            /* Remove justify-content: space-around; and flex-wrap: wrap; as they are not needed with grid */
+            margin-top: 1rem;
+            color: var(--text-color);
+            font-weight: 300;
+            font-size: 1rem;
+            text-shadow: none;
+            padding: 1rem 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
-        .marquee { 
-            display: inline-block; padding-left: 100%; 
-            animation: marquee 40s linear infinite; /* Adjusted speed */
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
-            color: #1a1a1a; /* Darker text for contrast */
+
+        .footer-section {
+            text-align: left;
+            padding: 0.5rem;
         }
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
+
+        .footer-section h4 {
+            font-size: 1.4rem; /* Adjusted font size for titles */
+            color: var(--primary-color); /* Highlight titles with primary color */
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            text-shadow: 0 0 5px var(--glow-color-primary); /* Subtle glow for titles */
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.6rem; /* Slightly more space between list items */
+        }
+
+        .footer-section ul li a {
+            color: var(--text-color); /* Use text-color for links */
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.2s ease;
+            font-weight: 300;
+            display: inline-block; /* Allow transform */
+        }
+
+        .footer-section ul li a:hover {
+            color: var(--accent-color); /* Hover color */
+            text-decoration: underline;
+            transform: translateX(5px); /* Subtle slide on hover */
+        }
+
+        @media (max-width: 768px) { /* Adjust breakpoint as needed */
+            .main-container {
+                grid-template-columns: 1fr; /* Single column */
+                grid-template-rows: auto auto auto 1fr auto; /* Adjusted rows for mobile */
+                grid-template-areas:
+                    "header"
+                    "video"
+                    "queue"
+                    "footer";
+                height: auto; /* Allow content to dictate height on small screens */
+                overflow-y: auto; /* Enable scrolling */
+            }
+            .header { padding: 1rem 1.5rem; }
+            .header img { height: 40px; margin-right: 1rem; }
+            .header h1 { font-size: 1.5rem; }
+            .queue-container { padding: 1rem 1.5rem; }
+            .queue-boxes { flex-direction: column; }
+            .queue-box h3 { font-size: 1.5rem; }
+            .queue-number { font-size: 5rem; }
+            .visiting-container h3 { font-size: 1.5rem; }
+            .visiting-item { font-size: 1.2rem; }
+            .footer .marquee { font-size: 1.2rem; margin-bottom: 1rem; }
+            .footer-section h4 { font-size: 1.1rem; }
+            .footer-section ul li a { font-size: 0.9rem; }
+            #unmuteButton { top: 15px; right: 15px; width: 40px; height: 40px; font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -225,6 +333,24 @@
         <footer class="footer">
             <div class="marquee">
                 <span>SELAMAT DATANG DI LAYANAN KUNJUNGAN LAPAS KELAS IIB JOMBANG. DILARANG MEMBAWA BARANG TERLARANG. PATUHI PROTOKOL KESEHATAN.</span>
+            </div>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Unit Utama</h4>
+                    <ul>
+                        <li><a href="https://www.kemenkumham.go.id/" target="_blank" rel="noopener noreferrer">Sekretariat Jenderal</a></li>
+                        <li><a href="http://www.ditjenpas.go.id/" target="_blank" rel="noopener noreferrer">Ditjen PAS</a></li>
+                        <li><a href="https://imigrasi.go.id/id/" target="_blank" rel="noopener noreferrer">Ditjen Imigrasi</a></li>
+                        <li><a href="#" target="_blank" rel="noopener noreferrer">Inspektorat Jenderal</a></li>
+                        <li><a href="https://bpsdm.kemenimipas.go.id/" target="_blank" rel="noopener noreferrer">BPSDM</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Internal Links</h4>
+                    <ul>
+                        <li><a href="{{ route('display.antrian') }}" target="_blank" rel="noopener noreferrer">Display Antrian</a></li>
+                    </ul>
+                </div>
             </div>
         </footer>
     </div>
