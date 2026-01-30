@@ -73,21 +73,7 @@ class KunjunganController extends Controller
     }
 
   public function store(Request $request)
-    {
-        // 0. PRE-PROCESSING
-        // Perbaikan: Tambahkan error handling jika tanggal tidak valid
-        if ($request->has('tanggal_kunjungan')) {
-            try {
-                $date = Carbon::parse($request->tanggal_kunjungan);
-                if (!$date->isMonday()) {
-                    $request->merge(['sesi' => 'pagi']);
-                }
-            } catch (\Exception $e) {
-                // Biarkan validator yang menangani format tanggal invalid
-            }
-        }
-
-        // 1. VALIDASI
+    {        \Illuminate\Support\Facades\Log::debug('KunjunganStore request', $request->all());        // 1. VALIDASI
         $rules = [
             'nama_pengunjung'               => 'required|string|max:255',
             'nik_ktp'                       => 'required|numeric|digits:16',
@@ -100,7 +86,7 @@ class KunjunganController extends Controller
             'wbp_id'                        => 'required|exists:wbps,id',
             'hubungan'                      => 'required|string',
             'tanggal_kunjungan'             => 'required|date',
-            'sesi'                          => 'required',
+            'sesi'                          => 'nullable',
             
             // Validasi Array Pengikut
             'pengikut_nama'                 => 'nullable|array|max:4',
@@ -131,6 +117,17 @@ class KunjunganController extends Controller
         
         $validatedData = $validator->validated();
 
+        // Jika tanggal adalah hari Senin, pastikan sesi disertakan
+        try {
+            $tanggal = Carbon::parse($validatedData['tanggal_kunjungan']);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Format tanggal tidak valid.')->withInput();
+        }
+
+        if ($tanggal->isMonday() && empty($validatedData['sesi'])) {
+            return back()->withErrors(['sesi' => 'Sesi wajib dipilih pada hari Senin.'])->withInput();
+        }
+
         // 2. CEK KUOTA
         try {
             $tanggal = Carbon::parse($validatedData['tanggal_kunjungan']);
@@ -138,21 +135,34 @@ class KunjunganController extends Controller
              return back()->with('error', 'Format tanggal tidak valid.')->withInput();
         }
 
-        $sesi = strtolower(trim($validatedData['sesi'])); 
-        $isMonday = $tanggal->isMonday();
-
-        $totalQuota = 150;
-        if ($isMonday) {
-            $totalQuota = ($sesi === 'siang') ? 40 : 120;
+        // Prevent past dates
+        if ($tanggal->isPast()) {
+            return back()->with('error', 'Tanggal kunjungan tidak boleh di masa lalu.')->withInput();
         }
 
-        $registeredCount = Kunjungan::where('tanggal_kunjungan', $tanggal->format('Y-m-d'))
-            ->where('sesi', $sesi)
-            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED])
-            ->count();
+        $sesi = (isset($validatedData['sesi']) && !is_null($validatedData['sesi']) && trim((string)$validatedData['sesi']) !== '') ? strtolower(trim($validatedData['sesi'])) : null; 
+        $isMonday = $tanggal->isMonday();
+
+        $totalQuota = config('kunjungan.quota_hari_biasa', 150);
+        if ($isMonday) {
+            $totalQuota = ($sesi === 'siang') ? config('kunjungan.quota_senin_siang', 40) : config('kunjungan.quota_senin_pagi', 120);
+        }
+
+        $query = Kunjungan::where('tanggal_kunjungan', $tanggal->format('Y-m-d'))
+            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED]);
+
+        if (!is_null($sesi)) {
+            $query->where('sesi', $sesi);
+        }
+
+        $registeredCount = $query->count();
 
         if ($registeredCount >= $totalQuota) {
-            return back()->with('error', 'Mohon maaf, kuota untuk sesi yang Anda pilih sudah penuh.')->withInput();
+            if ($isMonday) {
+                return back()->withErrors(['sesi' => 'Mohon maaf, kuota untuk sesi yang Anda pilih sudah penuh.'])->withInput();
+            }
+
+            return back()->withErrors(['tanggal_kunjungan' => 'Mohon maaf, kuota untuk hari yang Anda pilih sudah penuh.'])->withInput();
         }
 
         // 3. LOGIKA BISNIS
@@ -161,22 +171,17 @@ class KunjunganController extends Controller
         $wbp = Wbp::find($validatedData['wbp_id']);
 
         if ($requestDate->isFriday() || $requestDate->isSaturday() || $requestDate->isSunday()) {
-            return back()->with('error', 'Layanan kunjungan TUTUP pada hari Jumat-Minggu.')->withInput();
+            return back()->withErrors(['tanggal_kunjungan' => 'Layanan kunjungan TUTUP pada hari Jumat-Minggu.'])->withInput();
         }
 
         if ($requestDate->isMonday()) {
             if (!($today->isFriday() || $today->isSaturday() || $today->isSunday())) {
-                return back()->with('error', 'Pendaftaran untuk hari Senin hanya dibuka pada hari Jumat-Minggu sebelumnya.')->withInput();
+                return back()->withErrors(['tanggal_kunjungan' => 'Pendaftaran untuk hari Senin hanya dibuka pada hari Jumat-Minggu sebelumnya.'])->withInput();
             }
             // Validasi Senin terdekat (Jumat/Sabtu/Minggu ini daftar untuk Senin besok)
             $diff = $today->diffInDays($requestDate, false);
             if ($diff < 1 || $diff > 3) {
-                 return back()->with('error', 'Tanggal Senin tidak valid. Pilih Senin terdekat.')->withInput();
-            }
-        } else {
-            // H-1 Check
-            if ($requestDate->format('Y-m-d') !== $today->copy()->addDay()->format('Y-m-d')) {
-                return back()->with('error', 'Pendaftaran kunjungan wajib dilakukan H-1 (satu hari sebelum jadwal kunjungan).')->withInput();
+                 return back()->withErrors(['tanggal_kunjungan' => 'Tanggal Senin tidak valid. Pilih Senin terdekat.'])->withInput();
             }
         }
 
@@ -236,14 +241,14 @@ class KunjunganController extends Controller
             );
 
             // Logika Nomor Antrian
-            if ($sesi == 'pagi') {
-                $maxAntrian = Kunjungan::where('tanggal_kunjungan', $validatedData['tanggal_kunjungan'])
-                    ->where('sesi', 'pagi')->lockForUpdate()->max('nomor_antrian_harian');
-                $nomorAntrian = ($maxAntrian ?? 0) + 1;
-            } else {
+            if ($sesi === 'siang') {
                 $maxAntrian = Kunjungan::where('tanggal_kunjungan', $validatedData['tanggal_kunjungan'])
                     ->where('sesi', 'siang')->lockForUpdate()->max('nomor_antrian_harian');
                 $nomorAntrian = $maxAntrian ? ($maxAntrian + 1) : 121;
+            } else {
+                $maxAntrian = Kunjungan::where('tanggal_kunjungan', $validatedData['tanggal_kunjungan'])
+                    ->where('sesi', 'pagi')->lockForUpdate()->max('nomor_antrian_harian');
+                $nomorAntrian = ($maxAntrian ?? 0) + 1;
             }
 
             $fullData = array_merge($validatedData, [
@@ -312,8 +317,10 @@ class KunjunganController extends Controller
                 Mail::to($kunjungan->email_pengunjung)->send(new KunjunganStatusMail($kunjungan, $fullQrPath));
             } catch (\Exception $e) { Log::error('Gagal Email: ' . $e->getMessage()); }
 
-            return redirect()->route('kunjungan.status', $kunjungan->id)
-                ->with('success', "PENDAFTARAN BERHASIL! Antrian: {$nomorAntrian}.");
+            // Simpan ID kunjungan ke sesi agar tombol "Lihat Status" dapat mengarah ke halaman status yang benar
+            return redirect()->route('kunjungan.create')
+                ->with('success', "PENDAFTARAN BERHASIL! Antrian: {$nomorAntrian}.")
+                ->with('kunjungan_id', $kunjungan->id);
 
         } catch (\Exception $e) {
             DB::rollBack();

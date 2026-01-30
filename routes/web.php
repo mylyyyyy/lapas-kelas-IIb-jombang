@@ -121,6 +121,16 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middle
 // =========================================================================
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/kunjungan/riwayat', [KunjunganController::class, 'riwayat'])->name('kunjungan.riwayat');
+
+    // Profil Pengunjung (akses oleh pengguna ter-autentikasi)
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Routes for managing followers (pengikut)
+    Route::get('/profile/pengikut', [ProfileController::class, 'pengikut'])->name('profile.pengikut');
+    Route::post('/profile/pengikut', [ProfileController::class, 'storePengikut'])->name('profile.pengikut.store');
+    Route::delete('/profile/pengikut/{id}', [ProfileController::class, 'destroyPengikut'])->name('profile.pengikut.destroy');
 });
 
 
@@ -199,16 +209,7 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
     // H. MANAJEMEN PENGUNJUNG
     Route::get('pengunjung', [\App\Http\Controllers\Admin\VisitorController::class, 'index'])->name('admin.visitors.index');
 
-    // F. PROFIL ADMIN
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
-    // Routes for managing followers
-    Route::get('/profile/pengikut', [ProfileController::class, 'pengikut'])->name('profile.pengikut');
-    Route::post('/profile/pengikut', [ProfileController::class, 'storePengikut'])->name('profile.pengikut.store');
-    Route::delete('/profile/pengikut/{id}', [ProfileController::class, 'destroyPengikut'])->name('profile.pengikut.destroy');
 });
 
-// Load auth routes bawaan Laravel Breeze (opsional, jika ada konflik bisa dikomentari)
-// require __DIR__ . '/auth.php';
+// Load auth routes bawaan Laravel Breeze
+require __DIR__ . '/auth.php';

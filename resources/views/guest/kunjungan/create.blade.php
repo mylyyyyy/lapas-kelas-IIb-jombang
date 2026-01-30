@@ -783,8 +783,20 @@
             pesanError += '</ul>';
             Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap / Salah', html: pesanError, confirmButtonText: 'Perbaiki', confirmButtonColor: '#f59e0b' });
         @endif
-        @if(session('success'))
-            Swal.fire({ icon: 'success', title: 'Berhasil!', text: "{{ session('success') }}", confirmButtonText: 'Lihat Status', confirmButtonColor: '#10b981' });
+        @if(session('success') && session('kunjungan_id'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: "{{ session('success') }}",
+                confirmButtonText: 'Lihat Status',
+                confirmButtonColor: '#10b981'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('kunjungan.status', session('kunjungan_id')) }}";
+                }
+            });
+        @elseif(session('success'))
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: "{{ session('success') }}", confirmButtonText: 'OK', confirmButtonColor: '#10b981' });
         @endif
     });
 

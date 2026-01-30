@@ -15,7 +15,6 @@ Route::middleware('guest')->group(function () {
     // Note: Custom login routes are defined in web.php using AuthController
     // These Breeze routes are commented out to avoid conflicts
     
-    /*
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
@@ -37,7 +36,6 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
-    */
 });
 
 Route::middleware('auth')->group(function () {

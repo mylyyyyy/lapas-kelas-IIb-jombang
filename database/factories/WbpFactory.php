@@ -23,7 +23,7 @@ class WbpFactory extends Factory
     {
         return [
             'nama' => $this->faker->name(),
-            'no_registrasi' => 'B' . $this->faker->unique()->numerify('####'),
+            'no_registrasi' => 'C' . $this->faker->unique()->numerify('####'),
             'blok' => $this->faker->randomElement(['A', 'B', 'C']),
             'kamar' => $this->faker->numberBetween(1, 10),
         ];
