@@ -61,8 +61,13 @@ class KunjunganRegistrationTest extends TestCase
 
         Kunjungan::factory()->create(['tanggal_kunjungan' => $date->format('Y-m-d')]);
 
+        // Sanity check: ensure one existing registration is present
+        $this->assertEquals(1, Kunjungan::whereDate('tanggal_kunjungan', $date->format('Y-m-d'))->count());
+
         $response = $this->post(route('kunjungan.store'), $this->validKunjunganData(['tanggal_kunjungan' => $date->format('Y-m-d')]));
 
+        // After posting, ensure no new registration was created and validation error present
+        $this->assertEquals(1, Kunjungan::whereDate('tanggal_kunjungan', $date->format('Y-m-d'))->count());
         $response->assertSessionHasErrors('tanggal_kunjungan');
     }
     

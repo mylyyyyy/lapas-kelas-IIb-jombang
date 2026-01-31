@@ -73,7 +73,11 @@ class KunjunganController extends Controller
     }
 
   public function store(Request $request)
-    {        \Illuminate\Support\Facades\Log::debug('KunjunganStore request', $request->all());        // 1. VALIDASI
+    {
+        // Log summary (hindari logging file binaries) ✅
+        \Illuminate\Support\Facades\Log::debug('KunjunganStore request', array_merge($request->except(['foto_ktp','pengikut_foto']), ['files_count' => count($request->allFiles())]));
+
+        // 1. VALIDASI
         $rules = [
             'nama_pengunjung'               => 'required|string|max:255',
             'nik_ktp'                       => 'required|numeric|digits:16',
@@ -82,7 +86,8 @@ class KunjunganController extends Controller
             'alamat_lengkap'                => 'required|string',
             'barang_bawaan'                 => 'nullable|string',
             'jenis_kelamin'                 => 'required|in:Laki-laki,Perempuan',
-            'foto_ktp'                      => 'required|image|max:5000', 
+            // Batasi ukuran file ke 2MB (2048 KB) untuk menghindari PostTooLarge/TokenMismatch
+            'foto_ktp'                      => 'required|image|max:2048', 
             'wbp_id'                        => 'required|exists:wbps,id',
             'hubungan'                      => 'required|string',
             'tanggal_kunjungan'             => 'required|date',
@@ -97,7 +102,7 @@ class KunjunganController extends Controller
             
             'pengikut_hubungan'             => 'nullable|array|max:4',
             'pengikut_foto'                 => 'nullable|array|max:4',
-            'pengikut_foto.*'               => 'nullable|image|max:5000',
+            'pengikut_foto.*'               => 'nullable|image|max:2048',
         ];
 
         // Pesan Error Custom yang Lebih Rapi
@@ -106,6 +111,8 @@ class KunjunganController extends Controller
             'pengikut_nik.*.digits'   => 'NIK Pengikut harus berjumlah tepat 16 digit.',
             'pengikut_nik.*.numeric'  => 'NIK Pengikut harus berupa angka.',
             'nik_ktp.digits'          => 'NIK Pengunjung Utama harus berjumlah 16 digit.',
+            'foto_ktp.max'            => 'Ukuran foto KTP maksimal 2MB.',
+            'pengikut_foto.*.max'     => 'Ukuran foto pengikut maksimal 2MB per file.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -148,14 +155,15 @@ class KunjunganController extends Controller
             $totalQuota = ($sesi === 'siang') ? config('kunjungan.quota_senin_siang', 40) : config('kunjungan.quota_senin_pagi', 120);
         }
 
-        $query = Kunjungan::where('tanggal_kunjungan', $tanggal->format('Y-m-d'))
-            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED]);
+        $query = Kunjungan::whereDate('tanggal_kunjungan', $tanggal->format('Y-m-d'))
+            ->whereIn('status', [KunjunganStatus::PENDING->value, KunjunganStatus::APPROVED->value]);
 
-        if (!is_null($sesi)) {
+        if (!is_null($sesi) ) {
             $query->where('sesi', $sesi);
         }
 
         $registeredCount = $query->count();
+        \Illuminate\Support\Facades\Log::info("Quota check for date {$tanggal->format('Y-m-d')} totalQuota={$totalQuota} registeredCount={$registeredCount} sesi={$sesi}");
 
         if ($registeredCount >= $totalQuota) {
             if ($isMonday) {
@@ -197,7 +205,7 @@ class KunjunganController extends Controller
         // Lock 1 Minggu
         $startWindow = $requestDate->copy()->subDays(6);
         $recentVisit = Kunjungan::where('wbp_id', $validatedData['wbp_id'])
-            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED])
+->whereIn('status', [KunjunganStatus::PENDING->value, KunjunganStatus::APPROVED->value])
             ->whereBetween('tanggal_kunjungan', [$startWindow->format('Y-m-d'), $requestDate->format('Y-m-d')])
             ->orderBy('tanggal_kunjungan', 'desc')
             ->first();
@@ -210,7 +218,7 @@ class KunjunganController extends Controller
         // Cek NIK Ganda
         $existingVisitor = Kunjungan::where('nik_ktp', $validatedData['nik_ktp'])
             ->whereDate('tanggal_kunjungan', $requestDate)
-            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED])
+            ->whereIn('status', [KunjunganStatus::PENDING->value, KunjunganStatus::APPROVED->value])
             ->first();
 
         if ($existingVisitor) {
@@ -224,9 +232,11 @@ class KunjunganController extends Controller
             $base64FotoUtama = null;
             if ($request->hasFile('foto_ktp')) {
                 $file = $request->file('foto_ktp');
-                $mimeType = $file->getMimeType();
-                $imageContent = file_get_contents($file->getRealPath());
-                $base64FotoUtama = 'data:' . $mimeType . ';base64,' . base64_encode($imageContent);
+                // Store original to local disk quickly and dispatch background compression
+                $storedPath = $file->store('kunjungan/originals', 'local');
+                $base64FotoUtama = null; // will be filled by background job
+            } else {
+                $storedPath = null;
             }
 
             $profil = ProfilPengunjung::updateOrCreate(
@@ -264,28 +274,36 @@ class KunjunganController extends Controller
                 'qr_token'             => Str::uuid(),
                 'preferred_notification_channel' => 'both', 
                 'foto_ktp'             => $base64FotoUtama,
+                'foto_ktp_path'        => $storedPath,
             ]));
 
             // Simpan Pengikut
             if ($request->has('pengikut_nama')) {
                 foreach ($request->pengikut_nama as $index => $nama) {
                     if (!empty($nama)) {
-                        $base64FotoPengikut = null;
+                        $fotoPathPengikut = null;
                         if ($request->hasFile("pengikut_foto.$index")) {
                             $fileP = $request->file("pengikut_foto")[$index];
-                            $mimeP = $fileP->getMimeType();
-                            $contentP = file_get_contents($fileP->getRealPath());
-                            $base64FotoPengikut = 'data:' . $mimeP . ';base64,' . base64_encode($contentP);
+                            $fotoPathPengikut = $fileP->store('kunjungan/pengikut/originals', 'local');
                         }
 
-                        Pengikut::create([
+                        $pengikut = Pengikut::create([
                             'kunjungan_id'  => $kunjungan->id,
                             'nama'          => $nama,
                             'nik'           => $request->pengikut_nik[$index] ?? null,
                             'hubungan'      => $request->pengikut_hubungan[$index] ?? null,
                             'barang_bawaan' => $request->pengikut_barang[$index] ?? null,
-                            'foto_ktp'      => $base64FotoPengikut
+                            'foto_ktp'      => null,
+                            'foto_ktp_path' => $fotoPathPengikut
                         ]);
+
+                        if ($fotoPathPengikut) {
+                            try {
+                                \App\Jobs\CompressPengikutImageJob::dispatch($pengikut->id, $fotoPathPengikut);
+                            } catch (\Exception $e) {
+                                \Illuminate\Support\Facades\Log::error('Gagal dispatch CompressPengikutImageJob: ' . $e->getMessage());
+                            }
+                        }
                     }
                 }
             }
@@ -306,6 +324,13 @@ class KunjunganController extends Controller
             }
 
             DB::commit();
+
+            // Dispatch background image compression if file was saved
+            if ($storedPath) {
+                try {
+                    \App\Jobs\CompressKtpImageJob::dispatch($kunjungan->id, $storedPath);
+                } catch (\Exception $e) { Log::error('Gagal dispatch CompressKtpImageJob: ' . $e->getMessage()); }
+            }
 
             // Notifikasi (WA & Email)
             try {

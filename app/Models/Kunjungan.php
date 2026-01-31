@@ -54,6 +54,8 @@ class Kunjungan extends Model
         'tanggal_kunjungan',
         'sesi',
         'foto_ktp',
+        'foto_ktp_path',
+        'foto_ktp_processed_at',
         'status',
         'qr_token',
         'pengikut_laki',
@@ -62,6 +64,10 @@ class Kunjungan extends Model
         'registration_type',
         'visit_started_at',
         'visit_ended_at'
+    ];
+
+    protected $dates = [
+        'foto_ktp_processed_at'
     ];
 
     protected $casts = [
