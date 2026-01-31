@@ -160,4 +160,19 @@ class WhatsAppService
 
         return $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
     }
+    /**
+     * Kirim notifikasi bahwa kunjungan telah selesai.
+     */
+    public function sendCompleted(Kunjungan $kunjungan)
+    {
+        $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
+
+        $message = "*KUNJUNGAN SELESAI* \n\n"
+                 . "Halo {$kunjungan->nama_pengunjung},\n"
+                 . "Kunjungan Anda pada tanggal {$tanggal} telah tercatat sebagai *SELESAI*.\n\n"
+                 . "Terima kasih telah mematuhi tata tertib Lapas Kelas IIB Jombang. Hati-hati di jalan.\n\n"
+                 . "_Pesan ini dikirim otomatis oleh sistem._";
+
+        $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
+    }
 }
