@@ -78,6 +78,11 @@ class KunjunganController extends Controller
             $updateData['qr_token'] = Str::random(40);
         }
 
+        // 3b. Hapus QR Token jika ditolak
+        if ($statusBaru === KunjunganStatus::REJECTED->value) {
+            $updateData['qr_token'] = null;
+        }
+
         // 4. Update Database
         $kunjungan->update($updateData);
 
@@ -104,7 +109,7 @@ class KunjunganController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Status kunjungan berhasil diperbarui.');
+        return redirect()->route('admin.kunjungan.index')->with('success', 'Status kunjungan berhasil diperbarui.');
     }
 
     /**
@@ -115,7 +120,7 @@ class KunjunganController extends Controller
         $kunjungan = Kunjungan::findOrFail($id);
         $kunjungan->delete();
 
-        return redirect()->back()->with('success', 'Data kunjungan berhasil dihapus.');
+        return redirect()->route('admin.kunjungan.index')->with('success', 'Data kunjungan berhasil dihapus.');
     }
 
     /**
@@ -166,7 +171,7 @@ class KunjunganController extends Controller
             $count++;
         }
 
-        return redirect()->back()->with('success', "$count data kunjungan berhasil diperbarui.");
+        return redirect()->route('admin.kunjungan.index')->with('success', "$count data kunjungan berhasil diperbarui.");
     }
 
     /**
@@ -182,7 +187,7 @@ class KunjunganController extends Controller
         $ids = $request->input('ids');
         Kunjungan::whereIn('id', $ids)->delete();
 
-        return redirect()->back()->with('success', count($ids) . ' data kunjungan berhasil dihapus.');
+        return redirect()->route('admin.kunjungan.index')->with('success', count($ids) . ' data kunjungan berhasil dihapus.');
     }
 
     /**
@@ -224,10 +229,11 @@ class KunjunganController extends Controller
                 ]);
             }
 
-            // For all standard web requests, show the new dedicated success page
-            return view('admin.kunjungan.verify_success', [
+            // For standard web requests, reuse the verification view and show success
+            return view('admin.kunjungan.verifikasi', [
                 'kunjungan' => $kunjungan,
-                'message' => $message
+                'status_verifikasi' => 'success',
+                'approval_message' => $message,
             ]);
         } else {
             if ($request->wantsJson()) {

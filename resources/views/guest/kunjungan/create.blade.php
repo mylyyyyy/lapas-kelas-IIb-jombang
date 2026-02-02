@@ -406,7 +406,7 @@
                 @endif
 
                 {{-- FORM START (Tambahkan x-data untuk handling loading) --}}
-                <form method="POST" action="{{ route('kunjungan.store') }}" enctype="multipart/form-data" class="space-y-8 animate-fade-in" x-data="{ isSubmitting: false }" @submit="isSubmitting = true">
+                <form method="POST" action="{{ route('kunjungan.store') }}" enctype="multipart/form-data" class="space-y-8 animate-fade-in" x-data="{ isSubmitting: false }" @submit="isSubmitting = true" @reset-submitting.window="isSubmitting = false">
                     @csrf
 
                     {{-- Data Pengunjung --}}
@@ -783,9 +783,140 @@
             pesanError += '</ul>';
             Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap / Salah', html: pesanError, confirmButtonText: 'Perbaiki', confirmButtonColor: '#f59e0b' });
         @endif
-        @if(session('success'))
-            Swal.fire({ icon: 'success', title: 'Berhasil!', text: "{{ session('success') }}", confirmButtonText: 'Lihat Status', confirmButtonColor: '#10b981' });
+        
+        // --- BAGIAN INI YANG DIPERBAIKI ---
+        @if(session('success') && session('kunjungan_id'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: "{{ session('success') }}",
+                confirmButtonText: 'Lihat Status',
+                confirmButtonColor: '#10b981', // Koma ditambahkan di sini
+                allowOutsideClick: false // Supaya user terpaksa klik tombol
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirect ke halaman status menggunakan ID dari session
+                    window.location.href = "{{ route('kunjungan.status', session('kunjungan_id')) }}";
+                }
+            });
+        @elseif(session('success'))
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: "{{ session('success') }}", confirmButtonText: 'OK', confirmButtonColor: '#10b981' });
         @endif
+        // ----------------------------------
+
+        // Client-side validation: ukuran file maksimal 2MB
+        const MAX_BYTES = 2 * 1024 * 1024;
+        const formEl = document.querySelector('form[action="{{ route('kunjungan.store') }}"]');
+        if (formEl) {
+            formEl.addEventListener('submit', function(e) {
+                // Foto KTP
+                const foto = formEl.querySelector('input[name="foto_ktp"]');
+                if (foto && foto.files && foto.files.length) {
+                    if (foto.files[0].size > MAX_BYTES) {
+                        e.preventDefault();
+                        formEl.dispatchEvent(new CustomEvent('reset-submitting', { bubbles: true }));
+                        Swal.fire({ icon:'error', title:'Ukuran File Terlalu Besar', text: 'Foto KTP melebihi 2MB. Silakan kompres atau pilih file lain.', confirmButtonText:'OK', confirmButtonColor:'#d33' });
+                        return false;
+                    }
+                }
+
+                // Foto pengikut
+                const pengikutFiles = formEl.querySelectorAll('input[name="pengikut_foto[]"]');
+                for (const input of pengikutFiles) {
+                    if (input.files && input.files.length) {
+                        if (input.files[0].size > MAX_BYTES) {
+                            e.preventDefault();
+                            formEl.dispatchEvent(new CustomEvent('reset-submitting', { bubbles: true }));
+                            Swal.fire({ icon:'error', title:'Ukuran File Terlalu Besar', text: 'Salah satu foto pengikut melebihi 2MB. Silakan kompres atau pilih file lain.', confirmButtonText:'OK', confirmButtonColor:'#d33' });
+                            return false;
+                        }
+                    }
+                }
+            });
+
+            // Client-side compression helper. Compress images on file selection to reduce upload size.
+            function compressImageFile(file, maxWidth = 1200, quality = 0.8) {
+                return new Promise((resolve, reject) => {
+                    if (!file.type.startsWith('image/')) return reject(new Error('Not an image'));
+                    const img = new Image();
+                    const reader = new FileReader();
+                    reader.onload = function(e) { img.src = e.target.result; };
+                    img.onerror = () => reject(new Error('Failed to load image'));
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        if (width > maxWidth) {
+                            const ratio = maxWidth / width;
+                            width = Math.round(width * ratio);
+                            height = Math.round(height * ratio);
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        canvas.toBlob((blob) => {
+                            if (!blob) return reject(new Error('Canvas toBlob failed'));
+                            // If compressed blob still too large, reduce quality progressively
+                            const tryCompress = (blobCandidate, q, attemptsLeft = 3) => {
+                                if (blobCandidate.size <= MAX_BYTES || attemptsLeft <= 0) {
+                                    const compressedFile = new File([blobCandidate], file.name.replace(/\.[^/.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+                                    return resolve(compressedFile);
+                                }
+                                // reduce quality and retry
+                                canvas.toBlob((b) => tryCompress(b, q * 0.7, attemptsLeft - 1), 'image/jpeg', q * 0.7);
+                            };
+                            tryCompress(blob, quality, 3);
+                        }, 'image/jpeg', quality);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // Hook for main KTP input
+            const fotoInput = document.querySelector('input[name="foto_ktp"]');
+            if (fotoInput) {
+                fotoInput.addEventListener('change', async function(e) {
+                    const file = this.files && this.files[0];
+                    if (!file) return;
+                    if (file.size <= MAX_BYTES) return; // already OK
+                    try {
+                        const compressed = await compressImageFile(file);
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(compressed);
+                        this.files = dataTransfer.files;
+                        if (compressed.size > MAX_BYTES) {
+                            Swal.fire({ icon:'warning', title:'Hasil Kompres Masih Besar', text:'Setelah kompres, file masih lebih dari 2MB. Silakan pilih file yang lebih kecil.', confirmButtonText:'OK', confirmButtonColor:'#d33' });
+                        }
+                    } catch (err) {
+                        console.warn('Compress failed', err);
+                        Swal.fire({ icon:'warning', title:'Gagal Kompres', text:'Gagal mengompres gambar di perangkat Anda. Silakan unggah gambar yang lebih kecil.', confirmButtonText:'OK', confirmButtonColor:'#d33' });
+                    }
+                });
+            }
+
+            // Delegate for dynamic pengikut file inputs
+            document.addEventListener('change', async function(ev) {
+                const input = ev.target;
+                if (input && input.matches('input[name="pengikut_foto[]"]')) {
+                    const file = input.files && input.files[0];
+                    if (!file) return;
+                    if (file.size <= MAX_BYTES) return;
+                    try {
+                        const compressed = await compressImageFile(file);
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(compressed);
+                        input.files = dataTransfer.files;
+                        if (compressed.size > MAX_BYTES) {
+                            Swal.fire({ icon:'warning', title:'Hasil Kompres Masih Besar', text:'Salah satu foto pengikut tetap lebih dari 2MB setelah kompres. Silakan pilih file lain.', confirmButtonText:'OK', confirmButtonColor:'#d33' });
+                        }
+                    } catch (err) {
+                        console.warn('Compress failed', err);
+                        Swal.fire({ icon:'warning', title:'Gagal Kompres', text:'Gagal mengompres gambar di perangkat Anda. Silakan unggah gambar yang lebih kecil.', confirmButtonText:'OK', confirmButtonColor:'#d33' });
+                    }
+                }
+            });
+        }
     });
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -938,8 +1069,8 @@
                             }
                         });
                 } else {
-                     statusMessage.textContent = 'Format NIK harus angka.';
-                     statusMessage.className = 'text-xs mt-1 text-red-500';
+                      statusMessage.textContent = 'Format NIK harus angka.';
+                      statusMessage.className = 'text-xs mt-1 text-red-500';
                 }
             });
         }

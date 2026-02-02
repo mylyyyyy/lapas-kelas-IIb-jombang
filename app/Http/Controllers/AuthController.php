@@ -40,19 +40,31 @@ class AuthController extends Controller
             // Cek role setelah login berhasil
             $userRole = Auth::user()->role;
 
-            if (in_array($userRole, ['super_admin', 'admin_humas', 'admin_registrasi', 'admin_umum', 'admin'])) {
-                // Jika admin, redirect ke dashboard admin
-                return redirect()->intended(route('dashboard'));
-            } elseif ($userRole) {
-                // Jika user biasa, redirect ke halaman utama
-                return redirect()->intended('/');
-            } else {
-                // Jika role tidak valid, logout dan beri pesan error
-                Auth::logout();
-                return back()->withErrors([
-                    'email' => 'Akun Anda tidak memiliki akses yang valid. Hubungi administrator.',
-                ]);
+            // Treat any role containing 'admin' or explicit superadmin as admin-level
+            $isAdmin = $userRole && (str_contains($userRole, 'admin') || in_array($userRole, ['superadmin', 'super_admin']));
+
+            if ($isAdmin) {
+                // Jika admin, always redirect to dashboard (do not honor intended to avoid redirecting to API/admin endpoints)
+                return redirect()->route('dashboard');
             }
+
+            // If there is an intended URL and it doesn't point to API or admin area, honor it
+            $intended = $request->session()->get('url.intended');
+            if ($intended) {
+                $intendedPath = parse_url($intended, PHP_URL_PATH) ?? $intended;
+                if (!str_starts_with($intendedPath, '/api') && !str_contains($intendedPath, '/admin/')) {
+                    return redirect()->intended();
+                }
+                // Otherwise clear the intended so we don't redirect non-admins to admin routes
+                $request->session()->forget('url.intended');
+            }
+
+            // Default: for non-admin, redirect to user area (kunjungan riwayat) if available, otherwise fallback to '/'
+            if (\Illuminate\Support\Facades\Route::has('kunjungan.riwayat')) {
+                return redirect()->route('kunjungan.riwayat');
+            }
+
+            return redirect('/');
         }
 
         // 4. Jika login gagal, kembalikan ke halaman login dengan error
@@ -72,7 +84,7 @@ class AuthController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect('/');
     }
 }
 

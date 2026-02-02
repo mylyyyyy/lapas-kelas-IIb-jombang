@@ -54,6 +54,21 @@ class ProfileController extends Controller
         return Redirect::route('profile.pengikut')->with('status', 'pengikut-saved');
     }
 
+    public function destroyPengikut(Request $request, $id): RedirectResponse
+    {
+        $user = $request->user();
+        $profil = $user->profilPengunjung;
+
+        // Detach relationship and delete the pengikut record
+        $profil->pengikuts()->detach($id);
+        $pengikut = \App\Models\Pengikut::find($id);
+        if ($pengikut) {
+            $pengikut->delete();
+        }
+
+        return Redirect::route('profile.pengikut')->with('status', 'pengikut-deleted');
+    }
+
     /**
      * Update the user's profile information.
      */

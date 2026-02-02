@@ -57,7 +57,7 @@ class AdminKunjunganTest extends TestCase
         $this->assertNotNull($kunjungan->qr_token);
         $this->assertIsString($kunjungan->qr_token);
 
-        Mail::assertSent(KunjunganStatusMail::class, function ($mail) use ($kunjungan) {
+        Mail::assertQueued(KunjunganStatusMail::class, function ($mail) use ($kunjungan) {
             return $mail->kunjungan->id === $kunjungan->id;
         });
     }
@@ -83,7 +83,7 @@ class AdminKunjunganTest extends TestCase
         // Assertions
         $response->assertOk();
         $response->assertViewIs('admin.kunjungan.verifikasi');
-        $response->assertSee('Kunjungan Ditemukan');
+        $response->assertSee('Kode QR Terverifikasi');
         $response->assertSee('Budi Hartono');
     }
 
@@ -101,7 +101,7 @@ class AdminKunjunganTest extends TestCase
         // Assertions
         $response->assertOk();
         $response->assertViewIs('admin.kunjungan.verifikasi');
-        $response->assertSee('Token Tidak Ditemukan');
+        $response->assertSee('Token Tidak Valid');
     }
 
     /**
@@ -128,7 +128,7 @@ class AdminKunjunganTest extends TestCase
         $this->assertEquals(KunjunganStatus::REJECTED, $kunjungan->status);
         $this->assertNull($kunjungan->qr_token);
 
-        Mail::assertSent(KunjunganStatusMail::class, function ($mail) use ($kunjungan) {
+        Mail::assertQueued(KunjunganStatusMail::class, function ($mail) use ($kunjungan) {
             return $mail->kunjungan->id === $kunjungan->id;
         });
     }

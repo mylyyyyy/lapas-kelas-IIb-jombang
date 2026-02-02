@@ -1,7 +1,4 @@
 <x-app-layout>
-    @php
-        use App\Enums\KunjunganStatus;
-    @endphp
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             {{ __('Riwayat Kunjungan') }}
@@ -41,9 +38,9 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                @if ($kunjungan->status == KunjunganStatus::APPROVED)
+                                                @if ($kunjungan->status == \App\Enums\KunjunganStatus::APPROVED)
                                                     bg-green-100 text-green-800
-                                                @elseif ($kunjungan->status == KunjunganStatus::REJECTED)
+                                                @elseif ($kunjungan->status == \App\Enums\KunjunganStatus::REJECTED)
                                                     bg-red-100 text-red-800
                                                 @else
                                                     bg-yellow-100 text-yellow-800

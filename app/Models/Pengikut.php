@@ -15,7 +15,13 @@ class Pengikut extends Model
         'nik',
         'hubungan',
         'barang_bawaan',
-        'foto_ktp'
+        'foto_ktp',
+        'foto_ktp_path',
+        'foto_ktp_processed_at'
+    ];
+
+    protected $dates = [
+        'foto_ktp_processed_at'
     ];
 
     public function kunjungan()

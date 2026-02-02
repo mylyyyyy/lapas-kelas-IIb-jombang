@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Kunjungan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\UploadedFile;
+use App\Models\Wbp;
 use Tests\TestCase;
 use Carbon\Carbon;
 
@@ -17,15 +19,20 @@ class KunjunganRegistrationTest extends TestCase
      */
     private function validKunjunganData($overrides = [])
     {
+        $wbp = Wbp::factory()->create();
+
         return array_merge([
             'nama_pengunjung'    => 'John Doe',
-            'nik_pengunjung'     => '1234567890123456',
-            'no_wa_pengunjung'   => '081234567890',
+            'nik_ktp'            => '1234567890123456',
+            'nomor_hp'           => '081234567890',
             'email_pengunjung'   => 'john@example.com',
-            'alamat_pengunjung'  => 'Some Address',
-            'nama_wbp'           => 'Jane Doe',
+            'alamat_lengkap'     => 'Some Address',
+            'jenis_kelamin'      => 'Laki-laki',
+            'wbp_id'             => $wbp->id,
             'hubungan'           => 'Teman',
             'tanggal_kunjungan'  => Carbon::now()->next(Carbon::TUESDAY)->format('Y-m-d'),
+            'sesi'               => null,
+            'foto_ktp'           => UploadedFile::fake()->image('ktp.jpg'),
         ], $overrides);
     }
 
@@ -54,8 +61,13 @@ class KunjunganRegistrationTest extends TestCase
 
         Kunjungan::factory()->create(['tanggal_kunjungan' => $date->format('Y-m-d')]);
 
+        // Sanity check: ensure one existing registration is present
+        $this->assertEquals(1, Kunjungan::whereDate('tanggal_kunjungan', $date->format('Y-m-d'))->count());
+
         $response = $this->post(route('kunjungan.store'), $this->validKunjunganData(['tanggal_kunjungan' => $date->format('Y-m-d')]));
 
+        // After posting, ensure no new registration was created and validation error present
+        $this->assertEquals(1, Kunjungan::whereDate('tanggal_kunjungan', $date->format('Y-m-d'))->count());
         $response->assertSessionHasErrors('tanggal_kunjungan');
     }
     
@@ -131,18 +143,24 @@ class KunjunganRegistrationTest extends TestCase
 
         $response = $this->post(route('kunjungan.store'), $data);
 
-        $response->assertSessionHasErrors($field);
+        // Special case: when tanggal_kunjungan is in the past, controller returns a general 'error' message
+        if ($field === 'tanggal_kunjungan' && $value && Carbon::parse($value)->isPast()) {
+            $response->assertSessionHas('error');
+        } else {
+            $response->assertSessionHasErrors($field);
+        }
+
         $this->assertDatabaseCount('kunjungans', 0);
     }
 
-    public function validation_provider()
+    public static function validation_provider()
     {
         return [
             'nama_pengunjung is null' => ['nama_pengunjung', null],
-            'nik_pengunjung is null' => ['nik_pengunjung', null],
-            'nik_pengunjung is not 16 digits' => ['nik_pengunjung', '12345'],
-            'nik_pengunjung contains letters' => ['nik_pengunjung', '123456789012345a'],
-            'no_wa_pengunjung is null' => ['no_wa_pengunjung', null],
+            'nik_ktp is null' => ['nik_ktp', null],
+            'nik_ktp is not 16 digits' => ['nik_ktp', '12345'],
+            'nik_ktp contains letters' => ['nik_ktp', '123456789012345a'],
+            'nomor_hp is null' => ['nomor_hp', null],
             'tanggal_kunjungan is null' => ['tanggal_kunjungan', null],
             'tanggal_kunjungan is in the past' => ['tanggal_kunjungan', Carbon::yesterday()->format('Y-m-d')],
             'hubungan is null' => ['hubungan', null],

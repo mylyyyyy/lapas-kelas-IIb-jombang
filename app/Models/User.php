@@ -71,4 +71,13 @@ class User extends Authenticatable
         return $this->role === 'superadmin';
     }
 
+    /**
+     * Hubungan ke ProfilPengunjung (satu-ke-satu).
+     */
+    public function profilPengunjung()
+    {
+        return $this->hasOne(ProfilPengunjung::class);
+    }
+
+
 }

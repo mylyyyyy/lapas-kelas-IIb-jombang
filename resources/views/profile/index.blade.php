@@ -15,11 +15,10 @@
         ['nama' => 'DANANG PANDU WINOTO, S.Sos', 'jabatan' => 'Kaur Kepeg & Keu'],
         ['nama' => 'LATIFA ISNA DAMAYANTI, S.H', 'jabatan' => 'Kaur Umum'],
         ['nama' => 'GUSTIANSYAH SURYA W, P,S.Tr.Pas.', 'jabatan' => 'Kasubsi Registrasi'],
-        ['nama' => 'MOCHAMAD MACHMUDA HARIS, S.H', 'jabatan' => 'Kasubsi Bimkemaswat'],
-        ['nama' => '[Nama Pejabat]', 'jabatan' => 'Kasubsi Binker'],
-        ['nama' => '[Nama Pejabat]', 'jabatan' => 'Kasubsi PHK'],
-        ['nama' => '[Nama Pejabat]', 'jabatan' => 'Kasubsi Portatib'],
-        ['nama' => 'SAMUD, S.H', 'jabatan' => 'Kasubsi Keamanan'],
+        ['nama' => 'MOCHAMAD MACHMUDA HARIS, S.H', 'jabatan' => 'Kasubsi Keperawatan'],
+        ['nama' => 'BUDI MULYONO, S.H', 'jabatan' => 'Kasubsi Kegiatan Kerja'],
+        ['nama' => 'EDY HARIADY, S.H', 'jabatan' => 'Kasubsi Keamanan'],
+        ['nama' => 'SAMUD, S.H', 'jabatan' => 'Kasubsi Portatib'],
     ];
 @endphp
 
@@ -119,7 +118,7 @@
 
                 {{-- Foto Wrapper --}}
                 <div class="relative group cursor-pointer swing-trigger-foto flex-shrink-0" 
-                     data-nama="RINO SOLEH SUMITRO, A.Md.IP, S.H. M.H." 
+                     data-nama="RINO SOLEH SUMITRO, A.Md.IP, S.H., M.H." 
                      data-jabatan="Kepala Lapas Kelas IIB Jombang"
                      data-img="{{ asset('img/kalapas.png') }}">
                     <div class="w-48 h-48 md:w-56 md:h-56 rounded-full p-1.5 bg-gradient-to-br from-yellow-400 via-yellow-200 to-blue-600 shadow-2xl animate-spin-slow-stop">
