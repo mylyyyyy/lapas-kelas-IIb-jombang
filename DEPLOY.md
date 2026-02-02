@@ -82,31 +82,53 @@ nssm start laravel-queue
 
 > Tips: saat deploy, jalankan `php artisan queue:restart` untuk menjalankan ulang proses worker dengan kode baru.
 
-## 7) Jobs/Background Work
-- Aplikasi menyimpan file upload sementara di `storage/app/kunjungan/originals` dan dispatch job `CompressKtpImageJob` dan `CompressPengikutImageJob` untuk memproses hasil ke `foto_ktp` base64.
-- Pastikan worker memproses antrean agar file sementara tidak menumpuk.
+- **KTP / Pengikut Image Handling**: Aplikasi sekarang menyimpan foto dalam format Base64 secara instan. Pastikan database dikonfigurasi untuk menangani ukuran baris data yang besar (longtext).
+- **Server-side Compression**: Pastikan modul `mod_deflate` (Apache) atau `gzip` (Nginx) aktif untuk memanfaatkan optimasi kecepatan yang ada di `.htaccess`.
 
-## 8) Monitoring & Logging
-- Pantau `storage/logs/laravel.log` untuk error runtime.
-- Pantau worker log (mis. `/var/log/laravel-queue.log` atau `storage/logs/worker.log`).
-- Pertimbangkan menambahkan alert (email/Slack) untuk error berulang (WA provider failures dikirimi `ADMIN_EMAIL`).
+## 7) Prosedur Build (Production)
+Sebelum mengunggah kode ke server, jalankan perintah build aset untuk memastikan performa maksimal:
+```bash
+# Install dependencies
+composer install --no-dev --optimize-autoloader
+npm install
 
-## 9) Cron (Scheduler)
-Jalankan scheduler via cron/systemd timer:
-```cron
-* * * * * /usr/bin/php /var/www/project/artisan schedule:run >> /dev/null 2>&1
+# Compile & Minify Assets
+npm run build
 ```
 
-## 10) Backup & Rollback
-- Backup DB sebelum migrasi besar.
-- Siapkan dokumentasi rollback (DB schema/migration plan).
+## 8) Prosedur Pengujian (Testing)
+Pastikan semua fitur berjalan normal sebelum rilis:
+```bash
+# Jalankan unit & feature tests
+php artisan test
 
-## 11) Post-deploy checklist
-- `php artisan migrate --force`
-- `php artisan queue:restart`
-- `php artisan config:cache` & `php artisan route:cache` (kalau perlu)
-- Verifikasi Worker berjalan dan tidak ada antrean backlog: `php artisan queue:failed` dan inspect monitoring dashboard
+# Pastikan tidak ada eror pada route & view
+php artisan route:list
+php artisan view:cache
+```
+
+## 9) Langkah Rilis (v1.2.0 Update)
+Jika Anda memperbarui dari versi sebelumnya ke v1.2.0, ikuti urutan ini:
+1.  **Backup Database**: Selalu cadangkan data sebelum melakukan migrasi.
+2.  **Pull Code**: Ambil perubahan terbaru.
+3.  **Migrate**: Jalankan index database baru.
+    ```bash
+    php artisan migrate --force
+    ```
+4.  **Optimize**: Bersihkan dan bangun ulang cache Laravel.
+    ```bash
+    php artisan optimize
+    ```
+5.  **Queue Restart**: Jika menggunakan background worker.
+    ```bash
+    php artisan queue:restart
+    ```
+
+## 10) Monitoring & Logging
+- Pantau `storage/logs/laravel.log` untuk error runtime.
+- Pantau worker log (mis. `/var/log/laravel-queue.log` atau `storage/logs/worker.log`).
+- Pantau penggunaan memori database karena penyimpanan Base64.
 
 ---
 
-Jika mau, saya bisa menambahkan contoh systemd unit file & Supervisor config ke `examples/` atau membuat script deploy sederhana (bash/PowerShell) untuk mempermudah deploy. Pilih: `examples` / `script` / `tidak`.
+Jika mau, saya bisa membuat script deploy otomatis (`deploy.sh` atau `deploy.ps1`) untuk menjalankan langkah-langkah di atas dalam satu perintah. Pilih: `script` / `tidak`.
