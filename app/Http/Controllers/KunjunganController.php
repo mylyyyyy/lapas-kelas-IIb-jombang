@@ -232,11 +232,9 @@ class KunjunganController extends Controller
             $base64FotoUtama = null;
             if ($request->hasFile('foto_ktp')) {
                 $file = $request->file('foto_ktp');
-                // Store original to local disk quickly and dispatch background compression
-                $storedPath = $file->store('kunjungan/originals', 'local');
-                $base64FotoUtama = null; // will be filled by background job
-            } else {
-                $storedPath = null;
+                // Langsung kompres dan ubah ke base64
+                $compressed = \App\Services\ImageService::compressUploadedFile($file, 1200, 80);
+                $base64FotoUtama = 'data:image/jpeg;base64,' . base64_encode($compressed);
             }
 
             $profil = ProfilPengunjung::updateOrCreate(
@@ -251,13 +249,14 @@ class KunjunganController extends Controller
             );
 
             // Logika Nomor Antrian
+            $maxAntrian = Kunjungan::where('tanggal_kunjungan', $validatedData['tanggal_kunjungan'])
+                ->where('sesi', $sesi)
+                ->lockForUpdate()
+                ->max('nomor_antrian_harian');
+
             if ($sesi === 'siang') {
-                $maxAntrian = Kunjungan::where('tanggal_kunjungan', $validatedData['tanggal_kunjungan'])
-                    ->where('sesi', 'siang')->lockForUpdate()->max('nomor_antrian_harian');
                 $nomorAntrian = $maxAntrian ? ($maxAntrian + 1) : 121;
             } else {
-                $maxAntrian = Kunjungan::where('tanggal_kunjungan', $validatedData['tanggal_kunjungan'])
-                    ->where('sesi', 'pagi')->lockForUpdate()->max('nomor_antrian_harian');
                 $nomorAntrian = ($maxAntrian ?? 0) + 1;
             }
 
@@ -266,25 +265,33 @@ class KunjunganController extends Controller
                 'alamat_pengunjung' => $request->alamat_lengkap,
             ]);
 
+            // Generate Kode Kunjungan Unik
+            $kodeKunjungan = 'VIS-' . strtoupper(Str::random(6));
+            while (Kunjungan::where('kode_kunjungan', $kodeKunjungan)->exists()) {
+                $kodeKunjungan = 'VIS-' . strtoupper(Str::random(6));
+            }
+
             $kunjungan = Kunjungan::create(array_merge($fullData, [
                 'profil_pengunjung_id' => $profil->id,
-                'kode_kunjungan'       => 'VIS-' . strtoupper(Str::random(6)),
+                'kode_kunjungan'       => $kodeKunjungan,
                 'nomor_antrian_harian' => $nomorAntrian,
                 'status'               => KunjunganStatus::PENDING,
                 'qr_token'             => Str::uuid(),
                 'preferred_notification_channel' => 'both', 
                 'foto_ktp'             => $base64FotoUtama,
-                'foto_ktp_path'        => $storedPath,
+                'foto_ktp_path'        => null,
+                'foto_ktp_processed_at' => $base64FotoUtama ? now() : null,
             ]));
 
             // Simpan Pengikut
             if ($request->has('pengikut_nama')) {
                 foreach ($request->pengikut_nama as $index => $nama) {
                     if (!empty($nama)) {
-                        $fotoPathPengikut = null;
+                        $base64FotoPengikut = null;
                         if ($request->hasFile("pengikut_foto.$index")) {
                             $fileP = $request->file("pengikut_foto")[$index];
-                            $fotoPathPengikut = $fileP->store('kunjungan/pengikut/originals', 'local');
+                            $compressedP = \App\Services\ImageService::compressUploadedFile($fileP, 1000, 80);
+                            $base64FotoPengikut = 'data:image/jpeg;base64,' . base64_encode($compressedP);
                         }
 
                         $pengikut = Pengikut::create([
@@ -293,17 +300,10 @@ class KunjunganController extends Controller
                             'nik'           => $request->pengikut_nik[$index] ?? null,
                             'hubungan'      => $request->pengikut_hubungan[$index] ?? null,
                             'barang_bawaan' => $request->pengikut_barang[$index] ?? null,
-                            'foto_ktp'      => null,
-                            'foto_ktp_path' => $fotoPathPengikut
+                            'foto_ktp'      => $base64FotoPengikut,
+                            'foto_ktp_path' => null,
+                            'foto_ktp_processed_at' => $base64FotoPengikut ? now() : null,
                         ]);
-
-                        if ($fotoPathPengikut) {
-                            try {
-                                \App\Jobs\CompressPengikutImageJob::dispatch($pengikut->id, $fotoPathPengikut);
-                            } catch (\Exception $e) {
-                                \Illuminate\Support\Facades\Log::error('Gagal dispatch CompressPengikutImageJob: ' . $e->getMessage());
-                            }
-                        }
                     }
                 }
             }
@@ -324,13 +324,6 @@ class KunjunganController extends Controller
             }
 
             DB::commit();
-
-            // Dispatch background image compression if file was saved
-            if ($storedPath) {
-                try {
-                    \App\Jobs\CompressKtpImageJob::dispatch($kunjungan->id, $storedPath);
-                } catch (\Exception $e) { Log::error('Gagal dispatch CompressKtpImageJob: ' . $e->getMessage()); }
-            }
 
             // Notifikasi (WA & Email)
             try {
