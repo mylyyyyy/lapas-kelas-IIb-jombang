@@ -130,5 +130,3 @@ Jika Anda memperbarui dari versi sebelumnya ke v1.2.0, ikuti urutan ini:
 - Pantau penggunaan memori database karena penyimpanan Base64.
 
 ---
-
-Jika mau, saya bisa membuat script deploy otomatis (`deploy.sh` atau `deploy.ps1`) untuk menjalankan langkah-langkah di atas dalam satu perintah. Pilih: `script` / `tidak`.
