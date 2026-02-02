@@ -122,6 +122,7 @@ class WhatsAppService
     public function sendPending(Kunjungan $kunjungan, string $qrCodeUrl)
     {
         $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
+        $statusUrl = route('kunjungan.status', $kunjungan->id);
         
         $message = "*PENDAFTARAN BERHASIL* ⏳\n\n"
                  . "Halo {$kunjungan->nama_pengunjung},\n"
@@ -130,6 +131,7 @@ class WhatsAppService
                  . "📅 Tanggal: {$tanggal}\n"
                  . "🕒 Sesi: " . ucfirst($kunjungan->sesi) . "\n"
                  . "👤 WBP: " . ($kunjungan->wbp->nama ?? '-') . "\n\n"
+                 . "Lihat Status: {$statusUrl}\n\n"
                  . "Mohon tunggu verifikasi petugas. Kami akan mengabari Anda jika status berubah.";
 
         // Kirim pesan (QR Code akan diabaikan otomatis oleh logika di atas jika localhost)
@@ -139,6 +141,7 @@ class WhatsAppService
     public function sendApproved(Kunjungan $kunjungan, ?string $qrCodeUrl = null)
     {
         $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
+        $statusUrl = route('kunjungan.status', $kunjungan->id);
 
         $message = "*KUNJUNGAN DISETUJUI* ✅\n\n"
                  . "Halo {$kunjungan->nama_pengunjung},\n"
@@ -146,16 +149,21 @@ class WhatsAppService
                  . "📅 Tanggal: {$tanggal}\n"
                  . "🕒 Sesi: " . ucfirst($kunjungan->sesi) . "\n"
                  . "🔢 Antrian: *{$kunjungan->nomor_antrian_harian}*\n\n"
-                 . "Harap datang tepat waktu dengan membawa KTP Asli dan Bukti QR Code (Cek Email Anda untuk QR Code).";
+                 . "Lihat Tiket QR: {$statusUrl}\n\n"
+                 . "Harap datang tepat waktu dengan membawa KTP Asli dan Bukti QR Code.";
 
         $this->sendMessage($kunjungan->no_wa_pengunjung, $message, $qrCodeUrl);
     }
 
     public function sendRejected(Kunjungan $kunjungan)
     {
+        $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
+        $statusUrl = route('kunjungan.status', $kunjungan->id);
+
         $message = "*KUNJUNGAN DITOLAK* ❌\n\n"
                  . "Mohon maaf {$kunjungan->nama_pengunjung},\n"
-                 . "Pendaftaran kunjungan Anda untuk tanggal " . $kunjungan->tanggal_kunjungan . " tidak dapat kami proses.\n\n"
+                 . "Pendaftaran kunjungan Anda untuk tanggal " . $tanggal . " tidak dapat kami proses.\n\n"
+                 . "Cek alasan penolakan di: {$statusUrl}\n\n"
                  . "Silakan hubungi petugas untuk informasi lebih lanjut.";
 
         return $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
@@ -166,10 +174,12 @@ class WhatsAppService
     public function sendCompleted(Kunjungan $kunjungan)
     {
         $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
+        $statusUrl = route('kunjungan.status', $kunjungan->id);
 
         $message = "*KUNJUNGAN SELESAI* \n\n"
                  . "Halo {$kunjungan->nama_pengunjung},\n"
                  . "Kunjungan Anda pada tanggal {$tanggal} telah tercatat sebagai *SELESAI*.\n\n"
+                 . "Anda dapat memberikan penilaian layanan kami melalui link berikut:\n{$statusUrl}\n\n"
                  . "Terima kasih telah mematuhi tata tertib Lapas Kelas IIB Jombang. Hati-hati di jalan.\n\n"
                  . "_Pesan ini dikirim otomatis oleh sistem._";
 
