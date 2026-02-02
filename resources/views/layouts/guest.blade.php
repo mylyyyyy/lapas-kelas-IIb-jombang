@@ -68,6 +68,15 @@
     {{-- Alpine.js --}}
     <script src="//unpkg.com/alpinejs" defer></script>
 
+    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css">
+    <style>
+        #nprogress .bar { background: #3b82f6 !important; height: 3px !important; }
+    </style>
+    <script>
+        window.addEventListener('beforeunload', () => NProgress.start());
+    </script>
+
     <script src="//instant.page/5.2.0" type="module" integrity="sha384-jnZyxPjiipSbm6WFEJp1hi6VExjQ7uE6TRiMUNGR6fInGo4InAsISAbHsGuNwXAY"></script>
 </body>
 </html>
