@@ -397,7 +397,7 @@
                         {{-- KOLOM KIRI: Google Maps --}}
                         <div class="w-full h-64 md:h-80 rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50 relative group">
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.149599388365!2d112.23126867575233!3d-7.558661674643537!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e78401e71277a3d%3A0x6a2c9c9c9c9c9c9c!2sLapas%20Kelas%20IIB%20Jombang!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.149599388365!2d112.23126867575233!3d-7.558661674643537!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e78401e73999999%3A0x26906660d6ad0951!2sLapas%20Kelas%20IIB%20Jombang!5e0!3m2!1sid!2sid!4v1706869500000!5m2!1sid!2sid"
                                 class="w-full h-full border-0 filter grayscale group-hover:grayscale-0 transition duration-500"
                                 allowfullscreen=""
                                 loading="lazy"
@@ -684,7 +684,29 @@
             </script>
         
             @stack('scripts')
-    </body>
+        {{-- NProgress for visual loading feedback --}}
+    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css">
+    <style>
+        #nprogress .bar { background: #3b82f6 !important; height: 3px !important; }
+        #nprogress .peg { box-shadow: 0 0 10px #3b82f6, 0 0 5px #3b82f6 !important; }
+    </style>
+
+    <script>
+        // Tampilkan loading bar saat mulai pindah halaman
+        window.addEventListener('beforeunload', () => NProgress.start());
+        // Jika menggunakan instant.page, kita bisa trigger start lebih awal
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a');
+            if (link && link.href && !link.target && !link.href.includes('#')) {
+                NProgress.start();
+            }
+        });
+    </script>
+
+    {{-- Instant Page for Faster Navigation --}}
+    <script src="//instant.page/5.2.0" type="module" integrity="sha384-jnZyxPjiipSbm6WFEJp1hi6VExjQ7uE6TRiMUNGR6fInGo4InAsISAbHsGuNwXAY"></script>
+</body>
         
         </html>
         
