@@ -46,7 +46,13 @@ class Kunjungan extends Model
         // INI YANG BIKIN ERROR TADI (Harus sesuai nama kolom database)
         'no_wa_pengunjung',   // <--- Jangan tulis 'nomor_hp'
         'email_pengunjung',
-        'alamat_pengunjung',  // <--- Jangan tulis 'alamat_lengkap'
+        'alamat_pengunjung',
+        'alamat',
+        'rt',
+        'rw',
+        'desa',
+        'kecamatan',
+        'kabupaten',
         'barang_bawaan',
 
         'jenis_kelamin',

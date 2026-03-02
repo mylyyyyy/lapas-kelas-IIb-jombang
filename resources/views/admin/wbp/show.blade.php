@@ -49,8 +49,8 @@
                         <p class="font-bold text-indigo-600">{{ $wbp->blok ?: '-' }}</p>
                     </div>
                     <div class="info-item">
-                        <label><i class="fa-solid fa-door-closed"></i>Kamar</label>
-                        <p class="font-bold text-emerald-600">{{ $wbp->kamar ?: '-' }}</p>
+                        <label><i class="fa-solid fa-door-closed"></i>Lokasi Sel</label>
+                        <p class="font-bold text-emerald-600">{{ $wbp->lokasi_sel ?: '-' }}</p>
                     </div>
                 </div>
             </div>

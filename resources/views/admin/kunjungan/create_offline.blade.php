@@ -155,7 +155,25 @@
                             <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                 <i class="fa-solid fa-map-marker-alt text-red-500"></i> Alamat Lengkap
                             </label>
-                            <textarea name="alamat_pengunjung" rows="3" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white resize-none" required placeholder="Alamat lengkap sesuai KTP...">{{ old('alamat_pengunjung') }}</textarea>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="md:col-span-2">
+                                    <input type="text" name="alamat" value="{{ old('alamat') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Nama Jalan / Dusun">
+                                    <p class="text-[10px] text-slate-400 mt-1">Nama Jalan, Dusun, atau Lingkungan.</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="text" name="rt" value="{{ old('rt') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="RT">
+                                    <input type="text" name="rw" value="{{ old('rw') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="RW">
+                                </div>
+                                <div>
+                                    <input type="text" name="desa" value="{{ old('desa') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Desa / Kelurahan">
+                                </div>
+                                <div>
+                                    <input type="text" name="kecamatan" value="{{ old('kecamatan') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Kecamatan">
+                                </div>
+                                <div>
+                                    <input type="text" name="kabupaten" value="{{ old('kabupaten', 'Jombang') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Kabupaten / Kota">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -183,7 +183,13 @@
                                     @endif
                                     <div class="flex items-start gap-1.5 text-xs text-slate-400 font-medium">
                                         <i class="fas fa-map-marker-alt text-slate-300 mt-0.5 text-[10px]"></i>
-                                        <span class="max-w-[180px] leading-tight">{{ $visitor->alamat }}</span>
+                                        <span class="max-w-[180px] leading-tight">
+                                            @if($visitor->rt || $visitor->rw)
+                                                {{ $visitor->alamat }}, RT {{ $visitor->rt }} / RW {{ $visitor->rw }}, Desa {{ $visitor->desa }}, Kec. {{ $visitor->kecamatan }}, Kab. {{ $visitor->kabupaten }}
+                                            @else
+                                                {{ $visitor->alamat }}
+                                            @endif
+                                        </span>
                                     </div>
                                 </div>
                             </td>

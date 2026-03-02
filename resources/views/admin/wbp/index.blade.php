@@ -124,10 +124,10 @@
                             {{ $wbp->no_registrasi }}
                         </span>
                         {{-- Lokasi inline --}}
-                        @if($wbp->blok || $wbp->kamar)
+                        @if($wbp->blok || $wbp->lokasi_sel)
                         <span class="inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-lg">
                             <i class="fas fa-door-open text-[9px]"></i>
-                            Blok {{ $wbp->blok ?? '-' }} / Kamar {{ $wbp->kamar ?? '-' }}
+                            Blok {{ $wbp->blok ?? '-' }} / Sel {{ $wbp->lokasi_sel ?? '-' }}
                         </span>
                         @endif
                         @if($wbp->kode_tahanan)

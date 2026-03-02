@@ -6,150 +6,110 @@ use App\Models\Wbp;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
-class WbpImport implements ToCollection, SkipsEmptyRows
+class WbpImport implements ToCollection, SkipsEmptyRows, WithChunkReading
 {
+    public $importedNoRegs = [];
+
     /**
      * @param Collection $rows
      */
     public function collection(Collection $rows)
     {
-        $processedRegistrations = [];
-        $blokIdx = -1;
-        $kamarIdx = -1;
+        // Tingkatkan batas waktu eksekusi untuk file besar
+        set_time_limit(300); 
 
         foreach ($rows as $index => $row) {
-            // Lewati header jika baris pertama mengandung kata kunci tertentu
+            // Lewati header
             if ($this->isHeader($row)) {
-                // Dinamis mencari indeks kolom Blok dan Kamar jika ada
-                foreach ($row->values()->toArray() as $colIdx => $colName) {
-                    $cn = strtolower(trim((string)$colName));
-                    if (str_contains($cn, 'blok')) $blokIdx = $colIdx;
-                    if (str_contains($cn, 'kamar') || str_contains($cn, 'sel')) $kamarIdx = $colIdx;
-                }
                 continue;
             }
 
             $data = $row->values()->toArray();
             
-            $nama = null;
-            $noReg = null;
-            $alias = null;
-            $tglMasuk = null;
-            $tglEkspirasi = null;
-            $blok = '-';
-            $kamar = '-';
-
-            // Ambil dari deteksi indeks header dinamis (jika ada)
-            if ($blokIdx !== -1 && isset($data[$blokIdx]) && trim((string)$data[$blokIdx]) !== '') {
-                $blok = trim((string)$data[$blokIdx]);
-            }
-            if ($kamarIdx !== -1 && isset($data[$kamarIdx]) && trim((string)$data[$kamarIdx]) !== '') {
-                $kamar = trim((string)$data[$kamarIdx]);
+            // Ambil data berdasarkan urutan kolom yang diberikan user
+            $nama = isset($data[0]) ? trim((string)$data[0]) : null;
+            $noReg = isset($data[1]) ? trim((string)$data[1]) : null;
+            
+            // Jika baris benar-benar kosong atau No Reg tidak valid, lewati
+            if (empty($nama) || empty($noReg) || strlen($noReg) < 5) {
+                continue;
             }
 
-            // LOGIKA DETEKSI KOLOM (FLEXIBLE)
-            foreach ($data as $cellIndex => $cell) {
-                if (is_null($cell) || $cell === '') continue;
-                $cell = trim((string)$cell);
-
-                // 1. Deteksi No Registrasi (Pola khas: Huruf + Angka + Garis Miring)
-                if (!$noReg && preg_match('/^[AB]\.?\s?[I|V]?/i', $cell) && str_contains($cell, '/')) {
-                    $noReg = strtoupper($cell);
-                    continue;
-                }
-
-                // 2. Deteksi Nama (String panjang, tanpa angka, bukan No Reg)
-                if (!$nama && strlen($cell) > 3 && !preg_match('/[0-9]/', $cell) && !str_contains($cell, '/')) {
-                    $nama = strtoupper($cell);
-                    continue;
-                }
-
-                // 3. Deteksi Tanggal (Jika cell formatnya date atau string tanggal)
-                if (preg_match('/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}$/', $cell) || is_numeric($cell) && $cell > 30000) {
-                    if (!$tglMasuk) {
-                        $tglMasuk = $this->transformDate($cell);
-                    } else if (!$tglEkspirasi) {
-                        $tglEkspirasi = $this->transformDate($cell);
-                    }
+            // Gabungkan Alias & Nama Kecil (Kolom 4 sampai 9)
+            $aliasParts = [];
+            for ($i = 4; $i <= 9; $i++) {
+                if (isset($data[$i]) && trim((string)$data[$i]) !== '' && trim((string)$data[$i]) !== '-') {
+                    $aliasParts[] = trim((string)$data[$i]);
                 }
             }
+            $namaPanggilan = !empty($aliasParts) ? implode(', ', array_unique($aliasParts)) : '-';
 
-            // Fallback: Jika logic deteksi pintar gagal, gunakan posisi kolom (Asumsi format Lapas standar)
-            if (!$noReg && isset($data[1])) $noReg = trim($data[1]);
-            if (!$nama && isset($data[0])) $nama = trim($data[0]);
+            $tglMasuk = isset($data[2]) ? $this->transformDate($data[2]) : null;
+            $tglEkspirasi = isset($data[3]) ? $this->transformDate($data[3]) : null;
+            
+            $blok = (isset($data[10]) && trim((string)$data[10]) !== '') ? trim((string)$data[10]) : '-';
+            $lokasiSel = (isset($data[11]) && trim((string)$data[11]) !== '') ? trim((string)$data[11]) : '-';
 
-            // Simpan jika minimal ada Nama dan No Reg
-            if ($nama && $noReg && !in_array($noReg, $processedRegistrations)) {
-                
-                // Jika posisi kolom fix (format khusus file Excel SDP Lapas standar)
-                // Fallback jika tidak ditemukan nama header 'blok' / 'kamar'
-                if ($blok === '-' && isset($data[10]) && trim((string)$data[10]) !== '') {
-                     $blok = trim((string)$data[10]);
-                }
-                if ($kamar === '-' && isset($data[11]) && trim((string)$data[11]) !== '') {
-                     $kamar = trim((string)$data[11]);
-                }
-                
-                // Fallback format CSV Ringkas (misal Kolom 4 & 5)
-                if ($blok === '-' && isset($data[4]) && !preg_match('/^\d{1,2}[\/\-]\d{1,2}/', (string)$data[4]) && strlen(trim((string)$data[4])) <= 10) {
-                     $blok = trim((string)$data[4]);
-                }
-                if ($kamar === '-' && isset($data[5]) && !preg_match('/^\d{1,2}[\/\-]\d{1,2}/', (string)$data[5]) && strlen(trim((string)$data[5])) <= 10) {
-                     $kamar = trim((string)$data[5]);
-                }
+            // Tentukan Kode Tahanan (A/B)
+            $inferredKode = null;
+            $firstChar = strtoupper(substr(trim($noReg), 0, 1));
+            if (in_array($firstChar, ['A', 'B'])) {
+                $inferredKode = $firstChar;
+            }
 
-                $inferredKode = null;
-                if (!empty($noReg)) {
-                    $firstChar = strtoupper(substr(trim($noReg), 0, 1));
-                    if (in_array($firstChar, ['A', 'B'])) {
-                        $inferredKode = $firstChar;
-                    }
-                }
-
-                Wbp::create([
-                    'no_registrasi'     => $noReg,
-                    'kode_tahanan'      => $inferredKode,
+            // Update atau Buat Baru (Set status Aktif)
+            Wbp::updateOrCreate(
+                ['no_registrasi' => $noReg],
+                [
                     'nama'              => strtoupper($nama),
-                    'nama_panggilan'    => $alias,
+                    'kode_tahanan'      => $inferredKode,
+                    'nama_panggilan'    => strtoupper($namaPanggilan),
                     'tanggal_masuk'     => $tglMasuk,
                     'tanggal_ekspirasi' => $tglEkspirasi,
                     'blok'              => $blok,
-                    'kamar'             => $kamar,
-                ]);
+                    'lokasi_sel'        => $lokasiSel,
+                    'status'            => 'Aktif',
+                ]
+            );
 
-                $processedRegistrations[] = $noReg;
-            }
+            // Simpan daftar no reg yang ada di file
+            $this->importedNoRegs[] = $noReg;
         }
     }
 
     private function isHeader($row)
     {
-        $firstCell = strtolower((string)$row->first());
-        return str_contains($firstCell, 'nama') || str_contains($firstCell, 'no') || str_contains($firstCell, 'registrasi');
+        $firstCell = trim(strtolower((string)$row->first()));
+        $headerKeywords = ['nama lengkap', 'no. registrasi', 'no registrasi'];
+        
+        foreach ($headerKeywords as $keyword) {
+            if ($firstCell === $keyword) return true;
+        }
+
+        return false;
+    }
+
+    public function chunkSize(): int
+    {
+        return 100; // Memproses per 100 baris untuk efisiensi memori
     }
 
     private function transformDate($value)
     {
-        if (empty($value) || $value === '-') return null;
+        if (empty($value) || $value === '-' || $value === '00/00/0000') return null;
 
         try {
-            // Jika format angka Excel (Serial Date)
             if (is_numeric($value)) {
                 return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value)->format('Y-m-d');
             }
-
-            // Jika format string Indonesia (d/m/Y)
             $cleanDate = str_replace('/', '-', $value);
             return Carbon::parse($cleanDate)->format('Y-m-d');
         } catch (\Exception $e) {
             return null;
         }
-    }
-
-    private function isNumeric($val) {
-        return is_numeric($val);
     }
 }

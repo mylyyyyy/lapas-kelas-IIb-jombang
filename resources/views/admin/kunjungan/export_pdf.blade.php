@@ -40,6 +40,7 @@
                 <th>Sesi</th>
                 <th>Antrian</th>
                 <th>Nama Pengunjung</th>
+                <th>Alamat</th>
                 <th>NIK KTP</th>
                 <th>Nama WBP</th>
                 <th>No. Reg WBP</th>
@@ -69,6 +70,15 @@
                 <td class="center">{{ ucfirst($k->sesi ?? '-') }}</td>
                 <td class="center bold">{{ $k->nomor_antrian_harian ?? '-' }}</td>
                 <td>{{ $k->nama_pengunjung }}</td>
+                <td>
+                    @if($k->rt || $k->rw)
+                        {{ $k->alamat }}, RT {{ $k->rt }} / RW {{ $k->rw }}, Desa {{ $k->desa }}, Kec. {{ $k->kecamatan }}, Kab. {{ $k->kabupaten }}
+                    @elseif($k->alamat_pengunjung && preg_match('/^(.*), RT (.*) \/ RW (.*), Desa (.*), Kec. (.*), Kab. (.*)$/', $k->alamat_pengunjung, $matches))
+                        {{ $k->alamat_pengunjung }}
+                    @else
+                        {{ $k->alamat_pengunjung }}
+                    @endif
+                </td>
                 <td class="mono">{{ $k->nik_ktp }}</td>
                 <td>{{ $k->wbp?->nama ?? '-' }}</td>
                 <td class="center mono">{{ $k->wbp?->no_registrasi ?? '-' }}</td>

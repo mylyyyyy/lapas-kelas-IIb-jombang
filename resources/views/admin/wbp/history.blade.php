@@ -64,14 +64,14 @@
                             </div>
                         </div>
 
-                        {{-- Kamar --}}
+                        {{-- Lokasi Sel --}}
                         <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Kamar / Sel</span>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Lokasi Sel</span>
                             <div class="flex items-center gap-2">
                                 <span class="w-8 h-8 rounded bg-emerald-100 text-emerald-600 flex items-center justify-center">
                                     <i class="fa-solid fa-dungeon"></i>
                                 </span>
-                                <span class="text-lg font-bold text-slate-700">{{ $wbp->kamar ?? '-' }}</span>
+                                <span class="text-lg font-bold text-slate-700">{{ $wbp->lokasi_sel ?? '-' }}</span>
                             </div>
                         </div>
 

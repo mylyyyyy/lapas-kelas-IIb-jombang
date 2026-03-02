@@ -22,7 +22,7 @@ class VisitorExport implements
     FromCollection, WithHeadings, WithMapping,
     WithStyles, ShouldAutoSize, WithTitle, WithEvents, WithDrawings
 {
-    const LAST_COL    = 'J';
+    const LAST_COL    = 'O';
     const DATA_START  = 11;
 
     public function collection()
@@ -71,6 +71,11 @@ class VisitorExport implements
                 'NOMOR HP',
                 'EMAIL',
                 'ALAMAT',
+                'RT',
+                'RW',
+                'DESA',
+                'KECAMATAN',
+                'KABUPATEN',
                 'WBP YANG DIKUNJUNGI',
                 'TOTAL KUNJUNGAN',
                 'TGL TERDAFTAR',
@@ -84,6 +89,25 @@ class VisitorExport implements
         $latest  = $visitor->kunjungans->first();
         $wbpName = $latest && $latest->wbp ? strtoupper($latest->wbp->nama) : '-';
 
+        // Parsing untuk data lama jika kolom baru kosong
+        $alamat = $visitor->alamat;
+        $rt = $visitor->rt;
+        $rw = $visitor->rw;
+        $desa = $visitor->desa;
+        $kecamatan = $visitor->kecamatan;
+        $kabupaten = $visitor->kabupaten;
+
+        if (empty($rt) && !empty($visitor->alamat)) {
+             if (preg_match('/^(.*), RT (.*) \/ RW (.*), Desa (.*), Kec. (.*), Kab. (.*)$/', $visitor->alamat, $matches)) {
+                $alamat = $matches[1];
+                $rt = $matches[2];
+                $rw = $matches[3];
+                $desa = $matches[4];
+                $kecamatan = $matches[5];
+                $kabupaten = $matches[6];
+            }
+        }
+
         return [
             $no++,
             "'" . $visitor->nik,
@@ -91,7 +115,12 @@ class VisitorExport implements
             $visitor->jenis_kelamin,
             $visitor->nomor_hp ?? '-',
             $visitor->email ?? '-',
-            $visitor->alamat,
+            strtoupper($alamat),
+            $rt,
+            $rw,
+            strtoupper($desa),
+            strtoupper($kecamatan),
+            strtoupper($kabupaten),
             $wbpName,
             $visitor->kunjungans_count . ' Kali',
             $visitor->created_at->format('d/m/Y'),
@@ -165,7 +194,7 @@ class VisitorExport implements
                     }
 
                     // Center columns
-                    foreach (['A', 'B', 'D', 'I', 'J'] as $col) {
+                    foreach (['A', 'B', 'D', 'H', 'I', 'J', 'K', 'L', 'N', 'O'] as $col) {
                         $sheet->getStyle("{$col}{$dataStart}:{$col}{$lastRow}")
                               ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                     }

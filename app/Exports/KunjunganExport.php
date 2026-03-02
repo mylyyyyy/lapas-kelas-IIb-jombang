@@ -31,8 +31,8 @@ class KunjunganExport implements
     protected $period;
     protected $date;
 
-    // Kolom terakhir (M = 13 kolom)
-    const LAST_COL = 'M';
+    // Kolom terakhir (S = 19 kolom)
+    const LAST_COL = 'S';
     // Header selesai di baris 10, data mulai baris 11
     const DATA_START_ROW = 11;
 
@@ -112,6 +112,12 @@ class KunjunganExport implements
                 'NO REG WBP',
                 'TGL KUNJUNGAN',
                 'SESI',
+                'ALAMAT',
+                'RT',
+                'RW',
+                'DESA',
+                'KECAMATAN',
+                'KABUPATEN',
                 'PENGIKUT',
                 'BARANG BAWAAN',
             ],
@@ -121,6 +127,28 @@ class KunjunganExport implements
     public function map($kunjungan): array
     {
         static $no = 1;
+
+        // Parsing untuk data lama jika kolom baru kosong
+        $alamat = $kunjungan->alamat;
+        $rt = $kunjungan->rt;
+        $rw = $kunjungan->rw;
+        $desa = $kunjungan->desa;
+        $kecamatan = $kunjungan->kecamatan;
+        $kabupaten = $kunjungan->kabupaten;
+
+        if (empty($alamat) && !empty($kunjungan->alamat_pengunjung)) {
+            if (preg_match('/^(.*), RT (.*) \/ RW (.*), Desa (.*), Kec. (.*), Kab. (.*)$/', $kunjungan->alamat_pengunjung, $matches)) {
+                $alamat = $matches[1];
+                $rt = $matches[2];
+                $rw = $matches[3];
+                $desa = $matches[4];
+                $kecamatan = $matches[5];
+                $kabupaten = $matches[6];
+            } else {
+                $alamat = $kunjungan->alamat_pengunjung;
+            }
+        }
+
         return [
             $no++,
             $kunjungan->kode_kunjungan,
@@ -135,6 +163,12 @@ class KunjunganExport implements
             $kunjungan->wbp->no_registrasi ?? 'N/A',
             $kunjungan->tanggal_kunjungan->format('Y-m-d'),
             strtoupper($kunjungan->sesi),
+            strtoupper($alamat),
+            $rt,
+            $rw,
+            strtoupper($desa),
+            strtoupper($kecamatan),
+            strtoupper($kabupaten),
             $kunjungan->pengikuts->pluck('nama')->implode(', ') ?: '-',
             $kunjungan->barang_bawaan ?: '-',
         ];
@@ -143,7 +177,9 @@ class KunjunganExport implements
     public function columnFormats(): array
     {
         return [
-            'F' => NumberFormat::FORMAT_TEXT,
+            'F' => NumberFormat::FORMAT_TEXT, // NIK
+            'M' => NumberFormat::FORMAT_TEXT, // RT
+            'N' => NumberFormat::FORMAT_TEXT, // RW
             'J' => NumberFormat::FORMAT_DATE_YYYYMMDD,
         ];
     }
@@ -227,7 +263,7 @@ class KunjunganExport implements
                     }
 
                     // Center align
-                    foreach (['A', 'B', 'C', 'D', 'F', 'G', 'I', 'J', 'K'] as $col) {
+                    foreach (['A', 'B', 'C', 'D', 'F', 'G', 'I', 'J', 'K', 'M', 'N', 'O', 'P', 'Q'] as $col) {
                         $sheet->getStyle("{$col}{$dataStart}:{$col}{$lastRow}")
                               ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                     }

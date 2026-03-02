@@ -110,7 +110,21 @@ class KunjunganController extends Controller
     {
         $kunjungan = Kunjungan::with(['wbp', 'pengikuts'])->findOrFail($id);
         $wbps = Wbp::orderBy('nama')->get();
-        return view('admin.kunjungan.edit', compact('kunjungan', 'wbps'));
+
+        // Parse alamat_pengunjung jika sesuai pola kita
+        $alamat_part = [];
+        if (preg_match('/^(.*), RT (.*) \/ RW (.*), Desa (.*), Kec. (.*), Kab. (.*)$/', $kunjungan->alamat_pengunjung, $matches)) {
+            $alamat_part = [
+                'alamat' => $matches[1],
+                'rt' => $matches[2],
+                'rw' => $matches[3],
+                'desa' => $matches[4],
+                'kecamatan' => $matches[5],
+                'kabupaten' => $matches[6],
+            ];
+        }
+
+        return view('admin.kunjungan.edit', compact('kunjungan', 'wbps', 'alamat_part'));
     }
 
     /**
@@ -127,7 +141,12 @@ class KunjunganController extends Controller
             'nama_pengunjung' => 'required|string|max:255',
             'nik_ktp' => 'required|string|digits:16',
             'no_wa_pengunjung' => 'nullable|string|max:20',
-            'alamat_pengunjung' => 'nullable|string',
+            'alamat' => 'nullable|string|max:255',
+            'rt' => 'nullable|string|max:10',
+            'rw' => 'nullable|string|max:10',
+            'desa' => 'nullable|string|max:255',
+            'kecamatan' => 'nullable|string|max:255',
+            'kabupaten' => 'nullable|string|max:255',
             'hubungan' => 'required|string|max:100',
             'wbp_id' => 'required|exists:wbps,id',
             'pengikut.*.nama' => 'nullable|string|max:255',
@@ -176,6 +195,19 @@ class KunjunganController extends Controller
             ],
         ]);
 
+        $alamatLengkap = $kunjungan->alamat_pengunjung;
+        if ($request->filled(['alamat', 'rt', 'rw', 'desa', 'kecamatan', 'kabupaten'])) {
+            $alamatLengkap = sprintf(
+                "%s, RT %s / RW %s, Desa %s, Kec. %s, Kab. %s",
+                $request->alamat,
+                $request->rt,
+                $request->rw,
+                $request->desa,
+                $request->kecamatan,
+                $request->kabupaten
+            );
+        }
+
         $statusBaru = $request->status;
         
         // Data dasar yang diupdate
@@ -186,7 +218,14 @@ class KunjunganController extends Controller
             'no_wa_pengunjung' => $request->no_wa_pengunjung,
             'hubungan' => $request->hubungan,
             'wbp_id' => $request->wbp_id,
-            'alamat_pengunjung' => $request->alamat_pengunjung,
+            'alamat_pengunjung' => $alamatLengkap,
+            'alamat_lengkap' => $alamatLengkap, // Update both fields for consistency
+            'alamat' => $request->alamat,
+            'rt' => $request->rt,
+            'rw' => $request->rw,
+            'desa' => $request->desa,
+            'kecamatan' => $request->kecamatan,
+            'kabupaten' => $request->kabupaten,
             'barang_bawaan' => $request->barang_bawaan,
         ];
 
@@ -626,7 +665,12 @@ class KunjunganController extends Controller
             'nama_pengunjung' => 'required|string|max:255',
             'nik_ktp' => 'required|string|digits:16',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'alamat_pengunjung' => 'required|string',
+            'alamat' => 'required|string|max:255',
+            'rt' => 'required|string|max:10',
+            'rw' => 'required|string|max:10',
+            'desa' => 'required|string|max:255',
+            'kecamatan' => 'required|string|max:255',
+            'kabupaten' => 'required|string|max:255',
             'hubungan' => 'required|string|max:100',
             'no_wa_pengunjung' => 'nullable|string|max:20',
             'email_pengunjung' => 'nullable|email',
@@ -635,6 +679,16 @@ class KunjunganController extends Controller
             'pengikut_anak' => 'nullable|integer|min:0',
             'barang_bawaan' => 'nullable|string',
         ]);
+
+        $alamatLengkap = sprintf(
+            "%s, RT %s / RW %s, Desa %s, Kec. %s, Kab. %s",
+            $request->alamat,
+            $request->rt,
+            $request->rw,
+            $request->desa,
+            $request->kecamatan,
+            $request->kabupaten
+        );
 
         $quotaService = new \App\Services\QuotaService();
         $dateStr = Carbon::parse($request->tanggal_kunjungan)->format('Y-m-d');
@@ -689,7 +743,13 @@ class KunjunganController extends Controller
             'nama_pengunjung' => $request->nama_pengunjung,
             'nik_ktp' => $request->nik_ktp,
             'jenis_kelamin' => $request->jenis_kelamin,
-            'alamat_pengunjung' => $request->alamat_pengunjung,
+            'alamat_pengunjung' => $alamatLengkap,
+            'alamat' => $request->alamat,
+            'rt' => $request->rt,
+            'rw' => $request->rw,
+            'desa' => $request->desa,
+            'kecamatan' => $request->kecamatan,
+            'kabupaten' => $request->kabupaten,
             'hubungan' => $request->hubungan,
             'no_wa_pengunjung' => $request->no_wa_pengunjung,
             'email_pengunjung' => $request->email_pengunjung,

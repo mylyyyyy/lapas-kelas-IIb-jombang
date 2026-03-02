@@ -72,6 +72,27 @@ class KunjunganObserver
         // KONDISI B: STATUS DISETUJUI (APPROVED) ATAU DITOLAK (REJECTED)
         // =========================================================================
         if (in_array($status, [KunjunganStatus::APPROVED, KunjunganStatus::REJECTED])) {
+            
+            // Jika Approved, pastikan ProfilPengunjung terupdate/tercatat
+            if ($status === KunjunganStatus::APPROVED) {
+                \App\Models\ProfilPengunjung::updateOrCreate(
+                    ['nik' => $kunjungan->nik_ktp],
+                    [
+                        'nama' => $kunjungan->nama_pengunjung,
+                        'nomor_hp' => $kunjungan->no_wa_pengunjung,
+                        'email' => $kunjungan->email_pengunjung,
+                        'alamat' => $kunjungan->alamat,
+                        'rt' => $kunjungan->rt,
+                        'rw' => $kunjungan->rw,
+                        'desa' => $kunjungan->desa,
+                        'kecamatan' => $kunjungan->kecamatan,
+                        'kabupaten' => $kunjungan->kabupaten,
+                        'jenis_kelamin' => $kunjungan->jenis_kelamin,
+                        'image' => $kunjungan->foto_ktp,
+                    ]
+                );
+            }
+
             $qrPath = null;
             $qrUrl  = null;
 

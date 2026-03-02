@@ -554,7 +554,25 @@
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-map-marker-alt text-red-500"></i> Alamat Lengkap
                                 </label>
-                                <input id="alamat_lengkap" type="text" name="alamat_lengkap" value="{{ old('alamat_lengkap') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Jalan, RT/RW, Desa, Kecamatan">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="md:col-span-2">
+                                        <input id="alamat" type="text" name="alamat" value="{{ old('alamat') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Nama Jalan / Dusun">
+                                        <p class="text-[10px] text-slate-400 mt-1">Nama Jalan, Dusun, atau Lingkungan.</p>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <input id="rt" type="text" name="rt" value="{{ old('rt') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="RT">
+                                        <input id="rw" type="text" name="rw" value="{{ old('rw') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="RW">
+                                    </div>
+                                    <div>
+                                        <input id="desa" type="text" name="desa" value="{{ old('desa') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Desa / Kelurahan">
+                                    </div>
+                                    <div>
+                                        <input id="kecamatan" type="text" name="kecamatan" value="{{ old('kecamatan') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Kecamatan">
+                                    </div>
+                                    <div>
+                                        <input id="kabupaten" type="text" name="kabupaten" value="{{ old('kabupaten', 'Jombang') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Kabupaten / Kota">
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="md:col-span-2 group">
@@ -738,8 +756,7 @@
 
                                 <div id="selected_wbp_info" class="hidden mt-2 p-3 bg-yellow-100 rounded-lg border border-yellow-300 text-sm text-yellow-800 flex justify-between items-center">
                                     <div>
-                                        <strong>Terpilih:</strong> <span id="disp_nama"></span><br>
-                                        <span class="text-xs">No.Reg: <span id="disp_noreg"></span> | Blok: <span id="disp_blok"></span></span>
+                                        <strong>Terpilih:</strong> <span id="disp_nama"></span>
                                     </div>
                                     <button type="button" id="btn_reset_wbp" class="text-red-600 text-xs font-bold underline">Ganti</button>
                                 </div>
@@ -1128,15 +1145,16 @@
                                 let div = document.createElement('div');
                                 div.className = 'wbp-item';
                                 div.setAttribute('role', 'option');
-                                div.innerHTML = `<div><strong>${item.nama}</strong><br><span class="text-xs text-gray-500">${item.no_registrasi}</span></div>`;
+                                
+                                // Hanya tampilkan Nama dan Kode Awalan (A/B) jika ada
+                                const displayCode = item.kode_tahanan ? ` (${item.kode_tahanan})` : '';
+                                div.innerHTML = `<div><strong>${item.nama}${displayCode}</strong></div>`;
                                 
                                 div.onclick = () => {
                                     searchInput.value = item.nama; 
                                     hiddenId.value = item.id;      
                                     infoDiv.classList.remove('hidden');
-                                    document.getElementById('disp_nama').innerText = item.nama;
-                                    document.getElementById('disp_noreg').innerText = item.no_registrasi;
-                                    document.getElementById('disp_blok').innerText = item.blok || '-'; 
+                                    document.getElementById('disp_nama').innerText = item.nama + displayCode;
                                     searchInput.classList.add('hidden');
                                     if(btnSearchManual) btnSearchManual.classList.add('hidden'); // Hide button
                                     resultsDiv.style.display = 'none';
@@ -1205,13 +1223,18 @@
             'nama_pengunjung': document.getElementById('nama_pengunjung'),
             'nomor_hp': document.getElementById('nomor_hp'),
             'email_pengunjung': document.getElementById('email_pengunjung'),
-            'alamat_lengkap': document.getElementById('alamat_lengkap'),
+            'alamat': document.getElementById('alamat'),
+            'rt': document.getElementById('rt'),
+            'rw': document.getElementById('rw'),
+            'desa': document.getElementById('desa'),
+            'kecamatan': document.getElementById('kecamatan'),
+            'kabupaten': document.getElementById('kabupaten'),
             'jenis_kelamin': document.getElementById('jenis_kelamin')
         };
         
         const statusMessage = document.createElement('p');
         statusMessage.className = 'text-xs mt-1 transition-all duration-300';
-        nikInput.parentElement.appendChild(statusMessage);
+        if (nikInput) nikInput.parentElement.appendChild(statusMessage);
 
         if (nikInput) {
             nikInput.addEventListener('keyup', function () { 
@@ -1241,9 +1264,25 @@
                                     let jsonKey = key;
                                     if(key === 'nama_pengunjung') jsonKey = 'nama';
                                     if(key === 'email_pengunjung') jsonKey = 'email';
-                                    if(key === 'alamat_lengkap') jsonKey = 'alamat';
                                     
-                                    if(data[jsonKey]) {
+                                    if (key === 'alamat') {
+                                        const fullAlamat = data['alamat'];
+                                        if (fullAlamat) {
+                                            const match = fullAlamat.match(/^(.*), RT (.*) \/ RW (.*), Desa (.*), Kec. (.*), Kab. (.*)$/);
+                                            if (match) {
+                                                inputsToFill['alamat'].value = match[1];
+                                                inputsToFill['rt'].value = match[2];
+                                                inputsToFill['rw'].value = match[3];
+                                                inputsToFill['desa'].value = match[4];
+                                                inputsToFill['kecamatan'].value = match[5];
+                                                inputsToFill['kabupaten'].value = match[6];
+                                            } else {
+                                                inputsToFill['alamat'].value = fullAlamat;
+                                            }
+                                        }
+                                    } else if (['rt', 'rw', 'desa', 'kecamatan', 'kabupaten'].includes(key)) {
+                                        // Handled in 'alamat' block
+                                    } else if(data[jsonKey]) {
                                         inputsToFill[key].value = data[jsonKey];
                                         inputsToFill[key].classList.add('bg-blue-50', 'border-blue-300');
                                         setTimeout(() => inputsToFill[key].classList.remove('bg-blue-50', 'border-blue-300'), 1500);

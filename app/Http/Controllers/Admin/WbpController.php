@@ -46,10 +46,15 @@ class WbpController extends Controller
         try {
             DB::beginTransaction();
             
-            // Hapus semua data lama sebelum import (Opsional, sesuai alur bisnis Anda)
-            Wbp::query()->delete();
+            $import = new \App\Imports\WbpImport;
+            \Maatwebsite\Excel\Facades\Excel::import($import, $request->file('file'));
 
-            \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\WbpImport, $request->file('file'));
+            // SINKRONISASI STATUS BEBAS:
+            // WBP yang tidak ada dalam file import baru akan diubah statusnya menjadi 'Bebas'
+            if (!empty($import->importedNoRegs)) {
+                Wbp::whereNotIn('no_registrasi', $import->importedNoRegs)
+                   ->update(['status' => 'Bebas']);
+            }
 
             DB::commit();
             Artisan::call('cache:clear');
@@ -112,7 +117,7 @@ class WbpController extends Controller
             'tanggal_masuk' => 'nullable|date',
             'tanggal_ekspirasi' => 'nullable|date',
             'blok' => 'nullable|string|max:255',
-            'kamar' => 'nullable|string|max:255',
+            'lokasi_sel' => 'nullable|string|max:255',
             'kode_tahanan' => 'nullable|string|max:255',
         ]);
 
@@ -140,7 +145,7 @@ class WbpController extends Controller
             'tanggal_masuk' => 'nullable|date',
             'tanggal_ekspirasi' => 'nullable|date',
             'blok' => 'nullable|string|max:255',
-            'kamar' => 'nullable|string|max:255',
+            'lokasi_sel' => 'nullable|string|max:255',
             'kode_tahanan' => 'nullable|string|max:255',
         ]);
 

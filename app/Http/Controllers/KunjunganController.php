@@ -179,17 +179,19 @@ class KunjunganController extends Controller
     {
         $search = $request->get('q');
         $wbps = Wbp::query()
-            ->where('nama', 'LIKE', "%{$search}%")
-            ->orWhere('no_registrasi', 'LIKE', "%{$search}%")
+            ->where('status', 'Aktif') // Hanya tampilkan yang aktif
+            ->where(function($q) use ($search) {
+                $q->where('nama', 'LIKE', "%{$search}%")
+                  ->orWhere('no_registrasi', 'LIKE', "%{$search}%");
+            })
             ->limit(10)->get();
 
         $results = $wbps->map(function ($wbp) {
+            // Kita sembunyikan No Reg dan Blok demi privasi publik
+            // Tapi tetap kirim kode_tahanan untuk logika validasi jadwal di frontend
             return [
                 'id' => $wbp->id,
                 'nama' => $wbp->nama,
-                'no_registrasi' => $wbp->no_registrasi,
-                'blok' => $wbp->blok ?? '-',
-                'kamar' => $wbp->kamar ?? '-',
                 'kode_tahanan' => $wbp->kode_tahanan ?? ''
             ];
         });
@@ -199,6 +201,17 @@ class KunjunganController extends Controller
     public function store(StoreKunjunganRequest $request, KunjunganService $kunjunganService, \App\Services\RegistrationValidationService $validationService, \App\Services\QuotaService $quotaService)
     {
         $validatedData = $request->validated();
+
+        // Gabungkan Alamat yang dipisah menjadi Alamat Lengkap
+        $validatedData['alamat_lengkap'] = sprintf(
+            "%s, RT %s / RW %s, Desa %s, Kec. %s, Kab. %s",
+            $validatedData['alamat'],
+            $validatedData['rt'],
+            $validatedData['rw'],
+            $validatedData['desa'],
+            $validatedData['kecamatan'],
+            $validatedData['kabupaten']
+        );
         
         $validationResult = $validationService->validate($validatedData);
 

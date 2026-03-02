@@ -42,7 +42,15 @@
                 </span>
             </td>
             <td>{{ $visitor->nomor_hp ?? '—' }}</td>
-            <td style="font-size:9.5px;">{{ $visitor->alamat }}</td>
+            <td style="font-size:9.5px;">
+                @if($visitor->rt || $visitor->rw)
+                    {{ $visitor->alamat }}, RT {{ $visitor->rt }} / RW {{ $visitor->rw }}, Desa {{ $visitor->desa }}, Kec. {{ $visitor->kecamatan }}, Kab. {{ $visitor->kabupaten }}
+                @elseif($visitor->alamat && preg_match('/^(.*), RT (.*) \/ RW (.*), Desa (.*), Kec. (.*), Kab. (.*)$/', $visitor->alamat, $matches))
+                    {{ $visitor->alamat }}
+                @else
+                    {{ $visitor->alamat }}
+                @endif
+            </td>
             <td>{{ $wbpName }}</td>
             <td class="text-center">{{ $visitor->created_at->format('d/m/Y') }}</td>
         </tr>

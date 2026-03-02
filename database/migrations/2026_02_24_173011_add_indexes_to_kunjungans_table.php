@@ -11,10 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('kunjungans', function (Blueprint $table) {
-            $table->index('kode_kunjungan');
-            $table->index('wbp_id');
-        });
+        try {
+            Schema::table('kunjungans', function (Blueprint $table) {
+                $table->index('kode_kunjungan');
+            });
+        } catch (\Exception $e) {}
+
+        try {
+            Schema::table('kunjungans', function (Blueprint $table) {
+                $table->index('wbp_id');
+            });
+        } catch (\Exception $e) {}
     }
 
     /**

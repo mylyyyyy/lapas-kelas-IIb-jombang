@@ -89,12 +89,12 @@
                             @error('blok') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                         <div class="relative form-group">
-                            <label for="kamar" class="block text-sm font-medium text-slate-700 mb-2">Kamar</label>
+                            <label for="lokasi_sel" class="block text-sm font-medium text-slate-700 mb-2">Lokasi Sel</label>
                             <div class="relative">
                                 <i class="fa-solid fa-door-closed absolute left-3.5 top-1/2 -translate-y-1/2 transform text-slate-400"></i>
-                                <input type="text" id="kamar" name="kamar" class="form-input" value="{{ old('kamar') }}" placeholder="Contoh: 101">
+                                <input type="text" id="lokasi_sel" name="lokasi_sel" class="form-input" value="{{ old('lokasi_sel') }}" placeholder="Contoh: 101">
                             </div>
-                            @error('kamar') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            @error('lokasi_sel') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
 

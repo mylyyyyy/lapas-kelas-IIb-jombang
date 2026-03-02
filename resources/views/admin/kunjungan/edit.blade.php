@@ -83,7 +83,25 @@
 
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Alamat Pengunjung</label>
-                            <textarea name="alamat_pengunjung" rows="2" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-700 focus:border-blue-500 focus:ring-0">{{ old('alamat_pengunjung', $kunjungan->alamat_pengunjung) }}</textarea>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="md:col-span-2">
+                                    <input type="text" name="alamat" value="{{ old('alamat', !empty($alamat_part) ? $alamat_part['alamat'] : $kunjungan->alamat_pengunjung) }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-700 focus:border-blue-500 focus:ring-0" placeholder="Nama Jalan / Dusun">
+                                    <p class="text-[10px] text-slate-400 mt-1">Nama Jalan, Dusun, atau Lingkungan.</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="text" name="rt" value="{{ old('rt', $alamat_part['rt'] ?? '') }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-700 focus:border-blue-500 focus:ring-0" placeholder="RT">
+                                    <input type="text" name="rw" value="{{ old('rw', $alamat_part['rw'] ?? '') }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-700 focus:border-blue-500 focus:ring-0" placeholder="RW">
+                                </div>
+                                <div>
+                                    <input type="text" name="desa" value="{{ old('desa', $alamat_part['desa'] ?? '') }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-700 focus:border-blue-500 focus:ring-0" placeholder="Desa">
+                                </div>
+                                <div>
+                                    <input type="text" name="kecamatan" value="{{ old('kecamatan', $alamat_part['kecamatan'] ?? '') }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-700 focus:border-blue-500 focus:ring-0" placeholder="Kecamatan">
+                                </div>
+                                <div>
+                                    <input type="text" name="kabupaten" value="{{ old('kabupaten', $alamat_part['kabupaten'] ?? 'Jombang') }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-700 focus:border-blue-500 focus:ring-0" placeholder="Kabupaten">
+                                </div>
+                            </div>
                         </div>
 
                         <div class="space-y-2">
