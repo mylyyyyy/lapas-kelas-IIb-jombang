@@ -178,6 +178,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 
     // Rekapitulasi & Statistik
     Route::get('/rekapitulasi', [DashboardController::class, 'rekapitulasi'])->name('admin.rekapitulasi');
+    Route::get('/rekapitulasi/export-pdf', [DashboardController::class, 'exportRecapPdf'])->name('admin.rekapitulasi.export-pdf');
+    Route::get('/rekapitulasi/export-excel', [DashboardController::class, 'exportRecapExcel'])->name('admin.rekapitulasi.export-excel');
     Route::get('/rekapitulasi/demografi', [DashboardController::class, 'demografi'])->name('admin.rekapitulasi.demografi');
     Route::get('/rekapitulasi/barang-bawaan', [DashboardController::class, 'barangBawaan'])->name('admin.rekapitulasi.barang_bawaan');
     Route::get('/api/dashboard/stats', [DashboardController::class, 'getStats'])->name('dashboard.stats');

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Support\Facades\Schema;
 use App\Models\VisitSchedule;
+use App\Exports\RecapExport;
 
 class DashboardController extends Controller
 {
@@ -278,6 +279,27 @@ class DashboardController extends Controller
 
     public function rekapitulasi(Request $request)
     {
+        $data = $this->getRecapData($request);
+        return view('admin.rekapitulasi.index', $data);
+    }
+
+    public function exportRecapPdf(Request $request)
+    {
+        $data = $this->getRecapData($request);
+        return view('admin.rekapitulasi.export_pdf', $data);
+    }
+
+    public function exportRecapExcel(Request $request)
+    {
+        $data = $this->getRecapData($request);
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new RecapExport($data), 
+            'rekapitulasi_kunjungan_' . date('Ymd_His') . '.xlsx'
+        );
+    }
+
+    protected function getRecapData(Request $request)
+    {
         $registrationType = $request->input('registration_type', 'all');
         $validStatuses = [
             KunjunganStatus::APPROVED, KunjunganStatus::CALLED, 
@@ -285,13 +307,13 @@ class DashboardController extends Controller
         ];
 
         // 1. Visitor Gender Statistics (Primary Visitor)
-        $genderCountsQuery = Kunjungan::whereIn('status', $validStatuses)
+        $genderCountsQuery = Kunjungan::whereIn('kunjungans.status', $validStatuses)
             ->when($registrationType !== 'all', function ($query) use ($registrationType) {
-                return $query->where('registration_type', $registrationType);
+                return $query->where('kunjungans.registration_type', $registrationType);
             });
 
-        $genderCounts = $genderCountsQuery->select('jenis_kelamin', DB::raw('count(*) as total'))
-            ->groupBy('jenis_kelamin')
+        $genderCounts = $genderCountsQuery->select('kunjungans.jenis_kelamin', DB::raw('count(*) as total'))
+            ->groupBy('kunjungans.jenis_kelamin')
             ->pluck('total', 'jenis_kelamin')
             ->all();
 
@@ -301,9 +323,9 @@ class DashboardController extends Controller
         ];
 
         // 2. Most Visited WBP
-        $mostVisitedWbpQuery = Kunjungan::whereIn('status', $validStatuses)
+        $mostVisitedWbpQuery = Kunjungan::whereIn('kunjungans.status', $validStatuses)
             ->when($registrationType !== 'all', function ($query) use ($registrationType) {
-                return $query->where('registration_type', $registrationType);
+                return $query->where('kunjungans.registration_type', $registrationType);
             });
         
         $mostVisitedWbp = $mostVisitedWbpQuery->join('wbps', 'kunjungans.wbp_id', '=', 'wbps.id')
@@ -314,9 +336,9 @@ class DashboardController extends Controller
             ->get();
 
         // 3. Busiest Visit Sessions
-        $sessionCountsQuery = Kunjungan::whereIn('status', $validStatuses)
+        $sessionCountsQuery = Kunjungan::whereIn('kunjungans.status', $validStatuses)
             ->when($registrationType !== 'all', function ($query) use ($registrationType) {
-                return $query->where('registration_type', $registrationType);
+                return $query->where('kunjungans.registration_type', $registrationType);
             });
 
         $sessionCounts = $sessionCountsQuery->get()
@@ -331,7 +353,7 @@ class DashboardController extends Controller
             })
             ->sortDesc();
 
-        return view('admin.rekapitulasi.index', compact('visitorGender', 'mostVisitedWbp', 'sessionCounts'));
+        return compact('visitorGender', 'mostVisitedWbp', 'sessionCounts', 'registrationType');
     }
 
     public function demografi(Request $request)

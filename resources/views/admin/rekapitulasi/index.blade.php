@@ -29,6 +29,17 @@
                 <p class="text-blue-100/70 mt-2 text-sm max-w-xl">
                     Analisis komprehensif data kunjungan, demografi pengunjung, dan WBP.
                 </p>
+                {{-- Tombol Export --}}
+                <div class="flex flex-wrap gap-3 mt-6">
+                    <a href="{{ route('admin.rekapitulasi.export-pdf', request()->all()) }}" target="_blank"
+                        class="inline-flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-lg shadow-rose-500/30 transition-all active:scale-95">
+                        <i class="fas fa-file-pdf"></i> Export PDF
+                    </a>
+                    <a href="{{ route('admin.rekapitulasi.export-excel', request()->all()) }}"
+                        class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-lg shadow-emerald-500/30 transition-all active:scale-95">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </a>
+                </div>
             </div>
             {{-- Filter Jenis Pendaftaran --}}
             <div x-data="{ open: false, selected: '{{ ucfirst(request('registration_type', 'Semua')) }}' }" class="relative flex-shrink-0">
