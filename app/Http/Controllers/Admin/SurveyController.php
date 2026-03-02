@@ -11,6 +11,27 @@ class SurveyController extends Controller
 {
     public function index(Request $request)
     {
+        $data = $this->getSurveyData($request);
+        return view('admin.surveys.index', $data);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $data = $this->getSurveyData($request, false);
+        return view('admin.surveys.export_pdf', $data);
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $data = $this->getSurveyData($request, false);
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\SurveyExport($data), 
+            'laporan_survei_ikm_' . date('Ymd_His') . '.xlsx'
+        );
+    }
+
+    protected function getSurveyData(Request $request, $paginate = true)
+    {
         $query = Survey::latest();
 
         if ($request->filled('search')) {
@@ -21,7 +42,7 @@ class SurveyController extends Controller
             $query->where('rating', $request->rating);
         }
         
-        $surveys = $query->paginate(10)->withQueryString();
+        $surveys = $paginate ? $query->paginate(10)->withQueryString() : $query->get();
 
         // Data for Charts
         $stats = DB::table('surveys')
@@ -45,13 +66,9 @@ class SurveyController extends Controller
             ];
         }
 
-        $averageRating = DB::table('surveys')->avg('rating');
+        $averageRating = DB::table('surveys')->avg('rating') ?: 0;
 
-        return view('admin.surveys.index', [
-            'surveys' => $surveys,
-            'stats' => $stats,
-            'averageRating' => $averageRating,
-        ]);
+        return compact('surveys', 'stats', 'averageRating');
     }
 
     public function destroy(Survey $survey)

@@ -42,6 +42,17 @@
                 <p class="text-blue-100/70 mt-2 text-sm max-w-lg">
                     Analisis kepuasan pengunjung berdasarkan feedback layanan kunjungan Lapas Kelas IIB Jombang.
                 </p>
+                {{-- Export Buttons --}}
+                <div class="flex flex-wrap items-center gap-3 mt-6">
+                    <a href="{{ route('admin.surveys.export-pdf', request()->all()) }}" target="_blank"
+                        class="inline-flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-lg shadow-rose-500/30 transition-all active:scale-95">
+                        <i class="fas fa-file-pdf"></i> Export PDF
+                    </a>
+                    <a href="{{ route('admin.surveys.export-excel', request()->all()) }}"
+                        class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </a>
+                </div>
                 <div class="flex flex-wrap items-center gap-3 mt-5">
                     <span class="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white text-sm font-bold px-4 py-2 rounded-xl">
                         <i class="fas fa-clipboard-list text-blue-300"></i>
