@@ -317,7 +317,7 @@
                         <th class="px-4 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest w-10">#</th>
                         <th @click="sortBy('nama')" class="th-sortable px-4 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest">Nama WBP</th>
                         <th @click="sortBy('no_registrasi')" class="th-sortable px-4 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest hidden md:table-cell">No. Reg</th>
-                        <th @click="sortBy('blok')" class="th-sortable px-4 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest hidden sm:table-cell">Blok/Kamar</th>
+                        <th @click="sortBy('blok')" class="th-sortable px-4 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest hidden sm:table-cell">Blok/Sel</th>
                         <th @click="sortBy('visit_count')" class="th-sortable px-4 py-3 text-right text-[11px] font-black text-slate-400 uppercase tracking-widest">Kunjungan</th>
                     </tr>
                 </thead>
@@ -351,7 +351,7 @@
                             <td class="px-4 py-3 hidden sm:table-cell">
                                 <span class="text-xs text-slate-600">
                                     <i class="fas fa-building text-slate-400 mr-1"></i>
-                                    <span x-text="(wbp.blok ?? '-') + ' / ' + (wbp.kamar ?? '-')"></span>
+                                    <span x-text="(wbp.blok ?? '-') + ' / ' + (wbp.lokasi_sel ?? '-')"></span>
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-right">

@@ -176,7 +176,7 @@
                             <h4 class="text-slate-900 font-bold text-xl mb-1">{{ $kunjungan->wbp->nama ?? 'Nama WBP Tidak Ditemukan' }}</h4>
                             <div class="flex gap-2 text-xs text-slate-500">
                                 <span class="bg-slate-100 px-2 py-1 rounded">Blok: <strong>{{ $kunjungan->wbp->blok ?? '-' }}</strong></span>
-                                <span class="bg-slate-100 px-2 py-1 rounded">Kamar: <strong>{{ $kunjungan->wbp->kamar ?? '-' }}</strong></span>
+                                <span class="bg-slate-100 px-2 py-1 rounded">Sel: <strong>{{ $kunjungan->wbp->lokasi_sel ?? '-' }}</strong></span>
                             </div>
                         </div>
 

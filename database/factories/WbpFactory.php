@@ -25,7 +25,7 @@ class WbpFactory extends Factory
             'nama' => $this->faker->name(),
             'no_registrasi' => 'C' . $this->faker->unique()->numerify('####'),
             'blok' => $this->faker->randomElement(['A', 'B', 'C']),
-            'kamar' => $this->faker->numberBetween(1, 10),
+            'lokasi_sel' => $this->faker->numberBetween(1, 10),
         ];
     }
 }

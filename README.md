@@ -32,7 +32,7 @@
 - **🌐 Production Ready** — Sistem kini telah *live* dan dapat diakses publik melalui domain resmi [lapasjombang.id](https://lapasjombang.id/).
 - **⚡ Real-time Cache Sinkronisasi** — Berita dan Pengumuman di beranda kini otomatis tersinkronisasi (*cache invalidation*) secara *real-time* setiap kali admin melakukan penambahan, perubahan, atau penghapusan data.
 - **📷 Smart QR Scanner** — Fitur *Scan* QR Code kini ditingkatkan untuk secara cerdas memprioritaskan penggunaan kamera belakang (*Environment-facing camera*) pada perangkat *mobile* demi kenyamanan petugas.
-- **🎫 Comprehensive Ticket Details** — Optimalisasi *Eager Loading* pada relasi database memastikan detail Nomor Blok dan Kamar Warga Binaan dapat selalu tampil akurat di tiket pengunjung.
+- **🎫 Comprehensive Ticket Details** — Optimalisasi *Eager Loading* pada relasi database memastikan detail Nomor Blok dan Lokasi Sel Warga Binaan dapat selalu tampil akurat di tiket pengunjung.
 - **✅ Quick Action Update** — Perbaikan pada fungsionalitas tombol jalan pintas (Selesai/Tolak) di tabel Kunjungan Admin dengan *routing* status khusus yang mem-*bypass* validasi form lengkap.
 
 ### ✨ Versi 1.8.0

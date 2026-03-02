@@ -129,7 +129,7 @@
                         <th class="px-5 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest w-10">#</th>
                         <th class="px-5 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest">Nama WBP</th>
                         <th class="px-5 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest hidden md:table-cell">No. Registrasi</th>
-                        <th class="px-5 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest hidden sm:table-cell">Blok / Kamar</th>
+                        <th class="px-5 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest hidden sm:table-cell">Blok / Sel</th>
                         <th class="px-5 py-3 text-center text-[11px] font-black text-slate-400 uppercase tracking-widest">Kunjungan</th>
                     </tr>
                 </thead>
@@ -156,7 +156,7 @@
                             <span class="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">{{ $wbp->no_registrasi }}</span>
                         </td>
                         <td class="px-5 py-3.5 hidden sm:table-cell text-xs text-slate-500">
-                            <i class="fas fa-building text-slate-300 mr-1"></i>{{ $wbp->blok ?? '-' }} / {{ $wbp->kamar ?? '-' }}
+                            <i class="fas fa-building text-slate-300 mr-1"></i>{{ $wbp->blok ?? '-' }} / {{ $wbp->lokasi_sel ?? '-' }}
                         </td>
                         <td class="px-5 py-3.5 text-center">
                             <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black {{ $i === 1 ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700' }}">

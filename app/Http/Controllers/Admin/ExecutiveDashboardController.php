@@ -324,8 +324,8 @@ class ExecutiveDashboardController extends Controller
 
         $mostVisitedWbp = Kunjungan::whereIn('status', $validStatuses)
             ->join('wbps', 'kunjungans.wbp_id', '=', 'wbps.id')
-            ->select('wbps.nama', 'wbps.no_registrasi', 'wbps.blok', 'wbps.kamar', DB::raw('count(kunjungans.wbp_id) as visit_count'))
-            ->groupBy('kunjungans.wbp_id', 'wbps.nama', 'wbps.no_registrasi', 'wbps.blok', 'wbps.kamar')
+            ->select('wbps.nama', 'wbps.no_registrasi', 'wbps.blok', 'wbps.lokasi_sel', DB::raw('count(kunjungans.wbp_id) as visit_count'))
+            ->groupBy('kunjungans.wbp_id', 'wbps.nama', 'wbps.no_registrasi', 'wbps.blok', 'wbps.lokasi_sel')
             ->orderBy('visit_count', 'desc')
             ->limit(10)
             ->get();
