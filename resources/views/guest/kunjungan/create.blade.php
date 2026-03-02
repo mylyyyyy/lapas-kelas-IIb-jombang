@@ -144,7 +144,13 @@
                         @foreach($openSchedules as $schedule)
                         <div class="flex flex-col justify-center items-center bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl border border-yellow-200 p-3 text-center h-full hover:shadow-md transition-all duration-300 transform hover:scale-105">
                             <span class="text-[10px] font-bold text-slate-500 uppercase mb-1">{{ $schedule->day_name }}</span>
-                            <span class="text-sm font-black text-slate-900">{{ empty($schedule->allowed_kode_tahanan) ? 'SEMUA WBP' : implode(', ', $schedule->allowed_kode_tahanan) }}</span>
+                            <span class="text-sm font-black text-slate-900 leading-tight">
+                                @php
+                                    $labels = ['A' => 'A Tahanan', 'B' => 'B Narapidana'];
+                                    $mapped = collect($schedule->allowed_kode_tahanan ?? [])->map(fn($k) => $labels[$k] ?? $k)->implode(', ');
+                                @endphp
+                                {{ $mapped ?: 'SEMUA WBP' }}
+                            </span>
                         </div>
                         @endforeach
                     </div>
