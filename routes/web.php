@@ -189,6 +189,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 
 
     // Survey IKM
+    Route::post('surveys/bulk-delete', [AdminSurveyController::class, 'bulkDestroy'])->name('admin.surveys.bulk-delete');
+    Route::delete('surveys/delete-all', [AdminSurveyController::class, 'deleteAll'])->name('admin.surveys.delete-all');
     Route::resource('surveys', AdminSurveyController::class)->names('admin.surveys')->only(['index', 'destroy']);
 });
 

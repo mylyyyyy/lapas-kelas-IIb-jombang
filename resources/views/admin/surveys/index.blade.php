@@ -134,7 +134,7 @@
     </div>
 
     {{-- FEEDBACK TABLE --}}
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden" x-data="{ selected: [] }">
         {{-- Table Header + Filter --}}
         <div class="p-5 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div class="flex items-center gap-3">
@@ -146,35 +146,51 @@
                     <p class="text-xs text-slate-400">{{ $surveys->total() }} entri ditemukan</p>
                 </div>
             </div>
-            <form method="GET" class="flex items-center gap-2 flex-wrap">
-                <div class="relative">
-                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" name="search" value="{{ request('search') }}"
-                        placeholder="Cari saran..."
-                        class="pl-9 pr-4 py-2.5 border-2 border-slate-100 bg-slate-50 rounded-xl text-xs font-medium text-slate-700 focus:border-blue-400 focus:outline-none focus:bg-white w-48 transition-all">
+            <div class="flex items-center gap-3 flex-wrap">
+                {{-- Bulk Delete Actions --}}
+                <div x-show="selected.length > 0" x-transition class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-2 rounded-xl border border-blue-100">
+                        <i class="fas fa-check-square mr-1"></i> <span x-text="selected.length"></span> terpilih
+                    </span>
+                    <button @click="bulkDelete(selected)"
+                        class="px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-xl transition-all shadow-lg shadow-red-200 active:scale-95">
+                        <i class="fas fa-trash-alt mr-1"></i> Hapus Terpilih
+                    </button>
                 </div>
-                <div class="relative">
-                    <select name="rating" onchange="this.form.submit()"
-                        class="pl-3 pr-8 py-2.5 border-2 border-slate-100 bg-slate-50 rounded-xl text-xs font-bold text-slate-700 focus:border-blue-400 focus:outline-none focus:bg-white appearance-none transition-all">
-                        <option value="">Semua Rating</option>
-                        <option value="4" @selected(request('rating') == 4)>⭐⭐⭐⭐ Sangat Baik</option>
-                        <option value="3" @selected(request('rating') == 3)>⭐⭐⭐ Baik</option>
-                        <option value="2" @selected(request('rating') == 2)>⭐⭐ Cukup</option>
-                        <option value="1" @selected(request('rating') == 1)>⭐ Buruk</option>
-                    </select>
-                    <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                </div>
-                <button type="submit"
-                    class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl transition-all">
-                    <i class="fas fa-filter mr-1"></i> Filter
+
+                {{-- Global Actions --}}
+                <button @click="deleteAll()"
+                    class="px-4 py-2.5 bg-slate-100 hover:bg-red-50 text-red-600 border border-transparent hover:border-red-200 text-xs font-bold rounded-xl transition-all active:scale-95">
+                    <i class="fas fa-eraser mr-1"></i> Kosongkan Data
                 </button>
-                @if(request('search') || request('rating'))
-                <a href="{{ route('admin.surveys.index') }}"
-                    class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-xl transition-all">
-                    <i class="fas fa-times"></i>
-                </a>
-                @endif
-            </form>
+
+                {{-- Filter Form --}}
+                <form method="GET" class="flex items-center gap-2 flex-wrap">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Cari saran..."
+                            class="pl-9 pr-4 py-2.5 border-2 border-slate-100 bg-slate-50 rounded-xl text-xs font-medium text-slate-700 focus:border-blue-400 focus:outline-none focus:bg-white w-48 transition-all">
+                    </div>
+                    <div class="relative">
+                        <select name="rating" onchange="this.form.submit()"
+                            class="pl-3 pr-8 py-2.5 border-2 border-slate-100 bg-slate-50 rounded-xl text-xs font-bold text-slate-700 focus:border-blue-400 focus:outline-none focus:bg-white appearance-none transition-all">
+                            <option value="">Semua Rating</option>
+                            <option value="4" @selected(request('rating') == 4)>⭐⭐⭐⭐ Sangat Baik</option>
+                            <option value="3" @selected(request('rating') == 3)>⭐⭐⭐ Baik</option>
+                            <option value="2" @selected(request('rating') == 2)>⭐⭐ Cukup</option>
+                            <option value="1" @selected(request('rating') == 1)>⭐ Buruk</option>
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                    </div>
+                    @if(request('search') || request('rating'))
+                    <a href="{{ route('admin.surveys.index') }}"
+                        class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-xl transition-all">
+                        <i class="fas fa-times"></i>
+                    </a>
+                    @endif
+                </form>
+            </div>
         </div>
 
         {{-- Table Body --}}
@@ -191,6 +207,10 @@
             <table class="min-w-full">
                 <thead class="bg-slate-50">
                     <tr>
+                        <th class="px-5 py-3 text-left w-10">
+                            <input type="checkbox" @change="if($el.checked) { selected = @json($surveys->pluck('id')) } else { selected = [] }"
+                                class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        </th>
                         <th class="px-5 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest w-36">Penilaian</th>
                         <th class="px-5 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest">Saran & Kritik</th>
                         <th class="px-5 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest hidden md:table-cell w-36">Waktu</th>
@@ -210,7 +230,11 @@
                         $bgMap = ['emerald' => 'bg-emerald-50', 'blue' => 'bg-sky-50', 'amber' => 'bg-amber-50', 'red' => 'bg-red-50', 'slate' => ''];
                         $badgeBg = ['emerald' => 'bg-emerald-100 text-emerald-700', 'blue' => 'bg-blue-100 text-blue-700', 'amber' => 'bg-amber-100 text-amber-700', 'red' => 'bg-red-100 text-red-700', 'slate' => 'bg-slate-100 text-slate-500'];
                     @endphp
-                    <tr class="hover:bg-slate-50 transition-colors group">
+                    <tr class="hover:bg-slate-50 transition-colors group" :class="selected.includes({{ $survey->id }}) ? 'bg-blue-50/50' : ''">
+                        <td class="px-5 py-4">
+                            <input type="checkbox" x-model="selected" value="{{ $survey->id }}"
+                                class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        </td>
                         <td class="px-5 py-4">
                             <div class="flex flex-col gap-1.5">
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-black {{ $badgeBg[$ri['color']] }}">
@@ -259,6 +283,17 @@
         @endif
     </div>
 </div>
+
+{{-- Hidden Bulk Forms --}}
+<form id="bulkDeleteForm" action="{{ route('admin.surveys.bulk-delete') }}" method="POST" class="hidden">
+    @csrf
+    <div id="bulkDeleteInputs"></div>
+</form>
+
+<form id="deleteAllForm" action="{{ route('admin.surveys.delete-all') }}" method="POST" class="hidden">
+    @csrf
+    @method('DELETE')
+</form>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -329,6 +364,47 @@ function confirmDelete(event, form) {
         cancelButtonText: 'Batal'
     }).then(r => { if (r.isConfirmed) form.submit(); });
     return false;
+}
+
+function bulkDelete(ids) {
+    Swal.fire({
+        customClass: { popup: 'rounded-3xl shadow-2xl', confirmButton: 'rounded-xl px-5 py-2.5 font-bold bg-red-600 text-white mr-2', cancelButton: 'rounded-xl px-5 py-2.5 font-bold bg-slate-200 text-slate-600' },
+        buttonsStyling: false,
+        title: 'Hapus Terpilih?',
+        text: ids.length + ' data survey akan dihapus permanen.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-trash-alt mr-1"></i> Hapus Semua',
+        cancelButtonText: 'Batal'
+    }).then(r => {
+        if (r.isConfirmed) {
+            const container = document.getElementById('bulkDeleteInputs');
+            container.innerHTML = '';
+            ids.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'ids[]';
+                input.value = id;
+                container.appendChild(input);
+            });
+            document.getElementById('bulkDeleteForm').submit();
+        }
+    });
+}
+
+function deleteAll() {
+    Swal.fire({
+        customClass: { popup: 'rounded-3xl shadow-2xl', confirmButton: 'rounded-xl px-5 py-2.5 font-bold bg-red-600 text-white mr-2', cancelButton: 'rounded-xl px-5 py-2.5 font-bold bg-slate-200 text-slate-600' },
+        buttonsStyling: false,
+        title: 'Kosongkan Semua?',
+        text: 'SEMUA data survey akan dihapus permanen tanpa terkecuali.',
+        icon: 'error',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fas fa-eraser mr-1"></i> Ya, Kosongkan',
+        cancelButtonText: 'Batal'
+    }).then(r => {
+        if (r.isConfirmed) document.getElementById('deleteAllForm').submit();
+    });
 }
 </script>
 @endsection

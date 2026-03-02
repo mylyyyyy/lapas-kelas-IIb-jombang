@@ -59,4 +59,21 @@ class SurveyController extends Controller
         $survey->delete();
         return redirect()->route('admin.surveys.index')->with('success', 'Data survey berhasil dihapus.');
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (empty($ids)) {
+            return back()->with('error', 'Tidak ada data yang dipilih.');
+        }
+
+        Survey::whereIn('id', $ids)->delete();
+        return redirect()->route('admin.surveys.index')->with('success', count($ids) . ' data survey berhasil dihapus.');
+    }
+
+    public function deleteAll()
+    {
+        Survey::truncate();
+        return redirect()->route('admin.surveys.index')->with('success', 'Semua data survey berhasil dikosongkan.');
+    }
 }
