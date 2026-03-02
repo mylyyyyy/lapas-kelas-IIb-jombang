@@ -228,15 +228,15 @@
             </div>
             <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center hover:bg-white/20 transition-all card-hover-scale group card-3d hover:shadow-xl hover:shadow-emerald-500/20">
                 <div class="text-2xl md:text-3xl font-black text-emerald-400 mb-1 group-hover:animate-float-up">
-                    <span class="counter" data-target="450">0</span>+
+                    <span class="counter" data-target="15">0</span>+
                 </div>
-                <div class="text-xs md:text-sm text-gray-300 font-medium">Warga Binaan</div>
+                <div class="text-xs md:text-sm text-gray-300 font-medium">Penghargaan</div>
             </div>
             <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center hover:bg-white/20 transition-all card-hover-scale group card-3d hover:shadow-xl hover:shadow-blue-500/20">
                 <div class="text-2xl md:text-3xl font-black text-blue-400 mb-1 group-hover:animate-float-up">
-                    <span class="counter" data-target="100">0</span>+
+                    WBK
                 </div>
-                <div class="text-xs md:text-sm text-gray-300 font-medium">Pegawai</div>
+                <div class="text-xs md:text-sm text-gray-300 font-medium">Predikat ZI</div>
             </div>
             <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 text-center hover:bg-white/20 transition-all card-hover-scale group card-3d hover:shadow-xl hover:shadow-purple-500/20">
                 <div class="text-2xl md:text-3xl font-black text-purple-400 mb-1 group-hover:animate-float-up">
