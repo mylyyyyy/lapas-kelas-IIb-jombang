@@ -22,7 +22,7 @@
             Papan <span class="bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent animate-text-shimmer">Pengumuman</span>
         </h1>
         <p class="text-xl text-emerald-100 max-w-3xl mx-auto leading-relaxed">
-            Informasi penting, jadwal kegiatan, dan pengumuman resmi dari Lembaga Pemasyarakatan Kelas 2B Jombang.
+            Informasi penting, jadwal kegiatan, dan pengumuman resmi dari Lembaga Pemasyarakatan Kelas IIB Jombang.
         </p>
     </div>
 </section>
