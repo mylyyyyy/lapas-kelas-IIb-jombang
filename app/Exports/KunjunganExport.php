@@ -93,7 +93,7 @@ class KunjunganExport implements
             ['KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN REPUBLIK INDONESIA'],
             ['KANTOR WILAYAH DIREKTORAT JENDERAL PEMASYARAKATAN – JAWA TIMUR'],
             ['LEMBAGA PEMASYARAKATAN KELAS IIB JOMBANG'],
-            ['Jl. KH. Wahid Hasyim No. 155, Jombang, Jawa Timur 61419  |  Telp. (0321) 861205'],
+            ['Jl. KH. Wahid Hasyim No. 155, Jombang, Jawa Timur 61419  |  Telp. +62 857 3333 3400'],
             [''],
             ['LAPORAN DATA KUNJUNGAN PENGUNJUNG'],
             ['Periode: ' . $periodeStr],

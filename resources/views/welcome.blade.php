@@ -527,8 +527,7 @@
                         <i class="fas fa-phone text-2xl text-white"></i>
                     </div>
                     <h3 class="font-bold mb-2">Telepon & Fax</h3>
-                    <p class="text-slate-300 text-sm">+62 321 861205</p>
-                </div>
+                    <p class="text-slate-300 text-sm">+62 857 3333 3400</p>                </div>
                 <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 card-hover-scale group">
                     <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
                         <i class="fas fa-envelope text-2xl text-white"></i>

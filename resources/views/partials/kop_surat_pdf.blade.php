@@ -230,7 +230,7 @@
             <p class="kop-instansi">Lembaga Pemasyarakatan Kelas IIB Jombang</p>
             <p class="kop-alamat">
                 Jl. KH. Wahid Hasyim No. 155, Jombang, Jawa Timur 61419 &nbsp;|&nbsp;
-                Telp. (0321) 861205 &nbsp;|&nbsp; Email: lapasjombang@gmail.com
+                Telp. +62 857 3333 3400 &nbsp;|&nbsp; Email: lapasjombang@gmail.com
             </p>
         </div>
 
