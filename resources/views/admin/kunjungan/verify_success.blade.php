@@ -186,8 +186,20 @@
                     <td>{{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y') }} (Sesi {{ ucfirst($kunjungan->sesi) }})</td>
                 </tr>
                 <tr>
+                    <th>Jenis Pendaftaran</th>
+                    <td>
+                        <span class="px-2 py-1 rounded-lg text-xs font-bold {{ $kunjungan->registration_type === 'offline' ? 'bg-teal-100 text-teal-700' : 'bg-blue-100 text-blue-700' }}">
+                            {{ strtoupper($kunjungan->registration_type ?? 'ONLINE') }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
                     <th>Nomor Antrian</th>
-                    <td><span class="antrian-badge">{{ $kunjungan->nomor_antrian_harian ?? 'N/A' }}</span></td>
+                    <td>
+                        <span class="antrian-badge">
+                            {{ ($kunjungan->registration_type === 'offline' ? 'B-' : 'A-') . str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT) }}
+                        </span>
+                    </td>
                 </tr>
             </table>
         </div>

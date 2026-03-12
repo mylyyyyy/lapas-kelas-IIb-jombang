@@ -216,6 +216,7 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_registrasi'])->gr
     Route::get('kunjungan/export', [AdminKunjunganController::class, 'export'])->name('admin.kunjungan.export');
     Route::get('kunjungan/verifikasi', [AdminKunjunganController::class, 'showVerificationForm'])->name('admin.kunjungan.verifikasi');
     Route::post('kunjungan/verifikasi', [AdminKunjunganController::class, 'verifyQrCode'])->name('admin.kunjungan.verifikasi.submit');
+    Route::get('kunjungan/verify-success/{kunjungan}', [AdminKunjunganController::class, 'verifySuccess'])->name('admin.kunjungan.verify.success');
     Route::post('kunjungan/bulk-update', [AdminKunjunganController::class, 'bulkUpdate'])->name('admin.kunjungan.bulk-update');
     Route::post('kunjungan/bulk-delete', [AdminKunjunganController::class, 'bulkDelete'])->name('admin.kunjungan.bulk-delete');
     Route::patch('kunjungan/{kunjungan}/update-status', [AdminKunjunganController::class, 'updateStatus'])->name('admin.kunjungan.update-status');

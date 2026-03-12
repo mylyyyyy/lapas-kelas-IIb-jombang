@@ -280,7 +280,21 @@ class KunjunganController extends Controller
             }
         }
 
+        if ($statusBaru === KunjunganStatus::APPROVED->value) {
+            return redirect()->route('admin.kunjungan.verify.success', $kunjungan->id)
+                ->with('success', 'Kunjungan berhasil disetujui.');
+        }
+
         return redirect()->route('admin.kunjungan.index')->with('success', 'Data kunjungan berhasil diverifikasi dan diperbarui.');
+    }
+
+    /**
+     * Menampilkan halaman sukses setelah verifikasi.
+     */
+    public function verifySuccess(Kunjungan $kunjungan)
+    {
+        $message = session('success') ?? 'Verifikasi pendaftaran kunjungan telah berhasil dilakukan.';
+        return view('admin.kunjungan.verify_success', compact('kunjungan', 'message'));
     }
 
     /**
