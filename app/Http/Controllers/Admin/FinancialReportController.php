@@ -72,7 +72,8 @@ class FinancialReportController extends Controller
 
     public function edit(FinancialReport $financialReport)
     {
-        return view('admin.financial_reports.edit', compact('financialReport'));
+        $categories = \App\Models\ReportCategory::ordered()->get();
+        return view('admin.financial_reports.edit', compact('financialReport', 'categories'));
     }
 
     public function update(Request $request, FinancialReport $financialReport)
