@@ -185,7 +185,11 @@
     function confirmDelete(id, title) {
         Swal.fire({ icon: 'warning', title: 'Hapus Laporan?', html: `Hapus <b>${title}</b>?`, showCancelButton: true, confirmButtonText: 'Hapus', cancelButtonText: 'Batal',
             customClass: { popup:'rounded-3xl', confirmButton:'px-5 py-2.5 bg-red-600 text-white font-bold rounded-xl mx-1', cancelButton:'px-5 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-xl mx-1' }, buttonsStyling: false
-        }).then(r => { if(r.isConfirmed){ const f=document.getElementById('deleteForm'); f.action=`/admin/financial-reports/${id}`; f.submit(); } });
+        }).then(r => { if(r.isConfirmed){ 
+            const f=document.getElementById('deleteForm'); 
+            f.action=`{{ route('admin.financial-reports.destroy', ':id') }}`.replace(':id', id); 
+            f.submit(); 
+        } });
     }
     function confirmBulkDelete() {
         const count = document.querySelectorAll('.report-checkbox:checked').length;
