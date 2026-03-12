@@ -121,7 +121,11 @@
                 ID Berita: #{{ $news->id }} &bull; Terakhir diupdate: {{ $news->updated_at->diffForHumans() }}
             </div>
 
-            <div class="flex gap-3">
+            <div class="flex flex-wrap gap-3">
+                <button onclick="copyPublicLink('{{ route('news.public.show', $news->slug) }}')" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 active:scale-95">
+                    <i class="fas fa-copy"></i> Copy Link Publik
+                </button>
+
                 <a href="{{ route('news.edit', $news->id) }}" class="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 transition-all shadow-sm active:scale-95">
                     <i class="fas fa-edit"></i> Edit Berita
                 </a>
@@ -169,6 +173,36 @@
             if (result.isConfirmed) {
                 document.getElementById('delete-form').submit();
             }
+        });
+    }
+
+    function copyPublicLink(url) {
+        navigator.clipboard.writeText(url).then(() => {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: 'Link publik berhasil disalin ke clipboard!'
+            });
+        }).catch(err => {
+            console.error('Gagal menyalin link: ', err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: 'Terjadi kesalahan saat menyalin link.',
+                timer: 2000,
+                showConfirmButton: false
+            });
         });
     }
 </script>

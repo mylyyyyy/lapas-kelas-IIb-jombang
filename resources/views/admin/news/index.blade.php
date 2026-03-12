@@ -158,6 +158,9 @@
                     </a>
 
                     <div class="flex items-center gap-2">
+                        <button onclick="copyPublicLink('{{ route('news.public.show', $item->slug) }}')" class="w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-emerald-600 hover:border-emerald-200 flex items-center justify-center transition-all shadow-sm" title="Salin Link Publik">
+                            <i class="fas fa-copy text-xs"></i>
+                        </button>
                         <a href="{{ route('news.edit', $item->id) }}" class="w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-blue-600 hover:border-blue-200 flex items-center justify-center transition-all shadow-sm" title="Edit">
                             <i class="fas fa-pen text-xs"></i>
                         </a>
@@ -223,6 +226,36 @@
             if (result.isConfirmed) {
                 document.getElementById(`delete-form-${id}`).submit();
             }
+        });
+    }
+
+    function copyPublicLink(url) {
+        navigator.clipboard.writeText(url).then(() => {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            Toast.fire({
+                icon: 'success',
+                title: 'Link publik berhasil disalin ke clipboard!'
+            });
+        }).catch(err => {
+            console.error('Gagal menyalin link: ', err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: 'Terjadi kesalahan saat menyalin link.',
+                timer: 2000,
+                showConfirmButton: false
+            });
         });
     }
 </script>
