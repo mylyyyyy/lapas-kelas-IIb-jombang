@@ -90,7 +90,7 @@ class SurveyController extends Controller
 
     public function deleteAll()
     {
-        Survey::truncate();
+        Survey::query()->delete();
         return redirect()->route('admin.surveys.index')->with('success', 'Semua data survey berhasil dikosongkan.');
     }
 }

@@ -498,7 +498,7 @@ class DashboardController extends Controller
      */
     public function resetActivityLogs()
     {
-        Activity::query()->truncate();
+        Activity::query()->delete();
 
         return redirect()->route('admin.activity_logs.index')->with('success', 'Semua log aktivitas berhasil dihapus!');
     }

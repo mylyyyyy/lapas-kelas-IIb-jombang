@@ -111,7 +111,7 @@ class VisitorController extends Controller
 
     public function deleteAll()
     {
-        ProfilPengunjung::truncate();
+        ProfilPengunjung::query()->delete();
         return back()->with('success', 'Seluruh data pengunjung telah berhasil dikosongkan.');
     }
 
