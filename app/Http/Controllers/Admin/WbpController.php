@@ -17,7 +17,19 @@ class WbpController extends Controller
      */
     public function index(Request $request)
     {
+        // Otomatis update status WBP yang sudah ekspirasi (lewat hari ini) menjadi 'Bebas'
+        Wbp::where('status', 'Aktif')
+            ->whereNotNull('tanggal_ekspirasi')
+            ->where('tanggal_ekspirasi', '<', now()->toDateString())
+            ->update(['status' => 'Bebas']);
+
         $query = Wbp::query();
+
+        // Filter Status (Default: Aktif)
+        $status = $request->get('status', 'Aktif');
+        if ($status !== 'Semua') {
+            $query->where('status', $status);
+        }
 
         if ($request->has('search')) {
             $search = trim($request->search); // Bersihkan spasi tidak sengaja
@@ -29,9 +41,9 @@ class WbpController extends Controller
         }
 
         // Urutkan berdasarkan waktu input terakhir agar data baru terlihat
-        $wbps = $query->latest()->paginate(10);
+        $wbps = $query->latest()->paginate(15)->withQueryString();
 
-        return view('admin.wbp.index', compact('wbps'));
+        return view('admin.wbp.index', compact('wbps', 'status'));
     }
 
     /**

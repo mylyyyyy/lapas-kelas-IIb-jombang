@@ -23,7 +23,9 @@
                 {{-- Stat --}}
                 <div class="bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-center">
                     <p class="text-2xl font-black text-white">{{ $wbps->total() }}</p>
-                    <p class="text-[10px] text-indigo-200 font-bold uppercase tracking-widest mt-0.5">Total WBP</p>
+                    <p class="text-[10px] text-indigo-200 font-bold uppercase tracking-widest mt-0.5">
+                        {{ $status === 'Semua' ? 'Total WBP' : ($status === 'Aktif' ? 'WBP Aktif' : 'WBP Bebas') }}
+                    </p>
                 </div>
                 {{-- Add Button --}}
                 <a href="{{ route('admin.wbp.create') }}"
@@ -33,6 +35,22 @@
                 </a>
             </div>
         </div>
+    </div>
+
+    {{-- TABS STATUS --}}
+    <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl w-fit">
+        <a href="{{ route('admin.wbp.index', ['status' => 'Aktif', 'search' => request('search')]) }}" 
+            class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Aktif' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
+            WBP Aktif
+        </a>
+        <a href="{{ route('admin.wbp.index', ['status' => 'Bebas', 'search' => request('search')]) }}" 
+            class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Bebas' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
+            WBP Bebas / Ekspirasi
+        </a>
+        <a href="{{ route('admin.wbp.index', ['status' => 'Semua', 'search' => request('search')]) }}" 
+            class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Semua' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
+            Semua
+        </a>
     </div>
 
     {{-- CONTENT CARD --}}
@@ -136,6 +154,10 @@
                             {{ $wbp->kode_tahanan }}
                         </span>
                         @endif
+                        {{-- Status Badge --}}
+                        <span class="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border {{ $wbp->status === 'Aktif' ? 'text-emerald-600 bg-emerald-50 border-emerald-100' : 'text-rose-600 bg-rose-50 border-rose-100' }}">
+                            {{ $wbp->status }}
+                        </span>
                     </div>
                 </div>
 
