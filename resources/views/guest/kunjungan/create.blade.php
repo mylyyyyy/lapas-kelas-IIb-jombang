@@ -1232,9 +1232,13 @@
             'jenis_kelamin': document.getElementById('jenis_kelamin')
         };
         
-        const statusMessage = document.createElement('p');
-        statusMessage.className = 'text-xs mt-1 transition-all duration-300';
-        if (nikInput) nikInput.parentElement.appendChild(statusMessage);
+        let statusMessage = document.getElementById('nik-status-message');
+        if (!statusMessage && nikInput) {
+            statusMessage = document.createElement('p');
+            statusMessage.id = 'nik-status-message';
+            statusMessage.className = 'text-xs mt-1 transition-all duration-300';
+            nikInput.parentElement.appendChild(statusMessage);
+        }
 
         if (nikInput) {
             nikInput.addEventListener('keyup', function () { 
