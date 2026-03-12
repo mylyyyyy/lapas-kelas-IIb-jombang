@@ -195,6 +195,12 @@ class KunjunganController extends Controller
             ],
         ]);
 
+        // Cek Status WBP (Hanya izinkan jika WBP Aktif)
+        $wbp = Wbp::find($request->wbp_id);
+        if ($wbp && $wbp->status !== 'Aktif' && $request->status !== 'rejected') {
+            return back()->withInput()->with('error', "Warga Binaan '{$wbp->nama}' sudah berstatus '{$wbp->status}' dan tidak dapat menerima kunjungan baru atau pembaruan status kunjungan (kecuali Penolakan).");
+        }
+
         $alamatLengkap = $kunjungan->alamat_pengunjung;
         if ($request->filled(['alamat', 'rt', 'rw', 'desa', 'kecamatan', 'kabupaten'])) {
             $alamatLengkap = sprintf(
@@ -707,6 +713,15 @@ class KunjunganController extends Controller
         $quotaService = new \App\Services\QuotaService();
         $dateStr = Carbon::parse($request->tanggal_kunjungan)->format('Y-m-d');
         
+        // 0. Cek Status WBP
+        $wbp = Wbp::find($request->wbp_id);
+        if (!$wbp) {
+            return redirect()->back()->withInput()->with('error', 'Data Warga Binaan tidak ditemukan.');
+        }
+        if ($wbp->status !== 'Aktif') {
+            return redirect()->back()->withInput()->with('error', "Warga Binaan ini berstatus '{$wbp->status}' dan tidak dapat dikunjungi lagi.");
+        }
+
         // 1. Cek apakah hari tersebut buka
         if (!$quotaService->isDayOpen($dateStr)) {
             return redirect()->back()->withInput()->with('error', 'Layanan kunjungan TUTUP pada hari yang dipilih.');

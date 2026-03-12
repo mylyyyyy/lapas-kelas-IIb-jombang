@@ -78,6 +78,15 @@ class RegistrationValidationService
         })->where('day_of_week', $tanggal->dayOfWeek)->first();
         
         $wbp = Wbp::find($validatedData['wbp_id']);
+
+        if (!$wbp) {
+            return $this->error('wbp_id', 'Data Warga Binaan tidak ditemukan.');
+        }
+
+        if ($wbp->status !== 'Aktif') {
+            return $this->error('global', "Warga Binaan ini sudah berstatus '{$wbp->status}' dan tidak dapat dikunjungi lagi.");
+        }
+
         if ($schedule && $wbp && !empty($schedule->allowed_kode_tahanan)) {
             $wbpCode = (string) $wbp->kode_tahanan;
             
