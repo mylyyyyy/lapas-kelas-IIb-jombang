@@ -32,6 +32,18 @@
             this.syncToInput('videos', this.newVideos);
         },
         removeNewImage(idx) { this.newImages.splice(idx, 1); this.syncToInput('images', this.newImages); },
+        moveNewImage(idx, direction) {
+            if (direction === 'left' && idx > 0) {
+                const temp = this.newImages[idx];
+                this.newImages[idx] = this.newImages[idx - 1];
+                this.newImages[idx - 1] = temp;
+            } else if (direction === 'right' && idx < this.newImages.length - 1) {
+                const temp = this.newImages[idx];
+                this.newImages[idx] = this.newImages[idx + 1];
+                this.newImages[idx + 1] = temp;
+            }
+            this.syncToInput('images', this.newImages);
+        },
         removeNewVideo(idx) { this.newVideos.splice(idx, 1); this.syncToInput('videos', this.newVideos); },
         syncToInput(type, arr) {
             const dt = new DataTransfer();
@@ -158,11 +170,21 @@
                                 <template x-for="(img, idx) in newImages" :key="idx">
                                     <div class="relative group rounded-xl overflow-hidden border-2 border-blue-300 aspect-video animate__animated animate__fadeIn">
                                         <img :src="img.url" class="w-full h-full object-cover">
-                                        <div class="absolute top-1 left-1 bg-blue-600 text-white text-[9px] font-black px-1.5 rounded">BARU</div>
-                                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-1">
-                                            <button type="button" @click="removeNewImage(idx)" class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-lg">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
+                                        <div class="absolute top-1 left-1 bg-blue-600 text-white text-[9px] font-black px-1.5 rounded" x-text="'URUTAN: ' + (idx + 1)"></div>
+                                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center gap-1">
+                                            <div class="flex items-center gap-1">
+                                                <button type="button" @click="moveNewImage(idx, 'left')" x-show="idx > 0"
+                                                    class="w-6 h-6 bg-white/20 hover:bg-white/40 text-white rounded flex items-center justify-center transition-all">
+                                                    <i class="fas fa-chevron-left text-[9px]"></i>
+                                                </button>
+                                                <button type="button" @click="removeNewImage(idx)" class="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-lg">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                                <button type="button" @click="moveNewImage(idx, 'right')" x-show="idx < newImages.length - 1"
+                                                    class="w-6 h-6 bg-white/20 hover:bg-white/40 text-white rounded flex items-center justify-center transition-all">
+                                                    <i class="fas fa-chevron-right text-[9px]"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </template>

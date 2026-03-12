@@ -31,6 +31,18 @@
             this.syncToInput('videos', this.videos);
         },
         removeImage(idx) { this.images.splice(idx, 1); this.syncToInput('images', this.images); },
+        moveImage(idx, direction) {
+            if (direction === 'left' && idx > 0) {
+                const temp = this.images[idx];
+                this.images[idx] = this.images[idx - 1];
+                this.images[idx - 1] = temp;
+            } else if (direction === 'right' && idx < this.images.length - 1) {
+                const temp = this.images[idx];
+                this.images[idx] = this.images[idx + 1];
+                this.images[idx + 1] = temp;
+            }
+            this.syncToInput('images', this.images);
+        },
         removeVideo(idx) { this.videos.splice(idx, 1); this.syncToInput('videos', this.videos); },
         syncToInput(type, arr) {
             const dt = new DataTransfer();
@@ -134,13 +146,24 @@
                                 <template x-for="(img, idx) in images" :key="idx">
                                     <div class="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-50 aspect-video animate__animated animate__fadeIn">
                                         <img :src="img.url" class="w-full h-full object-cover">
+                                        <div class="absolute top-2 left-2 bg-blue-600/90 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg" x-text="'Urutan: ' + (idx + 1)"></div>
                                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center gap-2">
                                             <p class="text-white text-[10px] text-center font-bold px-2 leading-tight" x-text="img.name"></p>
-                                            <p class="text-white/70 text-[10px]" x-text="img.size + ' MB'"></p>
-                                            <button type="button" @click="removeImage(idx)"
-                                                class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-lg transition-all active:scale-95">
-                                                <i class="fas fa-trash-alt mr-1"></i> Hapus
-                                            </button>
+                                            
+                                            <div class="flex items-center gap-1">
+                                                <button type="button" @click="moveImage(idx, 'left')" x-show="idx > 0"
+                                                    class="w-7 h-7 bg-white/20 hover:bg-white/40 text-white rounded-lg flex items-center justify-center transition-all">
+                                                    <i class="fas fa-chevron-left text-[10px]"></i>
+                                                </button>
+                                                <button type="button" @click="removeImage(idx)"
+                                                    class="bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-all active:scale-95 mx-1">
+                                                    <i class="fas fa-trash-alt mr-1"></i> Hapus
+                                                </button>
+                                                <button type="button" @click="moveImage(idx, 'right')" x-show="idx < images.length - 1"
+                                                    class="w-7 h-7 bg-white/20 hover:bg-white/40 text-white rounded-lg flex items-center justify-center transition-all">
+                                                    <i class="fas fa-chevron-right text-[10px]"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </template>
