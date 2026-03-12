@@ -475,7 +475,7 @@
                 processResults: function (d) {
                     return {
                         results: $.map(d, function (i) {
-                            return { text: i.nama + ' (' + i.no_registrasi + ')', id: i.id }
+                            return { text: i.nama + ' (' + (i.kode_tahanan || '-') + ')', id: i.id }
                         })
                     };
                 },
