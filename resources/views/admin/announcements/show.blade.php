@@ -133,7 +133,7 @@
                     <i class="fas fa-edit text-blue-500"></i> Edit
                 </a>
                 
-                <button onclick="confirmDelete(event)" class="inline-flex items-center gap-2 px-6 py-3 bg-red-100 text-red-600 font-bold rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm hover:shadow-red-200 active:scale-95">
+                <button onclick="confirmDeleteAnnouncement(event)" class="inline-flex items-center gap-2 px-6 py-3 bg-red-100 text-red-600 font-bold rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm hover:shadow-red-200 active:scale-95">
                     <i class="fas fa-trash-alt"></i> Hapus
                 </button>
 
@@ -161,7 +161,7 @@
         buttonsStyling: false
     };
 
-    function confirmDelete(event) {
+    function confirmDeleteAnnouncement(event) {
         event.preventDefault();
         
         Swal.fire({

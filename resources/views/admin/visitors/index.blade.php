@@ -228,7 +228,7 @@
                             </td>
                             {{-- Aksi --}}
                             <td class="px-5 py-4 text-center no-print">
-                                <button type="button" onclick="confirmDelete('{{ $visitor->id }}', '{{ $visitor->nama }}')"
+                                <button type="button" onclick="confirmDeleteVisitor('{{ $visitor->id }}', '{{ $visitor->nama }}')"
                                     class="w-9 h-9 rounded-xl bg-red-50 hover:bg-red-500 border-2 border-red-100 hover:border-red-500 text-red-500 hover:text-white flex items-center justify-center mx-auto transition-all hover:shadow-md hover:shadow-red-500/30 hover:-translate-y-0.5 active:scale-95">
                                     <i class="fas fa-trash-alt text-xs"></i>
                                 </button>
@@ -505,7 +505,7 @@
         });
     }
 
-    function confirmDelete(id, nama) {
+    function confirmDeleteVisitor(id, nama) {
         Swal.fire({
             ...swalTheme,
             title: 'Hapus Profil?',

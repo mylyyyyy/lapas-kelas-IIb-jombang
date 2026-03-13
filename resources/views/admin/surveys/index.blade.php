@@ -272,7 +272,7 @@
                         </td>
                         <td class="px-5 py-4 text-center">
                             <form action="{{ route('admin.surveys.destroy', $survey->id) }}" method="POST"
-                                onsubmit="return confirmDelete(event, this)">
+                                onsubmit="return confirmDeleteSurvey(event, this)">
                                 @csrf @method('DELETE')
                                 <button type="submit"
                                     class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-red-100 hover:text-red-600 text-slate-400 flex items-center justify-center mx-auto transition-all text-xs">
@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function confirmDelete(event, form) {
+function confirmDeleteSurvey(event, form) {
     event.preventDefault();
     Swal.fire({
         customClass: { popup: 'rounded-3xl shadow-2xl', confirmButton: 'rounded-xl px-5 py-2.5 font-bold bg-red-600 text-white mr-2', cancelButton: 'rounded-xl px-5 py-2.5 font-bold bg-slate-200 text-slate-600' },

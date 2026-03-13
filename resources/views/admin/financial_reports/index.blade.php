@@ -142,7 +142,7 @@
                                     class="w-9 h-9 rounded-xl bg-amber-50 hover:bg-amber-500 border-2 border-amber-100 hover:border-amber-500 text-amber-600 hover:text-white transition-all flex items-center justify-center hover:shadow-md hover:shadow-amber-500/30 hover:-translate-y-0.5 active:scale-95">
                                     <i class="fas fa-pencil-alt text-xs"></i>
                                 </a>
-                                <button type="button" onclick="confirmDelete('{{ $report->id }}', '{{ addslashes($report->title) }}')"
+                                <button type="button" onclick="confirmDeleteReport('{{ $report->id }}', '{{ addslashes($report->title) }}')"
                                     class="w-9 h-9 rounded-xl bg-red-50 hover:bg-red-500 border-2 border-red-100 hover:border-red-500 text-red-500 hover:text-white transition-all flex items-center justify-center hover:shadow-md hover:shadow-red-500/30 hover:-translate-y-0.5 active:scale-95">
                                     <i class="fas fa-trash-alt text-xs"></i>
                                 </button>
@@ -182,7 +182,7 @@
         document.querySelectorAll('.report-checkbox').forEach(cb => cb.checked = this.checked);
         updateCount();
     });
-    function confirmDelete(id, title) {
+    function confirmDeleteReport(id, title) {
         Swal.fire({ icon: 'warning', title: 'Hapus Laporan?', html: `Hapus <b>${title}</b>?`, showCancelButton: true, confirmButtonText: 'Hapus', cancelButtonText: 'Batal',
             customClass: { popup:'rounded-3xl', confirmButton:'px-5 py-2.5 bg-red-600 text-white font-bold rounded-xl mx-1', cancelButton:'px-5 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-xl mx-1' }, buttonsStyling: false
         }).then(r => { if(r.isConfirmed){ 

@@ -108,7 +108,7 @@
                             class="w-8 h-8 rounded-lg bg-blue-50 hover:bg-blue-500 border border-blue-100 hover:border-blue-500 text-blue-600 hover:text-white flex items-center justify-center transition-all active:scale-95" title="Edit">
                             <i class="fas fa-pen text-xs"></i>
                         </a>
-                        <button onclick="confirmDelete(event, '{{ $user->id }}', '{{ addslashes($user->name) }}')"
+                        <button onclick="confirmDeleteUser(event, '{{ $user->id }}', '{{ addslashes($user->name) }}')"
                             class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-500 border border-red-100 hover:border-red-500 text-red-600 hover:text-white flex items-center justify-center transition-all active:scale-95" title="Hapus">
                             <i class="fas fa-trash text-xs"></i>
                         </button>
@@ -148,9 +148,11 @@
     <div class="pt-2">{{ $users->links() }}</div>
     @endif
 </div>
+@endsection
 
+@push('scripts')
 <script>
-    function confirmDelete(event, userId, userName) {
+    function confirmDeleteUser(event, userId, userName) {
         event.preventDefault();
         Swal.fire({
             title: 'Hapus Pengguna?',
@@ -162,4 +164,4 @@
         }).then(r => { if(r.isConfirmed) document.getElementById(`delete-form-${userId}`).submit(); });
     }
 </script>
-@endsection
+@endpush
