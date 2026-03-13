@@ -69,121 +69,121 @@
         }
     </style>
 </head>
-<body class="bg-animated h-screen w-screen overflow-hidden text-white selection:bg-yellow-500 selection:text-slate-900 flex flex-col p-4 md:p-6 gap-4 md:gap-6" x-data="displayController()" x-init="init()">
+<body class="bg-animated min-h-screen md:h-screen w-screen md:overflow-hidden overflow-y-auto text-white selection:bg-yellow-500 selection:text-slate-900 flex flex-col p-2 md:p-6 gap-4 md:gap-6" x-data="displayController()" x-init="init()">
 
     {{-- HEADER --}}
-    <header class="glass-panel h-20 md:h-24 rounded-2xl flex items-center justify-between px-8 z-50 shrink-0">
-        <div class="flex items-center gap-6">
-            <div class="relative">
+    <header class="glass-panel h-auto md:h-24 rounded-2xl flex flex-col md:flex-row items-center justify-between px-4 md:px-8 py-4 md:py-0 gap-4 z-50 shrink-0">
+        <div class="flex items-center gap-4 md:gap-6 w-full md:w-auto">
+            <div class="relative shrink-0">
                 <div class="absolute inset-0 bg-yellow-500 blur-lg opacity-20 rounded-full"></div>
-                <img src="{{ asset('img/logo.png') }}" class="h-14 md:h-16 w-auto relative drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]" alt="Logo">
+                <img src="{{ asset('img/logo.png') }}" class="h-12 md:h-16 w-auto relative drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] object-contain" alt="Logo">
             </div>
-            <div class="flex flex-col">
-                <h1 class="text-2xl md:text-3xl font-bold tracking-wide uppercase bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
+            <div class="flex flex-col min-w-0">
+                <h1 class="text-lg md:text-3xl font-bold tracking-wide uppercase bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400 truncate leading-tight">
                     Lapas Kelas IIB Jombang
                 </h1>
-                <p class="text-xs md:text-sm text-yellow-500 tracking-[0.2em] font-medium uppercase">Kementerian Imigrasi dan Pemasyarakatan</p>
+                <p class="text-[10px] md:text-sm text-yellow-500 tracking-[0.1em] md:tracking-[0.2em] font-medium uppercase truncate">Kementerian Imigrasi dan Pemasyarakatan</p>
             </div>
         </div>
 
         {{-- Clock --}}
-        <div class="text-right">
-            <div x-text="currentTime" class="text-3xl md:text-4xl font-orbitron font-bold tracking-widest text-white drop-shadow-lg">--:--</div>
-            <div x-text="currentDate" class="text-xs md:text-sm text-slate-400 font-medium uppercase tracking-wide">...</div>
+        <div class="text-center md:text-right w-full md:w-auto border-t md:border-t-0 border-white/10 pt-2 md:pt-0">
+            <div x-text="currentTime" class="text-2xl md:text-4xl font-orbitron font-bold tracking-widest text-white drop-shadow-lg leading-none">--:--</div>
+            <div x-text="currentDate" class="text-[10px] md:text-sm text-slate-400 font-medium uppercase tracking-wide mt-1">...</div>
         </div>
     </header>
 
     {{-- MAIN CONTENT GRID --}}
-    <main class="flex-1 grid grid-cols-12 gap-6 min-h-0">
+    <main class="flex-1 grid grid-cols-12 gap-4 md:gap-6 min-h-0">
         
         {{-- LEFT COLUMN: VIDEO PLAYER (60%) --}}
-        <section class="col-span-12 lg:col-span-7 flex flex-col h-full min-h-0">
+        <section class="col-span-12 lg:col-span-7 flex flex-col min-h-[200px] md:h-full">
             <div class="glass-panel flex-1 rounded-2xl overflow-hidden relative group border border-slate-700/50 shadow-2xl">
                 {{-- Video Placeholder/Player --}}
-                <div id="player" class="w-full h-full object-cover"></div>
+                <div id="player" class="w-full h-full object-cover aspect-video md:aspect-auto"></div>
                 
                 {{-- Mute Controls Overlay --}}
                 <div class="absolute top-4 right-4 z-20">
                     <button @click="toggleMute()" 
-                        class="h-12 w-12 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-yellow-500 hover:text-black transition-all duration-300 group-hover:scale-110 shadow-lg">
+                        class="h-10 w-10 md:h-12 md:w-12 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-yellow-500 hover:text-black transition-all duration-300 group-hover:scale-110 shadow-lg">
                         <i class="fas" :class="isMuted ? 'fa-volume-mute' : 'fa-volume-up'"></i>
                     </button>
                 </div>
                 
                 {{-- Video Overlay Gradient (Subtle) --}}
                 <div class="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                <div class="absolute bottom-6 left-6 pointer-events-none">
-                    <span class="px-3 py-1 rounded-full bg-red-600/80 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-sm animate-pulse">
-                        <i class="fas fa-circle text-[8px] mr-1 align-middle"></i> Official Broadcast
+                <div class="absolute bottom-4 left-4 md:bottom-6 md:left-6 pointer-events-none">
+                    <span class="px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-red-600/80 text-white text-[8px] md:text-xs font-bold uppercase tracking-wider backdrop-blur-sm animate-pulse">
+                        <i class="fas fa-circle text-[6px] md:text-[8px] mr-1 align-middle"></i> Official Broadcast
                     </span>
-                    <h2 class="text-xl font-bold mt-2 text-white drop-shadow-md">Profil Lapas Jombang</h2>
+                    <h2 class="text-sm md:text-xl font-bold mt-1 md:mt-2 text-white drop-shadow-md truncate">Profil Lapas Jombang</h2>
                 </div>
             </div>
         </section>
 
         {{-- RIGHT COLUMN: QUEUE INFO (40%) --}}
-        <section class="col-span-12 lg:col-span-5 flex flex-col gap-6 h-full min-h-0">
+        <section class="col-span-12 lg:col-span-5 flex flex-col gap-4 md:gap-6 md:h-full">
             
             {{-- 1. QUEUE STATUS CARDS (Row) --}}
-            <div class="grid grid-cols-2 gap-4 shrink-0 h-48 md:h-56">
+            <div class="grid grid-cols-2 gap-4 shrink-0 h-32 md:h-56">
                 {{-- Card Pagi --}}
-                <div class="glass-panel rounded-2xl p-4 flex flex-col items-center justify-center relative pop-card overflow-hidden">
+                <div class="glass-panel rounded-2xl p-2 md:p-4 flex flex-col items-center justify-center relative pop-card overflow-hidden">
                     <div class="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50"></div>
-                    <span class="text-slate-400 text-sm font-bold uppercase tracking-widest mb-2"><i class="fas fa-sun text-blue-400 mr-2"></i> Pagi</span>
+                    <span class="text-slate-400 text-[10px] md:text-sm font-bold uppercase tracking-widest mb-1 md:mb-2"><i class="fas fa-sun text-blue-400 mr-1 md:mr-2"></i> Pagi</span>
                     <div class="relative">
-                        <span x-text="nomorPagi" class="font-orbitron text-6xl md:text-7xl font-bold text-white text-glow-blue transition-all duration-300" :class="{'scale-110 text-blue-300': pingPagi}">-</span>
+                        <span x-text="nomorPagi" class="font-orbitron text-4xl md:text-7xl font-bold text-white text-glow-blue transition-all duration-300" :class="{'scale-110 text-blue-300': pingPagi}">-</span>
                         <div class="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full z-[-1] opacity-50"></div>
                     </div>
                 </div>
 
                 {{-- Card Siang --}}
-                <div class="glass-panel rounded-2xl p-4 flex flex-col items-center justify-center relative pop-card overflow-hidden">
+                <div class="glass-panel rounded-2xl p-2 md:p-4 flex flex-col items-center justify-center relative pop-card overflow-hidden">
                     <div class="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent opacity-50"></div>
-                    <span class="text-slate-400 text-sm font-bold uppercase tracking-widest mb-2"><i class="fas fa-cloud-sun text-yellow-400 mr-2"></i> Siang</span>
+                    <span class="text-slate-400 text-[10px] md:text-sm font-bold uppercase tracking-widest mb-1 md:mb-2"><i class="fas fa-cloud-sun text-yellow-400 mr-1 md:mr-2"></i> Siang</span>
                     <div class="relative">
-                        <span x-text="nomorSiang" class="font-orbitron text-6xl md:text-7xl font-bold text-white text-glow-gold transition-all duration-300" :class="{'scale-110 text-yellow-300': pingSiang}">-</span>
+                        <span x-text="nomorSiang" class="font-orbitron text-4xl md:text-7xl font-bold text-white text-glow-gold transition-all duration-300" :class="{'scale-110 text-yellow-300': pingSiang}">-</span>
                         <div class="absolute inset-0 bg-yellow-500/20 blur-2xl rounded-full z-[-1] opacity-50"></div>
                     </div>
                 </div>
             </div>
 
             {{-- 2. VISITING LIST (Remaining Height) --}}
-            <div class="glass-panel flex-1 rounded-2xl flex flex-col min-h-0 overflow-hidden relative">
-                <div class="bg-black/20 p-4 border-b border-white/5 flex justify-between items-center backdrop-blur-md sticky top-0 z-10">
-                    <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+            <div class="glass-panel flex-1 rounded-2xl flex flex-col min-h-[300px] md:min-h-0 overflow-hidden relative">
+                <div class="bg-black/20 p-3 md:p-4 border-b border-white/5 flex justify-between items-center backdrop-blur-md sticky top-0 z-10">
+                    <h3 class="text-sm md:text-lg font-bold text-slate-200 flex items-center gap-2">
                         <i class="fas fa-users text-green-400"></i> Sedang Berkunjung
                     </h3>
-                    <span class="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded font-bold" x-text="visitingList.length + ' Orang'">0</span>
+                    <span class="px-2 py-1 bg-green-500/20 text-green-400 text-[10px] md:text-xs rounded font-bold" x-text="visitingList.length + ' Orang'">0</span>
                 </div>
                 
-                <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2 relative">
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-2 md:p-3 space-y-2 relative">
                     <template x-for="item in visitingList" :key="item.id">
-                        <div class="bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl p-3 flex justify-between items-center slide-in-right transition-all group">
-                            <div class="flex items-center gap-3">
-                                <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-slate-300 font-bold border border-white/10 group-hover:border-yellow-500/50 transition-colors">
+                        <div class="bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl p-2 md:p-3 flex justify-between items-center slide-in-right transition-all group">
+                            <div class="flex items-center gap-2 md:gap-3 min-w-0">
+                                <div class="h-8 w-8 md:h-10 md:w-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-slate-300 text-xs md:text-base font-bold border border-white/10 group-hover:border-yellow-500/50 transition-colors shrink-0">
                                     <i class="fas fa-user"></i>
                                 </div>
-                                <div>
-                                    <p class="text-sm font-bold text-white uppercase tracking-wide group-hover:text-yellow-400 transition-colors">
+                                <div class="min-w-0">
+                                    <p class="text-xs md:text-sm font-bold text-white uppercase tracking-wide group-hover:text-yellow-400 transition-colors truncate">
                                         <span x-text="(item.registration_type === 'offline' ? 'B-' : 'A-') + item.nomor_antrian_harian.toString().padStart(3, '0')"></span> - 
                                         <span x-text="item.nama_pengunjung"></span>
                                     </p>
-                                    <p class="text-xs text-slate-400 flex items-center gap-1">
-                                        <i class="fas fa-id-card text-[10px]"></i> <span x-text="item.wbp?.nama || 'WBP'"></span>
+                                    <p class="text-[10px] md:text-xs text-slate-400 flex items-center gap-1 truncate">
+                                        <i class="fas fa-id-card text-[8px] md:text-[10px]"></i> <span x-text="item.wbp?.nama || 'WBP'"></span>
                                     </p>
                                 </div>
                             </div>
-                            <div class="flex flex-col items-end">
-                                <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 text-[10px] font-bold border border-blue-500/30">
+                            <div class="flex flex-col items-end shrink-0 ml-2">
+                                <span class="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 text-[8px] md:text-[10px] font-bold border border-blue-500/30 whitespace-nowrap">
                                     ROOM A
                                 </span>
                             </div>
                         </div>
                     </template>
                     
-                    <div x-show="visitingList.length === 0" class="h-full flex flex-col items-center justify-center text-slate-500 opacity-60">
-                        <i class="fas fa-coffee text-4xl mb-2"></i>
-                        <p class="text-sm">Belum ada kunjungan.</p>
+                    <div x-show="visitingList.length === 0" class="h-40 md:h-full flex flex-col items-center justify-center text-slate-500 opacity-60">
+                        <i class="fas fa-coffee text-2xl md:text-4xl mb-2"></i>
+                        <p class="text-xs md:text-sm">Belum ada kunjungan.</p>
                     </div>
                 </div>
             </div>
@@ -192,13 +192,13 @@
     </main>
 
     {{-- FOOTER / MARQUEE --}}
-    <footer class="h-12 md:h-14 shrink-0 glass-panel rounded-xl flex items-center overflow-hidden border-t-2 border-yellow-500/50">
-        <div class="bg-yellow-500 text-slate-900 px-6 h-full flex items-center justify-center font-bold text-sm tracking-widest z-10 shadow-xl">
+    <footer class="h-10 md:h-14 shrink-0 glass-panel rounded-xl flex items-center overflow-hidden border-t-2 border-yellow-500/50 mb-2 md:mb-0">
+        <div class="bg-yellow-500 text-slate-900 px-3 md:px-6 h-full flex items-center justify-center font-bold text-[10px] md:text-sm tracking-widest z-10 shadow-xl whitespace-nowrap">
             INFO
         </div>
         <div class="flex-1 relative h-full flex items-center overflow-hidden">
             <div class="absolute whitespace-nowrap animate-marquee px-4">
-                <span class="text-lg font-light text-slate-100 tracking-wider">
+                <span class="text-sm md:text-lg font-light text-slate-100 tracking-wider">
                     <i class="fas fa-bullhorn text-yellow-500 mx-2"></i> SELAMAT DATANG DI LAYANAN KUNJUNGAN LAPAS KELAS IIB JOMBANG. 
                     <i class="fas fa-circle text-[6px] align-middle mx-3 text-slate-500"></i> DILARANG MEMBAWA HP, NARKOBA, DAN BARANG TERLARANG LAINNYA. 
                     <i class="fas fa-circle text-[6px] align-middle mx-3 text-slate-500"></i> JADWAL KUNJUNGAN: PAGI 08.00 - 11.30 WIB | SIANG 13.00 - 14.30 WIB.
