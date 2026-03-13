@@ -47,21 +47,21 @@
             <div class="group relative bg-white rounded-2xl overflow-hidden transition-all duration-700 border border-slate-200 hover:border-emerald-400 card-hover-scale flex flex-col card-3d" style="box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);">
 
                 {{-- Date Badge --}}
-                <div class="absolute top-6 right-6 z-10">
-                    <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-4 py-3 rounded-2xl shadow-lg group-hover:scale-110 transition-all duration-300 border border-emerald-400/50 group-hover:animate-float-up">
+                <div class="absolute top-4 right-4 sm:top-6 sm:right-6 z-10">
+                    <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl shadow-lg group-hover:scale-110 transition-all duration-300 border border-emerald-400/50 group-hover:animate-float-up">
                         <div class="text-center">
-                            <span class="block text-2xl font-bold">{{ $announcement->date->format('d') }}</span>
-                            <span class="block text-xs font-semibold uppercase tracking-widest">{{ $announcement->date->format('M') }}</span>
-                            <span class="block text-xs opacity-90">{{ $announcement->date->format('Y') }}</span>
+                            <span class="block text-lg sm:text-2xl font-bold leading-tight">{{ $announcement->date->format('d') }}</span>
+                            <span class="block text-[10px] sm:text-xs font-semibold uppercase tracking-widest">{{ $announcement->date->format('M') }}</span>
+                            <span class="block text-[9px] sm:text-xs opacity-90">{{ $announcement->date->format('Y') }}</span>
                         </div>
                     </div>
                 </div>
 
                 {{-- Priority Indicator --}}
                 @if($loop->first)
-                <div class="absolute top-6 left-6 z-10">
-                    <div class="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg animate-pulse border border-red-400/50 inline-flex items-center gap-2">
-                        <i class="fas fa-exclamation-triangle"></i>
+                <div class="absolute top-4 left-4 sm:top-6 sm:left-6 z-10">
+                    <div class="bg-gradient-to-r from-red-500 to-red-600 text-white text-[10px] sm:text-xs font-bold px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg animate-pulse border border-red-400/50 inline-flex items-center gap-2">
+                        <i class="fas fa-exclamation-triangle text-[9px] sm:text-xs"></i>
                         PRIORITAS
                     </div>
                 </div>
