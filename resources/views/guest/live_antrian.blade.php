@@ -58,93 +58,93 @@
 <body class="bg-animated h-screen w-screen overflow-hidden text-white selection:bg-yellow-500 selection:text-slate-900 flex flex-col">
 
     {{-- HEADER --}}
-    <header class="h-24 px-8 flex justify-between items-center glass-card border-b-0 border-white/5 relative z-10 w-full mx-auto mt-4 rounded-2xl max-w-[98%]">
+    <header class="h-auto md:h-24 px-4 md:px-8 py-4 md:py-0 flex flex-col md:flex-row justify-between items-center gap-4 glass-card border-b-0 border-white/5 relative z-10 w-full mx-auto mt-2 md:mt-4 rounded-2xl max-w-[98%]">
         {{-- Logo Section --}}
-        <div class="flex items-center gap-4">
-            <div class="relative group">
+        <div class="flex items-center gap-3 md:gap-4 w-full md:w-auto">
+            <div class="relative group shrink-0">
                 <div class="absolute -inset-1 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full blur opacity-40 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
-                <img src="{{ asset('img/logo.png') }}" alt="Logo Lapas" class="h-16 w-16 relative rounded-full border-2 border-yellow-500 bg-white/10 p-1">
+                <img src="{{ asset('img/logo.png') }}" alt="Logo Lapas" class="h-12 w-12 md:h-16 md:w-16 relative rounded-full border-2 border-yellow-500 bg-white/10 p-1 object-contain">
             </div>
-            <div>
-                <h1 class="text-2xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300">LAPAS KELAS IIB JOMBANG</h1>
-                <p class="text-sm text-yellow-500 font-semibold tracking-[0.2em] uppercase">Kemenimipas RI</p>
+            <div class="min-w-0">
+                <h1 class="text-lg md:text-2xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300 leading-tight">LAPAS KELAS IIB JOMBANG</h1>
+                <p class="text-[10px] md:text-sm text-yellow-500 font-semibold tracking-[0.1em] md:tracking-[0.2em] uppercase">Kemenimipas RI</p>
             </div>
         </div>
 
-        {{-- Center Title --}}
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <h2 class="text-1xl md:text-3xl font-extrabold tracking-widest uppercase text-white/10">Antrian Kunjungan</h2>
+        {{-- Center Title (Hidden on small mobile) --}}
+        <div class="hidden lg:absolute lg:inset-0 lg:flex lg:items-center lg:justify-center pointer-events-none">
+            <h2 class="text-3xl font-extrabold tracking-widest uppercase text-white/10">Antrian Kunjungan</h2>
         </div>
 
         {{-- Realtime Clock --}}
-        <div class="text-right">
-            <div id="clock-time" class="text-4xl font-mono font-bold leading-none tracking-tighter text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">--:--</div>
-            <div id="clock-date" class="text-sm font-light text-slate-400 tracking-wide uppercase mt-1">...</div>
+        <div class="text-center md:text-right w-full md:w-auto border-t md:border-t-0 border-white/10 pt-2 md:pt-0">
+            <div id="clock-time" class="text-2xl md:text-4xl font-mono font-bold leading-none tracking-tighter text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">--:--</div>
+            <div id="clock-date" class="text-[10px] md:text-sm font-light text-slate-400 tracking-wide uppercase mt-1">...</div>
         </div>
     </header>
 
     {{-- MAIN CONTENT --}}
-    <main class="flex-1 p-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-[98%] mx-auto w-full">
+    <main class="flex-1 p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-center max-w-[98%] mx-auto w-full overflow-y-auto md:overflow-hidden">
         
         {{-- CARD SESI PAGI --}}
-        <div id="card-pagi" class="h-full max-h-[70vh] glass-card rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-500 hover:bg-white/5 border-t-4 border-t-blue-500">
+        <div id="card-pagi" class="h-full min-h-[250px] md:max-h-[70vh] glass-card rounded-3xl p-6 md:p-8 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-500 hover:bg-white/5 border-t-4 border-t-blue-500">
             {{-- Background Decoration --}}
             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-700">
-                <i class="fas fa-sun text-9xl text-blue-400"></i>
+                <i class="fas fa-sun text-6xl md:text-9xl text-blue-400"></i>
             </div>
             
             <div class="text-center z-10 w-full">
-                <h3 class="text-2xl font-medium text-blue-300 uppercase tracking-widest mb-2 flex items-center justify-center gap-2">
+                <h3 class="text-xl md:text-2xl font-medium text-blue-300 uppercase tracking-widest mb-2 flex items-center justify-center gap-2">
                     <i class="fas fa-sun"></i> Sesi Pagi
                 </h3>
-                <div class="h-px w-24 bg-gradient-to-r from-transparent via-blue-500 to-transparent mx-auto mb-8"></div>
+                <div class="h-px w-16 md:w-24 bg-gradient-to-r from-transparent via-blue-500 to-transparent mx-auto mb-4 md:mb-8"></div>
                 
                 {{-- Number Display --}}
                 <div class="relative inline-block">
-                    <span id="nomor-pagi" class="font-mono text-[10rem] md:text-[12rem] font-bold leading-none tracking-tighter drop-shadow-2xl bg-clip-text text-transparent bg-gradient-to-b from-white to-slate-400 transition-all duration-300">
+                    <span id="nomor-pagi" class="font-mono text-8xl md:text-[12rem] font-bold leading-none tracking-tighter drop-shadow-2xl bg-clip-text text-transparent bg-gradient-to-b from-white to-slate-400 transition-all duration-300">
                         -
                     </span>
                     <div class="absolute -inset-4 bg-blue-500/20 blur-3xl rounded-full -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
 
-                <p class="text-slate-400 mt-6 text-lg font-light">Nomor Antrian</p>
+                <p class="text-slate-400 mt-4 md:mt-6 text-base md:text-lg font-light">Nomor Antrian</p>
             </div>
         </div>
 
         {{-- CARD SESI SIANG --}}
-        <div id="card-siang" class="h-full max-h-[70vh] glass-card rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-500 hover:bg-white/5 border-t-4 border-t-yellow-500">
+        <div id="card-siang" class="h-full min-h-[250px] md:max-h-[70vh] glass-card rounded-3xl p-6 md:p-8 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-500 hover:bg-white/5 border-t-4 border-t-yellow-500">
             {{-- Background Decoration --}}
             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-700">
-                <i class="fas fa-cloud-sun text-9xl text-yellow-400"></i>
+                <i class="fas fa-cloud-sun text-6xl md:text-9xl text-yellow-400"></i>
             </div>
             
             <div class="text-center z-10 w-full">
-                <h3 class="text-2xl font-medium text-yellow-300 uppercase tracking-widest mb-2 flex items-center justify-center gap-2">
+                <h3 class="text-xl md:text-2xl font-medium text-yellow-300 uppercase tracking-widest mb-2 flex items-center justify-center gap-2">
                     <i class="fas fa-cloud-sun"></i> Sesi Siang
                 </h3>
-                <div class="h-px w-24 bg-gradient-to-r from-transparent via-yellow-500 to-transparent mx-auto mb-8"></div>
+                <div class="h-px w-16 md:w-24 bg-gradient-to-r from-transparent via-yellow-500 to-transparent mx-auto mb-4 md:mb-8"></div>
                 
                 {{-- Number Display --}}
                 <div class="relative inline-block">
-                    <span id="nomor-siang" class="font-mono text-[10rem] md:text-[12rem] font-bold leading-none tracking-tighter drop-shadow-2xl bg-clip-text text-transparent bg-gradient-to-b from-white to-slate-400 transition-all duration-300">
+                    <span id="nomor-siang" class="font-mono text-8xl md:text-[12rem] font-bold leading-none tracking-tighter drop-shadow-2xl bg-clip-text text-transparent bg-gradient-to-b from-white to-slate-400 transition-all duration-300">
                         -
                     </span>
                     <div class="absolute -inset-4 bg-yellow-500/20 blur-3xl rounded-full -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
 
-                <p class="text-slate-400 mt-6 text-lg font-light">Nomor Antrian</p>
+                <p class="text-slate-400 mt-4 md:mt-6 text-base md:text-lg font-light">Nomor Antrian</p>
             </div>
         </div>
 
     </main>
 
     {{-- FOOTER / MARQUEE --}}
-    <footer class="h-12 bg-black/40 backdrop-blur-md flex items-center border-t border-white/10 w-full mb-4 rounded-xl max-w-[98%] mx-auto overflow-hidden">
-        <div class="bg-yellow-500 text-slate-900 px-6 h-full flex items-center font-bold text-sm tracking-wider z-20 shadow-lg">
-            INFORMASI
+    <footer class="h-10 md:h-12 bg-black/40 backdrop-blur-md flex items-center border-t border-white/10 w-full mb-2 md:mb-4 rounded-xl max-w-[98%] mx-auto overflow-hidden shrink-0">
+        <div class="bg-yellow-500 text-slate-900 px-3 md:px-6 h-full flex items-center font-bold text-[10px] md:text-sm tracking-wider z-20 shadow-lg whitespace-nowrap">
+            INFO
         </div>
         <div class="flex-1 relative overflow-hidden h-full flex items-center">
-            <marquee class="text-lg font-light text-slate-200 tracking-wide absolute w-full" scrollamount="6">
+            <marquee class="text-sm md:text-lg font-light text-slate-200 tracking-wide absolute w-full" scrollamount="4 md:6">
                 Selamat Datang di Layanan Kunjungan Lapas Kelas IIB Jombang. Budayakan antri dan patuhi tata tertib yang berlaku. | Jadwal Kunjungan: Pagi 08.00 - 11.30 WIB, Siang 13.00 - 14.30 WIB. | Dilarang keras membawa barang terlarang!
             </marquee>
         </div>
