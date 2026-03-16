@@ -356,7 +356,7 @@
                            
                            {{-- Date Badge --}}
                            <div class="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-full shadow-lg group-hover:animate-float-up">
-                               {{ $item->created_at->format('d M Y') }}
+                               {{ $item->published_at->format('d M Y') }}
                            </div>
                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                        </div>

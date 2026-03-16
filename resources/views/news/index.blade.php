@@ -95,7 +95,7 @@
                     @endif
                     {{-- Date badge --}}
                     <div class="absolute bottom-3 left-3 bg-white/95 text-slate-700 text-[10px] font-black px-2.5 py-1 rounded-lg shadow-sm">
-                        <i class="fas fa-calendar mr-1 text-blue-500"></i>{{ $item->created_at->translatedFormat('d M Y') }}
+                        <i class="fas fa-calendar mr-1 text-blue-500"></i>{{ $item->published_at->translatedFormat('d M Y') }}
                     </div>
                     {{-- Category badge --}}
                     <div class="absolute top-3 right-3">
@@ -117,7 +117,7 @@
                             Baca Selengkapnya <i class="fas fa-arrow-right"></i>
                         </a>
                         <span class="text-[10px] text-slate-400 font-medium">
-                            <i class="fas fa-clock mr-1"></i>{{ $item->created_at->diffForHumans() }}
+                            <i class="fas fa-clock mr-1"></i>{{ $item->published_at->diffForHumans() }}
                         </span>
                     </div>
                 </div>

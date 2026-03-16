@@ -26,6 +26,7 @@ class News extends Model
         'content',
         'image',
         'videos',
+        'published_at',
         'status',
     ];
 
@@ -34,9 +35,10 @@ class News extends Model
      * Agar created_at otomatis jadi objek Carbon
      */
     protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'image'      => 'array',
-        'videos'     => 'array',
+        'created_at'   => 'datetime',
+        'updated_at'   => 'datetime',
+        'published_at' => 'datetime',
+        'image'        => 'array',
+        'videos'       => 'array',
     ];
 }

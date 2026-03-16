@@ -24,9 +24,9 @@ class HomeController extends Controller
     {
         // Mengambil 4 berita terbaru langsung dari Database tanpa Cache.
         // Base64 image payload terlalu besar untuk MySQL cache table limit (max_allowed_packet).
-        $news = News::select('id', 'title', 'slug', 'content', 'created_at', 'status', 'image', 'videos')
+        $news = News::select('id', 'title', 'slug', 'content', 'created_at', 'status', 'image', 'videos', 'published_at')
             ->where('status', 'published')
-            ->latest()
+            ->orderBy('published_at', 'desc')
             ->take(4)
             ->get()
             ->map(function ($item) {

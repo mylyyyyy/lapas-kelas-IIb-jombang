@@ -24,7 +24,7 @@ class NewsController extends Controller
             });
         }
 
-        $news = $query->latest()->paginate(10)->withQueryString();
+        $news = $query->orderBy('published_at', 'desc')->paginate(10)->withQueryString();
 
         return view('admin.news.index', compact('news'));
     }
@@ -37,18 +37,20 @@ class NewsController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title'    => 'required|max:255',
-            'content'  => 'required',
-            'images.*' => 'nullable|image|file|max:5120',        // max 5MB per gambar
-            'videos.*' => 'nullable|file|mimes:mp4,mov,avi,webm|max:102400', // max 100MB per video
-            'status'   => 'required|in:published,draft',
+            'title'        => 'required|max:255',
+            'content'      => 'required',
+            'images.*'     => 'nullable|image|file|max:5120',        // max 5MB per gambar
+            'videos.*'     => 'nullable|file|mimes:mp4,mov,avi,webm|max:102400', // max 100MB per video
+            'published_at' => 'nullable|date',
+            'status'       => 'required|in:published,draft',
         ]);
 
         $data = [
-            'title'   => $request->title,
-            'slug'    => Str::slug($request->title),
-            'content' => $request->content,
-            'status'  => $request->status,
+            'title'        => $request->title,
+            'slug'         => Str::slug($request->title),
+            'content'      => $request->content,
+            'published_at' => $request->published_at ?? now(),
+            'status'       => $request->status,
         ];
 
         // Upload Gambar → Base64
@@ -91,18 +93,20 @@ class NewsController extends Controller
     public function update(Request $request, News $news)
     {
         $request->validate([
-            'title'    => 'required|max:255',
-            'content'  => 'required',
-            'images.*' => 'nullable|image|file|max:5120',
-            'videos.*' => 'nullable|file|mimes:mp4,mov,avi,webm|max:102400',
-            'status'   => 'required|in:published,draft',
+            'title'        => 'required|max:255',
+            'content'      => 'required',
+            'images.*'     => 'nullable|image|file|max:5120',
+            'videos.*'     => 'nullable|file|mimes:mp4,mov,avi,webm|max:102400',
+            'published_at' => 'nullable|date',
+            'status'       => 'required|in:published,draft',
         ]);
 
         $data = [
-            'title'   => $request->title,
-            'slug'    => Str::slug($request->title),
-            'content' => $request->content,
-            'status'  => $request->status,
+            'title'        => $request->title,
+            'slug'         => Str::slug($request->title),
+            'content'      => $request->content,
+            'published_at' => $request->published_at ?? $news->published_at ?? now(),
+            'status'       => $request->status,
         ];
 
         // Gambar baru → Base64 (jika ada)

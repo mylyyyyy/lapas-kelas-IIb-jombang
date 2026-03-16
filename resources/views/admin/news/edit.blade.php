@@ -263,6 +263,17 @@
             {{-- KOLOM KANAN --}}
             <div class="space-y-6">
 
+                {{-- Tanggal Publikasi --}}
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Tanggal Publikasi</label>
+                    <div class="relative">
+                        <input type="datetime-local" name="published_at" value="{{ old('published_at', $news->published_at ? $news->published_at->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}"
+                            class="input-field w-full px-4 py-3.5 rounded-xl bg-slate-50 text-slate-700 font-bold">
+                        @error('published_at') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-2 font-medium italic">* Ubah untuk backdate atau menjadwalkan berita.</p>
+                </div>
+
                 {{-- Status --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
                     <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Status Publikasi</label>

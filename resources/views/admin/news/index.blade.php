@@ -148,7 +148,7 @@
                 <div class="p-6 flex-grow flex flex-col">
                     <div class="text-xs text-slate-400 font-bold mb-2 flex items-center gap-2">
                         <i class="far fa-calendar-alt text-blue-500"></i>
-                        {{ $item->created_at->translatedFormat('d F Y') }}
+                        {{ $item->published_at->translatedFormat('d F Y') }}
                     </div>
                     
                     <h3 class="font-extrabold text-xl text-slate-800 leading-tight mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">

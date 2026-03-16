@@ -101,9 +101,9 @@
             {{-- Title Over Image --}}
             <div class="absolute bottom-0 left-0 w-full p-8 md:p-10 text-white">
                 <div class="flex items-center gap-4 text-sm font-medium text-slate-300 mb-2">
-                    <span class="flex items-center gap-1"><i class="far fa-calendar-alt"></i> {{ $news->created_at->translatedFormat('d F Y') }}</span>
+                    <span class="flex items-center gap-1"><i class="far fa-calendar-alt"></i> {{ $news->published_at->translatedFormat('d F Y') }}</span>
                     <span>&bull;</span>
-                    <span class="flex items-center gap-1"><i class="far fa-clock"></i> {{ $news->created_at->format('H:i') }} WIB</span>
+                    <span class="flex items-center gap-1"><i class="far fa-clock"></i> {{ $news->published_at->format('H:i') }} WIB</span>
                 </div>
                 <h1 class="text-3xl md:text-5xl font-black leading-tight shadow-black drop-shadow-lg">
                     {{ $news->title }}
