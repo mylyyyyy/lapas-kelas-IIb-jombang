@@ -58,6 +58,11 @@ class NewsController extends Controller
         // Conditionally add published_at if the column exists (prevents crash before migration)
         if (Schema::hasColumn('news', 'published_at')) {
             $data['published_at'] = $request->published_at ?? now();
+        } else {
+            // WORKAROUND: If migration not run yet, use created_at for backdating
+            if ($request->has('published_at') && !empty($request->published_at)) {
+                $data['created_at'] = $request->published_at;
+            }
         }
 
         // Upload Gambar → Base64
@@ -118,6 +123,11 @@ class NewsController extends Controller
         // Conditionally add published_at if the column exists
         if (Schema::hasColumn('news', 'published_at')) {
             $data['published_at'] = $request->published_at ?? $news->published_at ?? now();
+        } else {
+            // WORKAROUND: If migration not run yet, use created_at for backdating
+            if ($request->has('published_at') && !empty($request->published_at)) {
+                $data['created_at'] = $request->published_at;
+            }
         }
 
         // Gambar baru → Base64 (jika ada)
