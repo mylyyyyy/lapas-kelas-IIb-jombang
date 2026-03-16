@@ -70,11 +70,11 @@
         <div class="flex items-center justify-center space-x-6 text-gray-300 mb-8">
             <div class="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
                 <i class="fas fa-calendar-alt mr-2"></i>
-                <span>{{ $news->published_at->translatedFormat('l, d F Y') }}</span>
+                <span>{{ ($news->published_at ?? $news->created_at)->translatedFormat('l, d F Y') }}</span>
             </div>
             <div class="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
                 <i class="fas fa-clock mr-2"></i>
-                <span>{{ $news->published_at->translatedFormat('H:i') }} WIB</span>
+                <span>{{ ($news->published_at ?? $news->created_at)->translatedFormat('H:i') }} WIB</span>
             </div>
             <div class="flex items-center bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
                 <i class="fas fa-book-open mr-2"></i>

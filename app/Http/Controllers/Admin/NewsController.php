@@ -24,7 +24,9 @@ class NewsController extends Controller
             });
         }
 
-        $news = $query->orderBy('published_at', 'desc')->paginate(10)->withQueryString();
+        // Fallback safety if column doesn't exist yet
+        $orderColumn = Schema::hasColumn('news', 'published_at') ? 'published_at' : 'created_at';
+        $news = $query->orderBy($orderColumn, 'desc')->paginate(10)->withQueryString();
 
         return view('admin.news.index', compact('news'));
     }

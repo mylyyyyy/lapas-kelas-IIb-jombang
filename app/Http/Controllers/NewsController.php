@@ -29,7 +29,8 @@ class NewsController extends Controller
             $query->where('content', 'like', '%' . $category . '%'); // Simple filter, can be improved
         }
 
-        $allNews = $query->orderBy('published_at', 'desc')->paginate(10)->appends($request->query());
+        $orderColumn = \Illuminate\Support\Facades\Schema::hasColumn('news', 'published_at') ? 'published_at' : 'created_at';
+        $allNews = $query->orderBy($orderColumn, 'desc')->paginate(10)->appends($request->query());
         return view('news.index', compact('allNews'));
     }
 
@@ -43,15 +44,17 @@ class NewsController extends Controller
             abort(404);
         }
 
+        $orderColumn = \Illuminate\Support\Facades\Schema::hasColumn('news', 'published_at') ? 'published_at' : 'created_at';
+
         // Get previous and next news articles
         $previousNews = News::where('status', 'published')
-            ->where('published_at', '<', $news->published_at)
-            ->orderBy('published_at', 'desc')
+            ->where($orderColumn, '<', $news->$orderColumn)
+            ->orderBy($orderColumn, 'desc')
             ->first();
 
         $nextNews = News::where('status', 'published')
-            ->where('published_at', '>', $news->published_at)
-            ->orderBy('published_at', 'asc')
+            ->where($orderColumn, '>', $news->$orderColumn)
+            ->orderBy($orderColumn, 'asc')
             ->first();
 
         return view('news.show', compact('news', 'previousNews', 'nextNews'));
