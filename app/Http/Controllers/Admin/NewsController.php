@@ -85,7 +85,14 @@ class NewsController extends Controller
             $data['videos'] = $videoPaths;
         }
 
-        News::create($data);
+        $news = new News($data);
+        
+        // Final check for backdating if column doesn't exist
+        if (!Schema::hasColumn('news', 'published_at') && $request->filled('published_at')) {
+            $news->created_at = \Illuminate\Support\Carbon::parse($request->published_at);
+        }
+
+        $news->save();
 
         Cache::forget('homepage_news');
 
@@ -166,7 +173,14 @@ class NewsController extends Controller
             $data['videos'] = null;
         }
 
-        $news->update($data);
+        $news->fill($data);
+
+        // Final check for backdating if column doesn't exist
+        if (!Schema::hasColumn('news', 'published_at') && $request->filled('published_at')) {
+            $news->created_at = \Illuminate\Support\Carbon::parse($request->published_at);
+        }
+
+        $news->save();
 
         Cache::forget('homepage_news');
 
