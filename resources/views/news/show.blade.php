@@ -49,9 +49,13 @@
 
 <section class="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white min-h-[400px] flex items-center justify-center overflow-hidden">
     <div class="absolute inset-0 z-0">
-        <img src="{{ (is_array($news->image) && count($news->image) > 0) ? $news->image[0] : asset('img/default-news-background.jpg') }}"
-            alt="Background News"
-            class="w-full h-full object-cover opacity-40">
+        @if(is_array($news->image) && count($news->image) > 0)
+            <img src="{{ $news->image[0] }}" alt="Background News" class="w-full h-full object-cover opacity-40">
+        @elseif(is_array($news->videos) && count($news->videos) > 0)
+            <video src="{{ Storage::url($news->videos[0]) }}" class="w-full h-full object-cover opacity-30" autoplay muted loop playsinline></video>
+        @else
+            <img src="{{ asset('img/default-news-background.jpg') }}" alt="Background News" class="w-full h-full object-cover opacity-40">
+        @endif
         <div class="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-slate-900/80 to-slate-900/95"></div>
         <div class="absolute inset-0 bg-gradient-to-r from-blue-900/20 to-purple-900/20"></div>
     </div>
@@ -154,6 +158,19 @@
                             <span x-text="activeSlide + 1"></span> / {{ count($news->image) }}
                         </div>
                     @endif
+                </div>
+            @endif
+
+            {{-- Video Section --}}
+            @if(is_array($news->videos) && count($news->videos) > 0)
+                <div class="p-8 md:p-12 pb-0">
+                    <div class="grid grid-cols-1 gap-6">
+                        @foreach($news->videos as $videoPath)
+                            <div class="rounded-2xl overflow-hidden shadow-lg bg-black">
+                                <video controls class="w-full max-h-[500px]" src="{{ Storage::url($videoPath) }}"></video>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             @endif
 

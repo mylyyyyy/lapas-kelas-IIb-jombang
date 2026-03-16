@@ -70,16 +70,28 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             @forelse($allNews as $item)
             <article class="news-card bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm flex flex-col h-full">
-                {{-- Image --}}
+                {{-- Image/Video Preview --}}
                 <div class="relative h-52 overflow-hidden flex-shrink-0 bg-slate-100">
                     @if(is_array($item->image) && count($item->image) > 0)
-                    <img src="{{ $item->image[0] }}" alt="{{ $item->title }}"
-                        class="news-img w-full h-full object-cover transition-transform duration-500 ease-out" loading="lazy">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                        <img src="{{ $item->image[0] }}" alt="{{ $item->title }}"
+                            class="news-img w-full h-full object-cover transition-transform duration-500 ease-out" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                    @elseif(is_array($item->videos) && count($item->videos) > 0)
+                        <div class="w-full h-full bg-slate-900 flex items-center justify-center relative">
+                            <video src="{{ Storage::url($item->videos[0]) }}" class="w-full h-full object-cover opacity-50"></video>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30">
+                                    <i class="fas fa-play text-white text-lg ml-1"></i>
+                                </div>
+                            </div>
+                            <div class="absolute bottom-3 right-3 bg-black/60 text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest">
+                                Video
+                            </div>
+                        </div>
                     @else
-                    <div class="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-                        <i class="fas fa-newspaper text-4xl text-blue-200"></i>
-                    </div>
+                        <div class="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+                            <i class="fas fa-newspaper text-4xl text-blue-200"></i>
+                        </div>
                     @endif
                     {{-- Date badge --}}
                     <div class="absolute bottom-3 left-3 bg-white/95 text-slate-700 text-[10px] font-black px-2.5 py-1 rounded-lg shadow-sm">

@@ -24,7 +24,7 @@ class HomeController extends Controller
     {
         // Mengambil 4 berita terbaru langsung dari Database tanpa Cache.
         // Base64 image payload terlalu besar untuk MySQL cache table limit (max_allowed_packet).
-        $news = News::select('id', 'title', 'slug', 'content', 'created_at', 'status', 'image')
+        $news = News::select('id', 'title', 'slug', 'content', 'created_at', 'status', 'image', 'videos')
             ->where('status', 'published')
             ->latest()
             ->take(4)
@@ -35,6 +35,13 @@ class HomeController extends Controller
                     $item->image = [$item->image[0]];
                 } else {
                     $item->image = [];
+                }
+                
+                // Ambil video pertama saja jika ada
+                if (is_array($item->videos) && count($item->videos) > 0) {
+                    $item->videos = [$item->videos[0]];
+                } else {
+                    $item->videos = [];
                 }
                 return $item;
             });

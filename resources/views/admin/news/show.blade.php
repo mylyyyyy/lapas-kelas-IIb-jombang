@@ -76,6 +76,9 @@
                 <img src="{{ $news->image[0] }}" alt="{{ $news->title }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                 {{-- Overlay Gradient --}}
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            @elseif(is_array($news->videos) && count($news->videos) > 0)
+                <video src="{{ Storage::url($news->videos[0]) }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60" autoplay muted loop playsinline></video>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
             @else
                 <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-300">
                     <i class="fas fa-image text-6xl text-slate-400"></i>
@@ -110,6 +113,20 @@
 
         {{-- ARTICLE BODY --}}
         <div class="p-8 md:p-12">
+            @if(is_array($news->videos) && count($news->videos) > 0)
+                <div class="mb-12 space-y-6">
+                    <p class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Video Lampiran</p>
+                    <div class="grid grid-cols-1 gap-6">
+                        @foreach($news->videos as $videoPath)
+                            <div class="rounded-2xl overflow-hidden shadow-xl bg-black border-4 border-slate-100">
+                                <video controls class="w-full max-h-[500px]" src="{{ Storage::url($videoPath) }}"></video>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                <div class="border-t border-slate-100 mb-12"></div>
+            @endif
+
             <div class="article-content">
                 {!! $news->content !!}
             </div>

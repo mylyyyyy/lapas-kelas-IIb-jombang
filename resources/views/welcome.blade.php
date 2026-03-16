@@ -330,17 +330,26 @@
                    @forelse($news as $item)
                    <div class="transition-all duration-700 bg-white rounded-2xl shadow-lg hover:shadow-2xl overflow-hidden group border border-gray-100 card-hover-scale card-3d">
                        
-                       {{-- Image / Placeholder --}}
+                       {{-- Image / Video / Placeholder --}}
                        <div class="relative h-48 overflow-hidden">
                            @if(is_array($item->image) && count($item->image) > 0)
                                <img src="{{ $item->image[0] }}" alt="{{ $item->title }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" loading="lazy">
+                           @elseif(is_array($item->videos) && count($item->videos) > 0)
+                               <div class="w-full h-full bg-slate-900 flex items-center justify-center relative">
+                                   <video src="{{ Storage::url($item->videos[0]) }}" class="w-full h-full object-cover opacity-50"></video>
+                                   <div class="absolute inset-0 flex items-center justify-center">
+                                       <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30">
+                                           <i class="fas fa-play text-white text-sm ml-0.5"></i>
+                                       </div>
+                                   </div>
+                               </div>
                            @else
                                <div class="w-full h-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-slate-400">
                                    <div class="text-center">
                                        <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                        </svg>
-                                       <span class="text-sm font-medium">Tidak ada gambar</span>
+                                       <span class="text-sm font-medium">Tidak ada media</span>
                                    </div>
                                </div>
                            @endif

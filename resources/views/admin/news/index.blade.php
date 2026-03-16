@@ -108,16 +108,25 @@
         @forelse ($news as $item)
             <div class="card-3d bg-white rounded-[2rem] shadow-lg border border-slate-100 overflow-hidden flex flex-col h-full group relative">
                 
-                {{-- Image Thumbnail --}}
+                {{-- Image/Video Thumbnail --}}
                 <div class="relative h-56 overflow-hidden bg-slate-100">
                     @if(is_array($item->image) && count($item->image) > 0)
                         <img src="{{ $item->image[0] }}" alt="{{ $item->title }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
                         {{-- Overlay Gradient --}}
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
+                    @elseif(is_array($item->videos) && count($item->videos) > 0)
+                        <div class="w-full h-full bg-slate-900 flex items-center justify-center relative">
+                            <video src="{{ Storage::url($item->videos[0]) }}" class="w-full h-full object-cover opacity-50"></video>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30">
+                                    <i class="fas fa-play text-white text-lg ml-1"></i>
+                                </div>
+                            </div>
+                        </div>
                     @else
                         <div class="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-50">
                             <i class="fas fa-image text-5xl mb-2"></i>
-                            <span class="text-xs font-bold uppercase tracking-widest">No Image</span>
+                            <span class="text-xs font-bold uppercase tracking-widest">No Media</span>
                         </div>
                     @endif
 
