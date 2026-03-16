@@ -52,9 +52,13 @@ class NewsController extends Controller
             'title'        => $request->title,
             'slug'         => Str::slug($request->title),
             'content'      => $request->content,
-            'published_at' => $request->published_at ?? now(),
             'status'       => $request->status,
         ];
+
+        // Conditionally add published_at if the column exists (prevents crash before migration)
+        if (Schema::hasColumn('news', 'published_at')) {
+            $data['published_at'] = $request->published_at ?? now();
+        }
 
         // Upload Gambar → Base64
         $imagesData = [];
@@ -108,9 +112,13 @@ class NewsController extends Controller
             'title'        => $request->title,
             'slug'         => Str::slug($request->title),
             'content'      => $request->content,
-            'published_at' => $request->published_at ?? $news->published_at ?? now(),
             'status'       => $request->status,
         ];
+
+        // Conditionally add published_at if the column exists
+        if (Schema::hasColumn('news', 'published_at')) {
+            $data['published_at'] = $request->published_at ?? $news->published_at ?? now();
+        }
 
         // Gambar baru → Base64 (jika ada)
         if ($request->hasFile('images')) {
