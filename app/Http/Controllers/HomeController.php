@@ -24,8 +24,15 @@ class HomeController extends Controller
     {
         // Mengambil 4 berita terbaru langsung dari Database tanpa Cache.
         // Base64 image payload terlalu besar untuk MySQL cache table limit (max_allowed_packet).
-        $orderColumn = \Illuminate\Support\Facades\Schema::hasColumn('news', 'published_at') ? 'published_at' : 'created_at';
-        $news = News::select('id', 'title', 'slug', 'content', 'created_at', 'status', 'image', 'videos', 'published_at')
+        $hasPublishedAt = \Illuminate\Support\Facades\Schema::hasColumn('news', 'published_at');
+        $orderColumn = $hasPublishedAt ? 'published_at' : 'created_at';
+        
+        $columns = ['id', 'title', 'slug', 'content', 'created_at', 'status', 'image', 'videos'];
+        if ($hasPublishedAt) {
+            $columns[] = 'published_at';
+        }
+
+        $news = News::select($columns)
             ->where('status', 'published')
             ->orderBy($orderColumn, 'desc')
             ->take(4)
