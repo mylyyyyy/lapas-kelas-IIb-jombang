@@ -206,11 +206,13 @@
 
         {{-- CTA Buttons --}}
         <div class="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in-up" style="animation-delay: 0.4s;">
+            @if(!$isEmergencyClosed)
             <a href="{{ route('kunjungan.create') }}" class="group bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-lg font-bold py-4 px-10 rounded-full shadow-2xl transition-all transform hover:-translate-y-2 hover:shadow-emerald-500/25 inline-flex items-center justify-center gap-3 relative overflow-hidden btn-glow card-3d">
                 <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 <i class="fa-solid fa-user-plus text-xl relative z-10 group-hover:animate-float-up"></i>
                 <span class="relative z-10">Daftar Kunjungan</span>
             </a>
+            @endif
             <a href="#berita" class="group bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-slate-900 text-lg font-bold py-4 px-10 rounded-full shadow-2xl transition-all transform hover:-translate-y-2 hover:shadow-yellow-500/25 inline-flex items-center justify-center gap-3 relative overflow-hidden btn-glow card-3d">
                 <div class="absolute inset-0 bg-gradient-to-r from-slate-900/0 via-slate-900/10 to-slate-900/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 <i class="fa-solid fa-newspaper text-xl relative z-10 group-hover:animate-float-up"></i>
@@ -554,10 +556,12 @@
             </div>
 
             <div class="flex flex-col sm:flex-row justify-center gap-4">
+                @if(!$isEmergencyClosed)
                 <a href="{{ route('kunjungan.create') }}" class="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-slate-900 font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 inline-flex items-center justify-center gap-2">
                     <i class="fas fa-user-plus"></i>
                     <span>Daftar Kunjungan Sekarang</span>
                 </a>
+                @endif
                 <a href="{{ route('faq.index') }}" class="border-2 border-white text-white font-bold py-4 px-8 rounded-full hover:bg-white hover:text-slate-900 transition-all transform hover:-translate-y-1 inline-flex items-center justify-center gap-2">
                     <i class="fas fa-question-circle"></i>
                     <span>Lihat FAQ</span>

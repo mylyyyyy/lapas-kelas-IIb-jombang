@@ -47,6 +47,16 @@ class AppServiceProvider extends ServiceProvider
             $view->with('navCategories', ReportCategory::ordered()->get(['name','icon','emoji']));
         });
 
+        // Share isEmergencyClosed globally
+        try {
+            if (Schema::hasTable('visit_settings')) {
+                $visitSettings = \Illuminate\Support\Facades\Cache::rememberForever('visit_settings', function() {
+                    return VisitSetting::pluck('value', 'key')->toArray();
+                });
+                View::share('isEmergencyClosed', ($visitSettings['is_emergency_closed'] ?? '0') == '1');
+            }
+        } catch (\Exception $e) {}
+
         // ── Dynamic Mail Configuration from Database ──
         try {
             if (Schema::hasTable('visit_settings')) {

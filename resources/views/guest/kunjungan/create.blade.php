@@ -36,7 +36,7 @@
 
 {{-- WRAPPER UTAMA DENGAN STATE ALPINE JS --}}
 <div x-data="{ 
-    showForm: {{ (session('errors') || session('error') || request()->has('form')) ? 'true' : 'false' }} 
+    showForm: {{ (!$isEmergencyClosed && (session('errors') || session('error') || request()->has('form'))) ? 'true' : 'false' }} 
 }" class="bg-slate-50 min-h-screen pb-20">
 
     {{-- ============================================================== --}}
@@ -65,11 +65,13 @@
                 
                 {{-- Quick Action Buttons for Better UX --}}
                 <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    @if(!$isEmergencyClosed)
                     <button @click="showForm = true; window.scrollTo({top: 0, behavior: 'instant'})" 
                         class="w-full sm:w-auto bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-slate-950 font-black py-4 px-10 rounded-full shadow-2xl transition-all transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3 group">
                         <i class="fa-solid fa-file-signature text-xl group-hover:rotate-12 transition-transform"></i>
                         LANGSUNG ISI FORMULIR
                     </button>
+                    @endif
                     
                     <div class="flex gap-3">
                         <div class="bg-white bg-opacity-10 backdrop-blur-sm border border-white border-opacity-20 px-4 py-2 rounded-full text-white text-xs sm:text-sm font-medium">
