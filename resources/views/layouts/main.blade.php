@@ -148,12 +148,10 @@
                 {{-- Menu Kanan --}}
                 <div class="hidden md:flex items-center gap-4">
                     {{-- Button Pendaftaran --}}
-                    @if(!($isEmergencyClosed ?? false))
                     <a href="{{ route('kunjungan.create') }}"
                         class="text-sm lg:text-base font-extrabold text-slate-900 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 px-5 lg:px-7 py-2 lg:py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-yellow-500/30 transform hover:-translate-y-1 whitespace-nowrap inline-flex items-center gap-2 group">
                         Daftar <span class="hidden lg:inline">Kunjungan</span> <i class="fa-solid fa-arrow-right-long text-sm group-hover:translate-x-1 transition-transform"></i>
                     </a>
-                    @endif
 
                     <div class="h-6 w-px bg-slate-700/50 mx-1"></div>
 
