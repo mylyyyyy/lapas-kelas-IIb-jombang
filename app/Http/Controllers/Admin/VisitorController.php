@@ -243,18 +243,13 @@ class VisitorController extends Controller
                 ->latest('tanggal_kunjungan')
                 ->get();
 
-            // Append accessors manual untuk JSON response
-            $history->each(function($kunjungan) {
-                $kunjungan->append(['foto_ktp_url', 'qr_code_url']);
-                $kunjungan->pengikuts->each->append('foto_ktp_url');
-            });
-
             return response()->json([
                 'success' => true,
                 'visitor' => $visitor,
                 'history' => $history
             ]);
         } catch (\Exception $e) {
+            Log::error('History Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal sinkronisasi data riwayat: ' . $e->getMessage()

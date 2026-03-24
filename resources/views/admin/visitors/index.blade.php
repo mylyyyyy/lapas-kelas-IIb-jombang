@@ -490,11 +490,16 @@
         switchTab('history'); // Default tab
 
         fetch(`{{ url('admin/pengunjung') }}/${id}/history`)
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || 'Gagal sinkronisasi data riwayat.');
+                }
+                return data;
             })
             .then(data => {
+                if (!data.visitor) throw new Error('Data profil tidak ditemukan.');
+                
                 namaSpan.innerText = data.visitor.nama;
                 loading.classList.add('hidden');
                 modalContent.classList.remove('hidden');
@@ -506,11 +511,11 @@
                     const allFollowers = new Map();
 
                     data.history.forEach(item => {
-                        const date = new Date(item.tanggal_kunjungan).toLocaleDateString('id-ID', {
+                        const date = item.tanggal_kunjungan ? new Date(item.tanggal_kunjungan).toLocaleDateString('id-ID', {
                             day: '2-digit',
                             month: 'long',
                             year: 'numeric'
-                        });
+                        }) : '-';
 
                         const statusBadge = getStatusBadge(item.status);
                         
@@ -576,7 +581,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                Swal.fire({ ...swalTheme, icon: 'error', title: 'Gagal!', text: 'Gagal sinkronisasi data riwayat.' });
+                Swal.fire({ ...swalTheme, icon: 'error', title: 'Gagal!', text: error.message || 'Gagal sinkronisasi data riwayat.' });
                 closeHistory();
             });
     }
