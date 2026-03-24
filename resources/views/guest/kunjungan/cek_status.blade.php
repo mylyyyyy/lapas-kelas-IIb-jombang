@@ -12,10 +12,20 @@
             <h1 class="text-2xl font-extrabold text-slate-800">Cek Status Kunjungan</h1>
             <p class="text-slate-500 mt-2">Masukkan Kode Booking atau NIK Anda untuk melihat status dan tiket.</p>
         </div>
-
-        @if(session('error'))
-            <div class="bg-red-50 text-red-600 p-4 rounded-xl mb-6 text-center text-sm font-semibold border border-red-200 animate-shake">
-                <i class="fa-solid fa-circle-exclamation mr-2"></i> {{ session('error') }}
+@if(session('error'))
+    <div class="bg-red-50 text-red-600 p-4 rounded-xl mb-6 text-center text-sm font-semibold border border-red-200 animate-shake">
+        <i class="fa-solid fa-circle-exclamation mr-2"></i> {{ session('error') }}
+        <div class="mt-4">
+            <a href="{{ route('kunjungan.create', ['form' => 1]) }}" class="inline-flex items-center gap-2 bg-red-600 text-white font-bold py-2 px-4 rounded-lg text-xs hover:bg-red-700 transition-all shadow-md active:scale-95">
+                <i class="fa-solid fa-file-signature"></i> Daftar Kunjungan Baru
+            </a>
+        </div>
+    </div>
+@endif
+                    <a href="{{ route('kunjungan.create', ['form' => 1]) }}" class="inline-flex items-center gap-2 bg-red-600 text-white font-bold py-2 px-4 rounded-lg text-xs hover:bg-red-700 transition-all shadow-md active:scale-95">
+                        <i class="fa-solid fa-file-signature"></i> Daftar Kunjungan Baru
+                    </a>
+                </div>
             </div>
         @endif
 

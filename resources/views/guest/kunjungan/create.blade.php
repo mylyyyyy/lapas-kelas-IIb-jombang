@@ -442,6 +442,82 @@
     {{-- BAGIAN 2: FORMULIR PENDAFTARAN --}}
     {{-- ============================================================== --}}
     <div x-show="showForm"
+        x-data="{ 
+            selectedDate: '{{ old('tanggal_kunjungan') }}',
+            selectedSesi: '{{ old('sesi', 'pagi') }}',
+            quotaLoading: false,
+            sisaKuota: null,
+            maxKuota: null,
+            nikLoading: false,
+            
+            async checkQuota() {
+                if (!this.selectedDate) return;
+                this.quotaLoading = true;
+                try {
+                    const response = await fetch(`{{ route('kunjungan.quota.api') }}?tanggal_kunjungan=${this.selectedDate}&sesi=${this.selectedSesi}&type=online`);
+                    const data = await response.json();
+                    this.sisaKuota = data.sisa_kuota;
+                    this.maxKuota = data.max_kuota;
+                } catch (e) {
+                    console.error('Gagal cek kuota');
+                } finally {
+                    this.quotaLoading = false;
+                }
+            },
+
+            async fetchNikData() {
+                const nikInput = document.getElementById('nik_ktp');
+                const nik = nikInput.value.replace(/[^0-9]/g, '');
+                
+                if (nik.length !== 16) {
+                    Swal.fire({ icon: 'warning', title: 'Format Salah', text: 'NIK harus 16 digit angka.' });
+                    return;
+                }
+
+                this.nikLoading = true;
+                try {
+                    const response = await fetch(`{{ url('api/profil-by-nik') }}/${nik}`);
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        const data = result.data;
+                        document.getElementById('nama_pengunjung').value = data.nama || '';
+                        document.getElementById('nomor_hp').value = data.nomor_hp || '';
+                        document.getElementById('email_pengunjung').value = data.email || '';
+                        document.getElementById('alamat').value = data.alamat || '';
+                        
+                        // Isi field detail alamat jika ada
+                        if (document.getElementById('rt')) document.getElementById('rt').value = data.rt || '';
+                        if (document.getElementById('rw')) document.getElementById('rw').value = data.rw || '';
+                        if (document.getElementById('desa')) document.getElementById('desa').value = data.desa || '';
+                        if (document.getElementById('kecamatan')) document.getElementById('kecamatan').value = data.kecamatan || '';
+                        if (document.getElementById('kabupaten')) document.getElementById('kabupaten').value = data.kabupaten || '';
+                        
+                        // Set Jenis Kelamin
+                        const jkSelect = document.getElementById('jenis_kelamin');
+                        if (jkSelect) jkSelect.value = data.jenis_kelamin || '';
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Data Ditemukan',
+                            text: `Selamat datang kembali, ${data.nama}! Data profil Anda telah diisi otomatis.`,
+                            timer: 3000
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Data Baru',
+                            text: 'NIK Anda belum terdaftar. Silakan isi formulir secara manual.'
+                        });
+                    }
+                } catch (e) {
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal mencari data profil.' });
+                } finally {
+                    this.nikLoading = false;
+                }
+            }
+        }"
+        x-init="$watch('selectedDate', () => checkQuota()); $watch('selectedSesi', () => checkQuota()); if(selectedDate) checkQuota();"
         style="display: none;"
         x-transition:enter="transition ease-out duration-500"
         x-transition:enter-start="opacity-0 translate-y-10"
@@ -464,6 +540,72 @@
             </div>
 
             <div class="p-4 sm:p-10">
+                {{-- STEP 0: REAL-TIME QUOTA CHECKER (UX IMPROVEMENT) --}}
+                <div class="mb-10 bg-blue-50 border-2 border-blue-100 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                            <i class="fa-solid fa-users-viewfinder text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-slate-800 uppercase tracking-tight">Cek Ketersediaan Kuota</h3>
+                            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Pilih tanggal dan sesi terlebih dahulu</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-black text-slate-600 uppercase mb-2">Pilih Hari Kunjungan</label>
+                            <select x-model="selectedDate" class="w-full bg-white border-2 border-slate-200 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-0 transition-all font-bold text-slate-700">
+                                <option value="">-- Pilih Tanggal --</option>
+                                @foreach($datesByDay as $dayName => $dates)
+                                    <optgroup label="Hari {{ $dayName }}">
+                                        @foreach($dates as $date)
+                                            <option value="{{ $date['value'] }}">{{ $date['label'] }}</option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-black text-slate-600 uppercase mb-2">Pilih Sesi</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" @click="selectedSesi = 'pagi'" :class="selectedSesi === 'pagi' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200'" class="py-3 rounded-xl border-2 font-black text-xs transition-all uppercase tracking-widest shadow-sm">Pagi</button>
+                                <button type="button" @click="selectedSesi = 'siang'" :class="selectedSesi === 'siang' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200'" class="py-3 rounded-xl border-2 font-black text-xs transition-all uppercase tracking-widest shadow-sm">Siang</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Quota Display --}}
+                    <div class="mt-6 flex flex-col items-center justify-center p-4 bg-white rounded-xl border-2 border-slate-100 shadow-inner min-h-[80px]">
+                        <template x-if="quotaLoading">
+                            <div class="flex items-center gap-3 text-blue-600 font-bold italic animate-pulse">
+                                <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
+                                <span>Menghitung sisa kuota...</span>
+                            </div>
+                        </template>
+                        <template x-if="!quotaLoading && sisaKuota !== null">
+                            <div class="text-center">
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Sisa Kuota Tersedia</p>
+                                <div class="flex items-end justify-center gap-1">
+                                    <span :class="sisaKuota > 0 ? 'text-blue-600' : 'text-red-600'" class="text-4xl font-black leading-none" x-text="sisaKuota"></span>
+                                    <span class="text-slate-400 font-bold text-lg">/ <span x-text="maxKuota"></span></span>
+                                </div>
+                                <div class="mt-3">
+                                    <span x-show="sisaKuota > 0" class="px-4 py-1.5 bg-green-100 text-green-700 rounded-full text-[10px] font-black uppercase border border-green-200 shadow-sm animate__animated animate__fadeIn">
+                                        <i class="fa-solid fa-check-circle mr-1"></i> Slot Masih Tersedia
+                                    </span>
+                                    <span x-show="sisaKuota <= 0" class="px-4 py-1.5 bg-red-100 text-red-700 rounded-full text-[10px] font-black uppercase border border-red-200 shadow-sm animate__animated animate__headShake">
+                                        <i class="fa-solid fa-circle-xmark mr-1"></i> Mohon Maaf, Kuota Penuh
+                                    </span>
+                                </div>
+                            </div>
+                        </template>
+                        <template x-if="!quotaLoading && sisaKuota === null">
+                            <p class="text-slate-400 text-sm font-medium italic">Silakan pilih tanggal untuk melihat ketersediaan slot.</p>
+                        </template>
+                    </div>
+                </div>
+
                 {{-- ALERT BAWAAN --}}
                 @if (session('success'))
                     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-8 shadow-md flex flex-col sm:flex-row justify-between items-center gap-4" role="alert">
@@ -519,11 +661,19 @@
                                 <input id="nama_pengunjung" type="text" name="nama_pengunjung" value="{{ old('nama_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white @error('nama_pengunjung') border-red-500 @enderror" required placeholder="Budi Santoso">
                             </div>
 
-                            <div class="group">
+                            <div class="group relative">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-hashtag text-blue-500"></i> NIK (16 Digit)
                                 </label>
-                                <input id="nik_ktp" type="text" name="nik_ktp" value="{{ old('nik_ktp') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white @error('nik_ktp') border-red-500 @enderror" required placeholder="351xxxxxxxxx" maxlength="16">
+                                <div class="flex gap-2">
+                                    <input id="nik_ktp" type="text" name="nik_ktp" value="{{ old('nik_ktp') }}" class="flex-grow rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white @error('nik_ktp') border-red-500 @enderror" required placeholder="351xxxxxxxxx" maxlength="16">
+                                    <button type="button" @click="fetchNikData()" :disabled="nikLoading" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl transition-all shadow-md flex items-center gap-2 whitespace-nowrap disabled:opacity-50">
+                                        <i x-show="!nikLoading" class="fa-solid fa-magnifying-glass"></i>
+                                        <i x-show="nikLoading" class="fa-solid fa-circle-notch fa-spin"></i>
+                                        <span class="hidden sm:inline">Tarik Data</span>
+                                    </button>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1 italic font-medium">Pernah mendaftar? Klik <strong>Tarik Data</strong> untuk isi otomatis.</p>
                             </div>
 
                             <div class="group">

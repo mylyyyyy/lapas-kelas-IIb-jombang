@@ -366,6 +366,7 @@ class KunjunganController extends Controller
         if ($request->has('keyword')) {
             $keyword = trim($request->get('keyword'));
             
+            // Cari kunjungan terbaru berdasarkan Kode atau NIK
             $kunjungan = Kunjungan::where('kode_kunjungan', $keyword)
                 ->orWhere('nik_ktp', $keyword)
                 ->latest()
@@ -374,11 +375,51 @@ class KunjunganController extends Controller
             if ($kunjungan) {
                 return redirect()->route('kunjungan.status', $kunjungan->id);
             } else {
-                return back()->with('error', 'Data kunjungan tidak ditemukan. Periksa Kode Booking atau NIK Anda.');
+                // Jika tidak ditemukan di tabel kunjungan, coba cari di profil (mungkin belum pernah kunjungan tapi sudah punya profil)
+                $profil = ProfilPengunjung::where('nik', $keyword)->first();
+                $message = 'Data kunjungan tidak ditemukan. Periksa Kode Booking atau NIK Anda.';
+                if ($profil) {
+                    $message = "Profil atas nama {$profil->nama} ditemukan, namun belum ada riwayat kunjungan aktif. Silakan lakukan pendaftaran baru.";
+                }
+                
+                return back()->with('error', $message)->withInput();
             }
         }
 
         return view('guest.kunjungan.cek_status');
+    }
+
+    public function findProfilByNik($nik)
+    {
+        // Bersihkan input
+        $nik = preg_replace('/[^0-9]/', '', $nik);
+        
+        if (strlen($nik) !== 16) {
+            return response()->json(['success' => false, 'message' => 'Format NIK tidak valid.'], 400);
+        }
+
+        $profil = ProfilPengunjung::where('nik', $nik)->first();
+
+        if ($profil) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'nama' => $profil->nama,
+                    'nik' => $profil->nik,
+                    'nomor_hp' => $profil->nomor_hp,
+                    'email' => $profil->email,
+                    'alamat' => $profil->alamat,
+                    'rt' => $profil->rt,
+                    'rw' => $profil->rw,
+                    'desa' => $profil->desa,
+                    'kecamatan' => $profil->kecamatan,
+                    'kabupaten' => $profil->kabupaten,
+                    'jenis_kelamin' => $profil->jenis_kelamin,
+                ]
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Profil tidak ditemukan'], 404);
     }
 
     public function getQuotaStatus(Request $request)
@@ -490,27 +531,5 @@ class KunjunganController extends Controller
                 'qr_token' => $token
             ]);
         }
-    }
-
-    public function findProfilByNik($nik)
-    {
-        if (!is_numeric($nik) || strlen($nik) !== 16) {
-            return response()->json(['message' => 'Format NIK tidak valid.'], 400);
-        }
-
-        $profil = ProfilPengunjung::where('nik', $nik)->first();
-
-        if ($profil) {
-            return response()->json([
-                'nama' => $profil->nama,
-                'nik' => $profil->nik,
-                'nomor_hp' => $profil->nomor_hp,
-                'email' => $profil->email,
-                'alamat' => $profil->alamat,
-                'jenis_kelamin' => $profil->jenis_kelamin,
-            ]);
-        }
-
-        return response()->json(['message' => 'Profil tidak ditemukan'], 404);
     }
 }
