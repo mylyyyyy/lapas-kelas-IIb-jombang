@@ -554,12 +554,10 @@
             </div>
 
             <div class="flex flex-col sm:flex-row justify-center gap-4">
-                @if(!$isEmergencyClosed)
                 <a href="{{ route('kunjungan.create') }}" class="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-slate-900 font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 inline-flex items-center justify-center gap-2">
                     <i class="fas fa-user-plus"></i>
                     <span>Daftar Kunjungan Sekarang</span>
                 </a>
-                @endif
                 <a href="{{ route('faq.index') }}" class="border-2 border-white text-white font-bold py-4 px-8 rounded-full hover:bg-white hover:text-slate-900 transition-all transform hover:-translate-y-1 inline-flex items-center justify-center gap-2">
                     <i class="fas fa-question-circle"></i>
                     <span>Lihat FAQ</span>
