@@ -42,7 +42,6 @@ class VisitorController extends Controller
         // 3. Filter Foto KTP
         if ($request->filled('has_foto')) {
             if ($request->has_foto === 'yes') {
-                // Mencari yang setidaknya kunjungan terakhirnya punya foto (karena foto ada di tabel kunjungans)
                 $query->whereHas('kunjungans', function($q) {
                     $q->whereNotNull('foto_ktp');
                 });
@@ -53,7 +52,7 @@ class VisitorController extends Controller
             }
         }
 
-        // 4. Pengurutan (Loyalty / Terbaru)
+        // 4. Pengurutan
         $sort = $request->get('sort', 'latest');
         switch ($sort) {
             case 'latest_visit':
@@ -79,13 +78,9 @@ class VisitorController extends Controller
         $visitors = $query->paginate(10);
         $visitors->appends($request->all());
 
-        // Transform collection to set foto_ktp from profile image or latest visit
         $visitors->getCollection()->transform(function ($visitor) {
             $latestKunjungan = $visitor->kunjungans->first();
-            
-            // Prioritaskan kolom image di ProfilPengunjung, fallback ke foto_ktp kunjungan terakhir
             $visitor->foto_ktp = $visitor->image ?: ($latestKunjungan ? $latestKunjungan->foto_ktp : null);
-            
             $visitor->total_kunjungan = $visitor->kunjungans_count;
             $visitor->last_visit = $latestKunjungan ? $latestKunjungan->tanggal_kunjungan : null;
             $visitor->last_wbp = $latestKunjungan && $latestKunjungan->wbp ? $latestKunjungan->wbp->nama : '-';
@@ -110,14 +105,10 @@ class VisitorController extends Controller
             });
         }
 
-        // To get unique followers, we chunk or paginate but uniqueness is tricky with pagination
-        // Better: Group by NIK/Name and get latest record
-        // For simplicity and matching user request for a "database":
         $allFollowers = $query->get()->unique(function($item) {
             return ($item->nik ?: $item->nama);
         });
 
-        // Manual pagination for unique collection
         $perPage = 15;
         $page = $request->get('page', 1);
         $followers = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -136,10 +127,30 @@ class VisitorController extends Controller
         return Excel::download(new FollowerExport, 'database_pengikut_' . date('Ymd_His') . '.xlsx');
     }
 
+    public function exportFollowersPdf()
+    {
+        $followers = Pengikut::select('nama', 'nik', 'hubungan', 'barang_bawaan', 'created_at')
+            ->orderBy('nama')
+            ->get()
+            ->unique(function ($item) {
+                return ($item->nik ?: $item->nama);
+            });
+
+        return view('admin.visitors.followers-pdf', compact('followers'));
+    }
+
     public function destroy(ProfilPengunjung $visitor)
     {
-        $visitor->delete();
-        return back()->with('success', 'Data pengunjung berhasil dihapus.');
+        DB::transaction(function() use ($visitor) {
+            // Hapus kunjungan & pengikut terkait (berdasarkan NIK karena relasi string)
+            $kunjunganIds = Kunjungan::where('nik_ktp', $visitor->nik)->pluck('id');
+            Pengikut::whereIn('kunjungan_id', $kunjunganIds)->delete();
+            Kunjungan::whereIn('id', $kunjunganIds)->delete();
+            
+            $visitor->delete();
+        });
+
+        return back()->with('success', 'Data pengunjung dan riwayat terkait berhasil dihapus.');
     }
 
     public function bulkDestroy(Request $request)
@@ -149,19 +160,62 @@ class VisitorController extends Controller
             return back()->with('error', 'Pilih data yang ingin dihapus terlebih dahulu.');
         }
 
-        ProfilPengunjung::whereIn('id', $ids)->delete();
-        return back()->with('success', count($ids) . ' data pengunjung berhasil dihapus.');
+        DB::transaction(function() use ($ids) {
+            $niks = ProfilPengunjung::whereIn('id', $ids)->pluck('nik');
+            $kunjunganIds = Kunjungan::whereIn('nik_ktp', $niks)->pluck('id');
+            
+            Pengikut::whereIn('kunjungan_id', $kunjunganIds)->delete();
+            Kunjungan::whereIn('id', $kunjunganIds)->delete();
+            ProfilPengunjung::whereIn('id', $ids)->delete();
+        });
+
+        return back()->with('success', count($ids) . ' data pengunjung dan riwayat terkait berhasil dihapus.');
     }
 
     public function deleteAll()
     {
-        ProfilPengunjung::query()->delete();
-        return back()->with('success', 'Seluruh data pengunjung telah berhasil dikosongkan.');
+        DB::transaction(function() {
+            Pengikut::query()->delete();
+            Kunjungan::query()->delete();
+            ProfilPengunjung::query()->delete();
+        });
+
+        return back()->with('success', 'Seluruh data pengunjung dan riwayat telah berhasil dikosongkan.');
+    }
+
+    public function bulkDestroyFollowers(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (empty($ids)) {
+            return back()->with('error', 'Pilih data yang ingin dihapus terlebih dahulu.');
+        }
+
+        // Karena satu orang pengikut bisa punya banyak record di tabel pengikuts (tiap kunjungan),
+        // kita hapus berdasarkan Nama/NIK yang dipilih.
+        $followersToDelete = Pengikut::whereIn('id', $ids)->get();
+        
+        DB::transaction(function() use ($followersToDelete) {
+            foreach ($followersToDelete as $f) {
+                if ($f->nik) {
+                    Pengikut::where('nik', $f->nik)->delete();
+                } else {
+                    Pengikut::where('nama', $f->nama)->delete();
+                }
+            }
+        });
+
+        return back()->with('success', 'Data pengikut terpilih berhasil dihapus dari database.');
+    }
+
+    public function deleteAllFollowers()
+    {
+        Pengikut::query()->delete();
+        return back()->with('success', 'Seluruh data pengikut telah berhasil dikosongkan.');
     }
 
     public function exportPdf()
     {
-        $visitors = ProfilPengunjung::all();
+        $visitors = ProfilPengunjung::with('kunjungans.wbp')->get();
         return view('admin.visitors.pdf', compact('visitors'));
     }
 
@@ -170,10 +224,6 @@ class VisitorController extends Controller
         return Excel::download(new VisitorExport, 'database_pengunjung_' . date('Ymd_His') . '.xlsx');
     }
 
-    /**
-     * Metode untuk membersihkan data pengunjung yang lebih dari 1 bulan.
-     * Dapat dipanggil via Cron/Scheduler.
-     */
     public function deleteOldVisitors()
     {
         $count = ProfilPengunjung::where('created_at', '<', now()->subMonth())->delete();
@@ -188,9 +238,16 @@ class VisitorController extends Controller
             
         $history = Kunjungan::where('nik_ktp', $visitor->nik)
             ->select('id', 'nik_ktp', 'wbp_id', 'tanggal_kunjungan', 'status', 'barang_bawaan', 'sesi', 'nomor_antrian_harian')
-            ->with(['wbp:id,nama,no_registrasi', 'pengikuts:id,kunjungan_id,nama,nik,hubungan,barang_bawaan'])
+            ->with(['wbp:id,nama,no_registrasi', 'pengikuts:id,kunjungan_id,nama,nik,hubungan,barang_bawaan,foto_ktp'])
             ->latest('tanggal_kunjungan')
             ->get();
+
+        // Map foto_ktp_url into pengikuts
+        $history->each(function($kunjungan) {
+            $kunjungan->pengikuts->each(function($p) {
+                $p->foto_ktp_url = $p->foto_ktp_url; // Use the accessor
+            });
+        });
 
         return response()->json([
             'visitor' => $visitor,
@@ -204,14 +261,9 @@ class VisitorController extends Controller
         
         $response = new StreamedResponse(function() {
             $handle = fopen('php://output', 'w');
-            
-            // Add BOM for Excel compatibility with UTF-8
             fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
-
-            // Header
             fputcsv($handle, ['ID', 'NIK', 'Nama', 'Jenis Kelamin', 'Nomor HP', 'Email', 'Alamat', 'Dibuat Pada']);
 
-            // Data
             ProfilPengunjung::chunk(200, function($visitors) use ($handle) {
                 foreach ($visitors as $visitor) {
                     fputcsv($handle, [

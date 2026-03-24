@@ -21,6 +21,8 @@ class Pengikut extends Model
         'barcode'
     ];
 
+    protected $appends = ['foto_ktp_url'];
+
     protected $dates = [
         'foto_ktp_processed_at'
     ];

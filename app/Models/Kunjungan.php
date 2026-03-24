@@ -30,6 +30,8 @@ class Kunjungan extends Model
      */
     protected $table = 'kunjungans';
 
+    protected $appends = ['foto_ktp_url', 'qr_code_url'];
+
     /**
      * Daftar kolom yang boleh diisi secara massal (Mass Assignment).
      * Harus sesuai dengan nama kolom di database.

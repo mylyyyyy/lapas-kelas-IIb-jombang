@@ -536,17 +536,28 @@
                         noFollowers.classList.remove('hidden');
                     } else {
                         allFollowers.forEach(p => {
+                            let ktpButton = '';
+                            if (p.foto_ktp_url) {
+                                ktpButton = `
+                                    <button type="button" onclick="showKtpModal('${p.foto_ktp_url}', '${p.nama}')" 
+                                        class="mt-2 inline-flex items-center gap-1.5 text-[10px] font-black text-blue-600 hover:text-blue-800 transition-colors bg-blue-50 px-2 py-1 rounded-md border border-blue-100">
+                                        <i class="fas fa-id-card"></i> Lihat KTP
+                                    </button>
+                                `;
+                            }
+
                             const card = `
                                 <div class="bg-slate-50 border border-slate-100 p-4 rounded-2xl flex items-center gap-4 hover:shadow-md transition-all">
                                     <div class="flex-shrink-0">
-                                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 border-2 border-white shadow-sm">
-                                            <i class="fas fa-user text-sm"></i>
+                                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 border-2 border-white shadow-sm overflow-hidden">
+                                            ${p.foto_ktp_url ? `<img src="${p.foto_ktp_url}" class="w-full h-full object-cover">` : '<i class="fas fa-user text-sm"></i>'}
                                         </div>
                                     </div>
                                     <div class="flex-grow min-w-0">
                                         <h4 class="font-black text-slate-800 text-xs truncate">${p.nama}</h4>
                                         <p class="text-[10px] font-mono text-slate-400 truncate">${p.nik || '-'}</p>
                                         <span class="inline-block mt-1 px-2 py-0.5 rounded-lg bg-blue-100 text-blue-700 text-[9px] font-black uppercase tracking-wider">${p.hubungan}</span>
+                                        ${ktpButton}
                                     </div>
                                 </div>
                             `;
