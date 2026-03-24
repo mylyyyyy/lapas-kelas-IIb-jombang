@@ -903,11 +903,10 @@
                                         </div>
 
                                         <div class="md:col-span-2">
-                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Foto KTP/Identitas Pengikut</label>
-                                            <input type="file" name="pengikut_foto[]" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 border border-gray-300 rounded-lg cursor-pointer">
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Foto KTP/Identitas Pengikut <span class="text-red-500">*</span></label>
+                                            <input type="file" name="pengikut_foto[]" accept="image/*" required class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 border border-gray-300 rounded-lg cursor-pointer">
                                             <p class="text-[10px] text-gray-400 mt-1">*Wajib upload foto KTP/KIA/Kartu Pelajar pengikut.</p>
-                                        </div>
-                                    </div>
+                                        </div>                                    </div>
                                 </div>
                             </template>
 

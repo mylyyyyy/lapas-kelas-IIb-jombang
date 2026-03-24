@@ -7,9 +7,12 @@ use App\Models\ProfilPengunjung;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 use App\Exports\VisitorExport;
+use App\Exports\FollowerExport;
+use App\Models\Pengikut;
 use Maatwebsite\Excel\Facades\Excel;
 
 class VisitorController extends Controller
@@ -92,6 +95,47 @@ class VisitorController extends Controller
         return view('admin.visitors.index', compact('visitors'));
     }
 
+    public function followers(Request $request)
+    {
+        $query = Pengikut::query()
+            ->select('pengikuts.*')
+            ->join('kunjungans', 'pengikuts.kunjungan_id', '=', 'kunjungans.id')
+            ->orderBy('pengikuts.nama');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('pengikuts.nama', 'LIKE', "%{$search}%")
+                  ->orWhere('pengikuts.nik', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // To get unique followers, we chunk or paginate but uniqueness is tricky with pagination
+        // Better: Group by NIK/Name and get latest record
+        // For simplicity and matching user request for a "database":
+        $allFollowers = $query->get()->unique(function($item) {
+            return ($item->nik ?: $item->nama);
+        });
+
+        // Manual pagination for unique collection
+        $perPage = 15;
+        $page = $request->get('page', 1);
+        $followers = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allFollowers->forPage($page, $perPage),
+            $allFollowers->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return view('admin.visitors.followers', compact('followers'));
+    }
+
+    public function exportFollowersExcel()
+    {
+        return Excel::download(new FollowerExport, 'database_pengikut_' . date('Ymd_His') . '.xlsx');
+    }
+
     public function destroy(ProfilPengunjung $visitor)
     {
         $visitor->delete();
@@ -147,10 +191,6 @@ class VisitorController extends Controller
             ->with(['wbp:id,nama,no_registrasi', 'pengikuts:id,kunjungan_id,nama,nik,hubungan,barang_bawaan'])
             ->latest('tanggal_kunjungan')
             ->get();
-
-        // Transform history to include photo URLs but avoid sending full base64 in the main history list if possible, 
-        // or at least only for followers. Actually, we need the photos for the tab.
-        // We will keep pengikuts photos for now but ensure main kunjungan photos are excluded.
 
         return response()->json([
             'visitor' => $visitor,

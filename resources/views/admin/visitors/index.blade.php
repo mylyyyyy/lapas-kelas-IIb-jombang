@@ -58,6 +58,16 @@
         </div>
     </div>
 
+    {{-- SUB-NAV --}}
+    <div class="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit no-print">
+        <div class="bg-white px-6 py-2.5 rounded-xl text-sm font-black text-teal-600 shadow-sm">
+            <i class="fas fa-users mr-2"></i> Database Pengunjung
+        </div>
+        <a href="{{ route('admin.visitors.followers') }}" class="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-700 transition-all">
+            <i class="fas fa-user-friends mr-2"></i> Database Pengikut
+        </a>
+    </div>
+
     {{-- FILTERS --}}
     <form action="{{ route('admin.visitors.index') }}" method="GET" class="no-print">
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">

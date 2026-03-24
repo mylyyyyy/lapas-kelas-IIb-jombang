@@ -71,7 +71,7 @@ class StoreKunjunganRequest extends FormRequest
             'pengikut_hubungan'             => 'nullable|array|max:4',
             'pengikut_barang'               => 'nullable|array|max:4',
             'pengikut_foto'                 => 'nullable|array|max:4',
-            'pengikut_foto.*'               => 'nullable|image|max:2048',
+            'pengikut_foto.*'               => 'required_with:pengikut_nama.*|image|max:2048',
         ];
     }
 
@@ -87,6 +87,7 @@ class StoreKunjunganRequest extends FormRequest
             'nik_ktp.digits'          => 'NIK Pengunjung Utama harus berjumlah 16 digit.',
             'nik_ktp.numeric'         => 'NIK Pengunjung Utama harus berupa angka.',
             'foto_ktp.max'            => 'Ukuran foto KTP maksimal 2MB.',
+            'pengikut_foto.*.required_with' => 'Foto KTP Pengikut wajib dilampirkan.',
             'pengikut_foto.*.max'     => 'Ukuran foto pengikut maksimal 2MB per file.',
         ];
     }
