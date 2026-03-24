@@ -205,11 +205,15 @@
         </div>
 
         <div class="action-buttons-grid">
+            <a href="{{ route('admin.kunjungan.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-home"></i>
+                Kembali
+            </a>
             <a href="{{ route('admin.kunjungan.verifikasi') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-qrcode"></i>
                 Scan Lagi
             </a>
-            <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="btn btn-primary">
+            <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="btn btn-primary col-span-2">
                 <i class="fas fa-print"></i>
                 Cetak Struk
             </a>

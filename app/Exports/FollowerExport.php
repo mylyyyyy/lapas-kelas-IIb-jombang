@@ -14,13 +14,15 @@ class FollowerExport implements FromCollection, WithHeadings, WithMapping, Shoul
 {
     public function collection()
     {
-        // Get unique followers by NIK or Name
-        return Pengikut::select('nama', 'nik', 'hubungan', 'barang_bawaan', 'created_at')
+        // Mendapatkan pengikut unik dengan kunjungan terbaru
+        return Pengikut::with(['kunjungan.profilPengunjung', 'kunjungan.wbp'])
+            ->whereIn('id', function($q) {
+                $q->select(\DB::raw('MAX(id)'))
+                    ->from('pengikuts')
+                    ->groupBy(\DB::raw('COALESCE(nik, nama)'));
+            })
             ->orderBy('nama')
-            ->get()
-            ->unique(function ($item) {
-                return ($item->nik ?: $item->nama);
-            });
+            ->get();
     }
 
     public function headings(): array
@@ -28,7 +30,9 @@ class FollowerExport implements FromCollection, WithHeadings, WithMapping, Shoul
         return [
             'Nama Pengikut',
             'NIK / Identitas',
-            'Hubungan Terakhir',
+            'Hubungan',
+            'Pengunjung Utama',
+            'Tujuan WBP',
             'Barang Bawaan Terakhir',
             'Tanggal Terdaftar',
         ];
@@ -40,6 +44,8 @@ class FollowerExport implements FromCollection, WithHeadings, WithMapping, Shoul
             $follower->nama,
             $follower->nik ?: '-',
             $follower->hubungan,
+            optional($follower->kunjungan->profilPengunjung)->nama ?: '-',
+            optional($follower->kunjungan->wbp)->nama ?: '-',
             $follower->barang_bawaan ?: 'Nihil',
             $follower->created_at ? $follower->created_at->format('d/m/Y H:i') : '-',
         ];

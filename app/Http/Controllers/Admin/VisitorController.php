@@ -92,22 +92,21 @@ class VisitorController extends Controller
 
     public function followers(Request $request)
     {
-        $query = Pengikut::query()
-            ->select('pengikuts.*')
-            ->join('kunjungans', 'pengikuts.kunjungan_id', '=', 'kunjungans.id')
-            ->orderBy('pengikuts.nama');
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('pengikuts.nama', 'LIKE', "%{$search}%")
-                  ->orWhere('pengikuts.nik', 'LIKE', "%{$search}%");
-            });
-        }
-
-        $allFollowers = $query->get()->unique(function($item) {
-            return ($item->nik ?: $item->nama);
-        });
+        // Mendapatkan pengikut unik (berdasarkan NIK atau Nama) dengan data kunjungan terbaru
+        $allFollowers = Pengikut::with(['kunjungan.profilPengunjung', 'kunjungan.wbp'])
+            ->whereIn('id', function($q) {
+                $q->select(DB::raw('MAX(id)'))
+                    ->from('pengikuts')
+                    ->groupBy(DB::raw('COALESCE(nik, nama)'));
+            })
+            ->when($request->search, function($q) use ($request) {
+                $search = $request->search;
+                $q->where(function($sq) use ($search) {
+                    $sq->where('nama', 'LIKE', "%{$search}%")
+                      ->orWhere('nik', 'LIKE', "%{$search}%");
+                });
+            })
+            ->get();
 
         $perPage = 15;
         $page = $request->get('page', 1);
@@ -129,12 +128,15 @@ class VisitorController extends Controller
 
     public function exportFollowersPdf()
     {
-        $followers = Pengikut::select('nama', 'nik', 'hubungan', 'barang_bawaan', 'created_at')
+        // Mendapatkan pengikut unik dengan kunjungan terbaru (sama seperti di view)
+        $followers = Pengikut::with(['kunjungan.profilPengunjung', 'kunjungan.wbp'])
+            ->whereIn('id', function($q) {
+                $q->select(DB::raw('MAX(id)'))
+                    ->from('pengikuts')
+                    ->groupBy(DB::raw('COALESCE(nik, nama)'));
+            })
             ->orderBy('nama')
-            ->get()
-            ->unique(function ($item) {
-                return ($item->nik ?: $item->nama);
-            });
+            ->get();
 
         return view('admin.visitors.followers-pdf', compact('followers'));
     }
@@ -233,26 +235,31 @@ class VisitorController extends Controller
 
     public function getHistory($id)
     {
-        $visitor = ProfilPengunjung::select('id', 'nik', 'nama', 'nomor_hp', 'email', 'alamat', 'rt', 'rw', 'desa', 'kecamatan', 'kabupaten', 'jenis_kelamin', 'created_at')
-            ->findOrFail($id);
+        try {
+            $visitor = ProfilPengunjung::findOrFail($id);
             
-        $history = Kunjungan::where('nik_ktp', $visitor->nik)
-            ->select('id', 'nik_ktp', 'wbp_id', 'tanggal_kunjungan', 'status', 'barang_bawaan', 'sesi', 'nomor_antrian_harian')
-            ->with(['wbp:id,nama,no_registrasi', 'pengikuts:id,kunjungan_id,nama,nik,hubungan,barang_bawaan,foto_ktp'])
-            ->latest('tanggal_kunjungan')
-            ->get();
+            $history = Kunjungan::where('nik_ktp', $visitor->nik)
+                ->with(['wbp:id,nama,no_registrasi', 'pengikuts'])
+                ->latest('tanggal_kunjungan')
+                ->get();
 
-        // Map foto_ktp_url into pengikuts
-        $history->each(function($kunjungan) {
-            $kunjungan->pengikuts->each(function($p) {
-                $p->foto_ktp_url = $p->foto_ktp_url; // Use the accessor
+            // Append accessors manual untuk JSON response
+            $history->each(function($kunjungan) {
+                $kunjungan->append(['foto_ktp_url', 'qr_code_url']);
+                $kunjungan->pengikuts->each->append('foto_ktp_url');
             });
-        });
 
-        return response()->json([
-            'visitor' => $visitor,
-            'history' => $history
-        ]);
+            return response()->json([
+                'success' => true,
+                'visitor' => $visitor,
+                'history' => $history
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal sinkronisasi data riwayat: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function exportCsv()

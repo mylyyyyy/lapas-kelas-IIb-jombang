@@ -16,26 +16,28 @@
     <thead>
         <tr>
             <th style="width:30px">No</th>
-            <th style="width:140px">NIK / Identitas</th>
-            <th>Nama Lengkap</th>
-            <th>Hubungan Terakhir</th>
-            <th>Barang Bawaan Terakhir</th>
-            <th style="width:80px">Tgl Terdaftar</th>
+            <th>NIK Pengikut</th>
+            <th>Nama Pengikut</th>
+            <th>Hubungan</th>
+            <th>Pengunjung Utama</th>
+            <th>Tujuan WBP</th>
+            <th style="width:70px">Tgl Daftar</th>
         </tr>
     </thead>
     <tbody>
         @forelse($followers as $follower)
         <tr>
             <td class="text-center">{{ $loop->iteration }}</td>
-            <td style="font-family:monospace; font-size:10px;">{{ $follower->nik ?: '—' }}</td>
+            <td style="font-family:monospace; font-size:9px;">{{ $follower->nik ?: '—' }}</td>
             <td class="fw-bold">{{ strtoupper($follower->nama) }}</td>
             <td class="text-center">{{ $follower->hubungan ?: '—' }}</td>
-            <td>{{ $follower->barang_bawaan ?: 'Nihil' }}</td>
-            <td class="text-center">{{ $follower->created_at ? $follower->created_at->format('d/m/Y') : '—' }}</td>
+            <td>{{ optional($follower->kunjungan->profilPengunjung)->nama ?: '—' }}</td>
+            <td>{{ optional($follower->kunjungan->wbp)->nama ?: '—' }}</td>
+            <td class="text-center" style="font-size:9px">{{ $follower->created_at ? $follower->created_at->format('d/m/Y') : '—' }}</td>
         </tr>
         @empty
         <tr>
-            <td colspan="6" class="text-center" style="padding:20px;color:#94a3b8;font-style:italic;">Tidak ada data pengikut.</td>
+            <td colspan="7" class="text-center" style="padding:20px;color:#94a3b8;font-style:italic;">Tidak ada data pengikut.</td>
         </tr>
         @endforelse
     </tbody>

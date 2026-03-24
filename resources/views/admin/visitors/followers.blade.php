@@ -103,11 +103,12 @@
                     <thead class="bg-slate-50 border-b border-slate-100">
                         <tr>
                             <th class="px-5 py-3.5 w-10 no-print"></th>
-                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400">Identitas Pengikut</th>
-                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400">Hubungan Terakhir</th>
-                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400">Barang Bawaan Terakhir</th>
+                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400">Identitas Pengikut</th>        
+                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400">Hubungan & Visitor</th>
+                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400">Tujuan WBP</th>
+                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400">Barang Bawaan</th>    
                             <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400 text-center">Dokumen</th>
-                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400 text-center">Tgl Terdaftar</th>
+                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400 text-center">Tgl Terdaftar</th> 
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50">
@@ -122,20 +123,30 @@
                                         <i class="fas fa-user text-xs"></i>
                                     </div>
                                     <div>
-                                        <p class="font-black text-slate-800">{{ $follower->nama }}</p>
-                                        <p class="text-[10px] font-mono text-slate-400 mt-0.5 tracking-wider">{{ $follower->nik ?: '-' }}</p>
+                                        <p class="font-black text-slate-800 leading-tight">{{ $follower->nama }}</p>
+                                        <p class="text-[10px] font-mono text-slate-400 mt-1 tracking-wider">{{ $follower->nik ?: '-' }}</p>      
                                     </div>
                                 </div>
                             </td>
                             <td class="px-5 py-4">
-                                <span class="inline-flex items-center px-3 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-[10px] font-black uppercase tracking-widest border border-indigo-100">
-                                    {{ $follower->hubungan ?: '—' }}
-                                </span>
+                                <div class="space-y-1">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 text-[9px] font-black uppercase tracking-widest border border-indigo-100">
+                                        {{ $follower->hubungan ?: '—' }}
+                                    </span>
+                                    <p class="text-[10px] font-bold text-slate-500 italic">
+                                        By: {{ optional($follower->kunjungan->profilPengunjung)->nama ?: '—' }}
+                                    </p>
+                                </div>
                             </td>
                             <td class="px-5 py-4">
-                                <p class="text-xs text-slate-500 font-medium italic">{{ $follower->barang_bawaan ?: 'Nihil' }}</p>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-teal-400"></div>
+                                    <p class="text-xs font-black text-slate-700">{{ optional($follower->kunjungan->wbp)->nama ?: '—' }}</p>
+                                </div>
                             </td>
-                            <td class="px-5 py-4 text-center">
+                            <td class="px-5 py-4">
+                                <p class="text-xs text-slate-500 font-medium italic truncate max-w-[150px]">{{ $follower->barang_bawaan ?: 'Nihil' }}</p>
+                            </td>                            <td class="px-5 py-4 text-center">
                                 @if($follower->foto_ktp)
                                     <button type="button" onclick="showFollowerKtp('{{ $follower->foto_ktp_url }}', '{{ $follower->nama }}')"
                                         class="inline-flex items-center gap-1.5 px-3 py-2 bg-white border-2 border-slate-100 hover:bg-indigo-500 hover:border-indigo-500 hover:text-white text-indigo-600 rounded-xl text-xs font-black transition-all shadow-sm active:scale-95 no-print">

@@ -190,15 +190,23 @@
                                         class="flex items-center gap-1.5 text-emerald-600 font-bold text-xs hover:underline">
                                         <i class="fab fa-whatsapp text-sm"></i> {{ $visitor->nomor_hp }}
                                     </a>
+                                    @else
+                                    <span class="text-[10px] text-slate-300 italic">No HP tidak ada</span>
                                     @endif
+
                                     <div class="flex items-start gap-1.5 text-xs text-slate-400 font-medium">
                                         <i class="fas fa-map-marker-alt text-slate-300 mt-0.5 text-[10px]"></i>
                                         <span class="max-w-[180px] leading-tight">
-                                            @if($visitor->rt || $visitor->rw)
-                                                {{ $visitor->alamat }}, RT {{ $visitor->rt }} / RW {{ $visitor->rw }}, Desa {{ $visitor->desa }}, Kec. {{ $visitor->kecamatan }}, Kab. {{ $visitor->kabupaten }}
-                                            @else
-                                                {{ $visitor->alamat }}
-                                            @endif
+                                            @php
+                                                $alamatParts = array_filter([
+                                                    $visitor->alamat,
+                                                    ($visitor->rt || $visitor->rw) ? "RT {$visitor->rt} / RW {$visitor->rw}" : null,
+                                                    $visitor->desa ? "Desa {$visitor->desa}" : null,
+                                                    $visitor->kecamatan ? "Kec. {$visitor->kecamatan}" : null,
+                                                    $visitor->kabupaten ? "Kab. {$visitor->kabupaten}" : null
+                                                ]);
+                                            @endphp
+                                            {{ !empty($alamatParts) ? implode(', ', $alamatParts) : 'Alamat tidak lengkap' }}
                                         </span>
                                     </div>
                                 </div>

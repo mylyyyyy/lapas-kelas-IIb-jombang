@@ -110,9 +110,25 @@
                 {{-- Gunakan optional() untuk menghindari error jika WBP terhapus --}}
                 <span class="font-bold text-right w-32 truncate">{{ optional($kunjungan->wbp)->nama ?? '-' }}</span>
             </div>
+            
+            {{-- Tambahan Hubungan --}}
             <div class="flex justify-between">
-                <span class="text-gray-500">Pengikut</span>
-                <span class="font-bold">{{ $kunjungan->pengikuts->count() }} Orang</span>
+                <span class="text-gray-500">Hubungan</span>
+                <span class="font-bold">{{ $kunjungan->hubungan ?: '—' }}</span>
+            </div>
+
+            <div class="border-t border-dashed border-gray-200 mt-2 pt-2">
+                <div class="flex justify-between mb-1">
+                    <span class="text-gray-500">Pengikut ({{ $kunjungan->pengikuts->count() }})</span>
+                </div>
+                @forelse($kunjungan->pengikuts as $p)
+                    <div class="flex justify-between text-[10px] leading-tight mb-1">
+                        <span class="text-gray-600 truncate w-24">- {{ $p->nama }}</span>
+                        <span class="font-bold italic">({{ $p->hubungan }})</span>
+                    </div>
+                @empty
+                    <p class="text-[10px] text-gray-400 italic">Tidak ada pengikut</p>
+                @endforelse
             </div>
         </div>
 
