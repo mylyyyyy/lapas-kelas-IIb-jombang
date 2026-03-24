@@ -74,6 +74,12 @@
             <p class="text-slate-500 mt-2 font-medium">Tinjau informasi lengkap, histori kunjungan, dan tiket antrian.</p>
         </div>
         <div class="flex gap-3">
+            @if($kunjungan->status == KunjunganStatus::APPROVED)
+            <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="group inline-flex items-center gap-2 bg-blue-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-blue-200/50 hover:bg-blue-700 transition-all active:scale-95">
+                <i class="fas fa-print group-hover:scale-110 transition-transform"></i>
+                <span>Cetak Tiket</span>
+            </a>
+            @endif
             <a href="{{ route('admin.kunjungan.index') }}" class="group inline-flex items-center gap-2 bg-white text-slate-700 font-bold py-3 px-6 rounded-xl shadow-sm border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-all active:scale-95">
                 <i class="fas fa-arrow-left text-slate-400 group-hover:text-blue-500 transition-colors"></i>
                 <span>Kembali</span>
@@ -177,9 +183,9 @@
                         </code>
                     </div>
 
-                    <button onclick="printTicket()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl shadow-lg shadow-blue-200/50 transition-all active:scale-95 flex items-center justify-center gap-2 border border-blue-500">
+                    <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl shadow-lg shadow-blue-200/50 transition-all active:scale-95 flex items-center justify-center gap-2 border border-blue-500">
                         <i class="fas fa-print"></i> Cetak Lembar Antrian
-                    </button>
+                    </a>
                 </div>
             </div>
             @endif
@@ -581,28 +587,6 @@
     </div>
 </div>
 
-{{-- AREA CETAK (PRINT) --}}
-<div id="printableArea" class="hidden">
-    <div style="text-align: center; font-family: sans-serif; padding: 20px; border: 2px solid #000; margin: 20px;">
-        <h2 style="margin-bottom: 5px; text-transform: uppercase;">Lapas Kelas IIB Jombang</h2>
-        <p style="margin-top: 0; font-size: 14px;">Tiket Antrian Kunjungan Tatap Muka</p>
-        <hr style="margin: 20px 0;">
-        <h1 style="font-size: 48px; margin: 10px 0;">
-            {{ $kunjungan->registration_type === 'offline' ? 'B' : 'A' }}-{{ str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT) }}
-        </h1>
-        <p style="font-size: 18px; font-weight: bold; margin-bottom: 20px;">SESI: {{ strtoupper($kunjungan->sesi) }}</p>
-        <div style="margin: 20px 0;">
-            <img id="qrCodePrint" src="{{ $kunjungan->qr_code_url }}" style="width: 200px; height: 200px;">
-        </div>
-        <p style="font-family: monospace; font-size: 16px; letter-spacing: 2px;">{{ $kunjungan->qr_token }}</p>
-        <div style="text-align: left; margin-top: 30px;">
-            <p><strong>Nama Pengunjung:</strong> {{ $kunjungan->nama_pengunjung }}</p>
-            <p><strong>Mengunjungi:</strong> {{ $kunjungan->wbp->nama ?? '-' }}</p> 
-            <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y') }}</p>
-        </div>
-    </div>
-</div>
-
 {{-- Hidden Form for Actions --}}
 <form id="single-action-form" method="POST" style="display: none;">
     @csrf
@@ -648,29 +632,6 @@
     function closeFollowerKtpModal() {
         document.getElementById('followerKtpModal').classList.add('hidden');
         document.body.classList.remove('overflow-hidden');
-    }
-
-    function printTicket() {
-        const qrImg = document.getElementById('qrCodePrint');
-        
-        const doPrint = () => {
-            const original = document.body.innerHTML;
-            const printContent = document.getElementById('printableArea').innerHTML;
-            document.body.innerHTML = printContent;
-            window.print();
-            document.body.innerHTML = original;
-            window.location.reload(); 
-        };
-
-        if (qrImg.complete) {
-            doPrint();
-        } else {
-            qrImg.onload = doPrint;
-            qrImg.onerror = () => {
-                console.error('Failed to load QR code for printing');
-                doPrint(); // Try anyway
-            };
-        }
     }
 
     function confirmSingleAction(url, method, status, name) {
