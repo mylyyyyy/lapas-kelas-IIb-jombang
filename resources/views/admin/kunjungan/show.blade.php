@@ -494,12 +494,12 @@
                                 {{-- Foto Pengikut --}}
                                 <div class="flex-shrink-0">
                                     @if(!empty($pengikut->foto_ktp_url))
-                                        <a href="{{ $pengikut->foto_ktp_url }}" target="_blank" class="block relative">
+                                        <button type="button" onclick="showFollowerKtp('{{ $pengikut->foto_ktp_url }}', '{{ $pengikut->nama }}')" class="block relative">
                                             <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-full flex items-center justify-center text-white text-xs">
                                                 <i class="fas fa-search-plus"></i>
                                             </div>
                                             <img src="{{ $pengikut->foto_ktp_url }}" loading="lazy" class="w-14 h-14 rounded-full object-cover border-2 border-slate-200 shadow-sm">
-                                        </a>
+                                        </button>
                                     @else
                                         <div class="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200">
                                             <i class="fas fa-user-secret text-xl"></i>
@@ -508,7 +508,7 @@
                                 </div>
                                 <div class="flex-grow">
                                     <h4 class="font-bold text-slate-800 leading-tight">{{ $pengikut->nama }}</h4>
-                                    <p class="text-[11px] font-mono text-slate-500 tracking-wider mb-2 mt-0.5">ID: {{ $pengikut->nik ?? '-' }}</p>
+                                    <p class="text-[11px] font-mono text-slate-50 tracking-wider mb-2 mt-0.5">ID: {{ $pengikut->nik ?? '-' }}</p>
                                     
                                     <div class="flex flex-wrap gap-2">
                                         <span class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-1 rounded border border-indigo-100 font-bold uppercase tracking-widest"><i class="fas fa-link mr-1 opacity-50"></i> {{ $pengikut->hubungan }}</span>
@@ -545,6 +545,38 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+</div>
+
+{{-- MODAL LIHAT KTP PENGIKUT --}}
+<div id="followerKtpModal" class="fixed inset-0 z-[120] hidden overflow-y-auto no-print" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-slate-950/90 backdrop-blur-xl transition-opacity duration-500" aria-hidden="true" onclick="closeFollowerKtpModal()"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-[3.5rem] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl w-full animate__animated animate__fadeInUp animate__faster">
+            <div class="bg-white px-10 py-8 border-b border-slate-50 flex justify-between items-center">
+                <div>
+                    <p class="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] mb-1.5">Identitas Pengikut</p>
+                    <h3 class="text-2xl font-black text-slate-800 tracking-tighter">
+                        KTP: <span id="followerKtpNama" class="text-emerald-600"></span>
+                    </h3>
+                </div>
+                <button type="button" onclick="closeFollowerKtpModal()" class="w-12 h-12 rounded-2xl bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-all flex items-center justify-center">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-10 text-center bg-slate-100/30">
+                <div class="relative inline-block group">
+                    <img id="followerKtpImg" src="" class="max-w-full h-auto rounded-[2.5rem] shadow-2xl mx-auto border-[12px] border-white transition-transform duration-700 group-hover:scale-105" alt="KTP Pengikut">
+                    <div class="absolute inset-0 rounded-[2.5rem] ring-1 ring-black/5 pointer-events-none"></div>
+                </div>
+            </div>
+            <div class="bg-white px-10 py-8 flex justify-end">
+                <button type="button" onclick="closeFollowerKtpModal()" class="px-8 py-5 bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800 transition-all active:scale-95">
+                    Kembali
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -600,6 +632,23 @@
         },
         buttonsStyling: false
     };
+
+    function showFollowerKtp(src, nama) {
+        const modal = document.getElementById('followerKtpModal');
+        const img = document.getElementById('followerKtpImg');
+        const nameText = document.getElementById('followerKtpNama');
+        
+        img.src = src;
+        nameText.innerText = nama;
+        
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+    }
+
+    function closeFollowerKtpModal() {
+        document.getElementById('followerKtpModal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
 
     function printTicket() {
         const qrImg = document.getElementById('qrCodePrint');

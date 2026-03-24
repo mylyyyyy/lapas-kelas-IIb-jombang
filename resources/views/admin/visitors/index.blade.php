@@ -471,7 +471,7 @@
         
         switchTab('history'); // Default tab
 
-        fetch(`/admin/pengunjung/${id}/history`)
+        fetch(`{{ url('admin/pengunjung') }}/${id}/history`)
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
@@ -512,8 +512,10 @@
                         // Collect followers for unique list
                         if (item.pengikuts && item.pengikuts.length > 0) {
                             item.pengikuts.forEach(p => {
-                                if (!allFollowers.has(p.nik)) {
-                                    allFollowers.set(p.nik, p);
+                                // Use NIK or name as key to ensure uniqueness
+                                const key = p.nik || p.nama;
+                                if (!allFollowers.has(key)) {
+                                    allFollowers.set(key, p);
                                 }
                             });
                         }
@@ -527,18 +529,9 @@
                             const card = `
                                 <div class="bg-slate-50 border border-slate-100 p-4 rounded-2xl flex items-center gap-4 hover:shadow-md transition-all">
                                     <div class="flex-shrink-0">
-                                        ${p.foto_ktp ? `
-                                            <a href="${p.foto_ktp}" target="_blank" class="block relative group/img">
-                                                <img src="${p.foto_ktp}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">
-                                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 rounded-full flex items-center justify-center text-white text-[8px]">
-                                                    <i class="fas fa-search"></i>
-                                                </div>
-                                            </a>
-                                        ` : `
-                                            <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 border-2 border-white shadow-sm">
-                                                <i class="fas fa-user text-sm"></i>
-                                            </div>
-                                        `}
+                                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 border-2 border-white shadow-sm">
+                                            <i class="fas fa-user text-sm"></i>
+                                        </div>
                                     </div>
                                     <div class="flex-grow min-w-0">
                                         <h4 class="font-black text-slate-800 text-xs truncate">${p.nama}</h4>
@@ -560,6 +553,8 @@
     }
 
     function getStatusBadge(status) {
+        if (!status) return '<span class="opacity-30">-</span>';
+        
         const statuses = {
             'pending': 'bg-amber-100 text-amber-700',
             'approved': 'bg-emerald-100 text-emerald-700',
@@ -625,7 +620,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 const form = document.getElementById('deleteForm');
-                form.action = '/admin/pengunjung/' + id;
+                form.action = `{{ url('admin/pengunjung') }}/${id}`;
                 form.submit();
             }
         });

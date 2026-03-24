@@ -144,7 +144,7 @@ class VisitorController extends Controller
             
         $history = Kunjungan::where('nik_ktp', $visitor->nik)
             ->select('id', 'nik_ktp', 'wbp_id', 'tanggal_kunjungan', 'status', 'barang_bawaan', 'sesi', 'nomor_antrian_harian')
-            ->with(['wbp:id,nama,no_registrasi', 'pengikuts:id,kunjungan_id,nama,nik,hubungan,barang_bawaan,foto_ktp'])
+            ->with(['wbp:id,nama,no_registrasi', 'pengikuts:id,kunjungan_id,nama,nik,hubungan,barang_bawaan'])
             ->latest('tanggal_kunjungan')
             ->get();
 
