@@ -139,11 +139,18 @@ class VisitorController extends Controller
 
     public function getHistory($id)
     {
-        $visitor = ProfilPengunjung::findOrFail($id);
+        $visitor = ProfilPengunjung::select('id', 'nik', 'nama', 'nomor_hp', 'email', 'alamat', 'rt', 'rw', 'desa', 'kecamatan', 'kabupaten', 'jenis_kelamin', 'created_at')
+            ->findOrFail($id);
+            
         $history = Kunjungan::where('nik_ktp', $visitor->nik)
-            ->with('wbp')
+            ->select('id', 'nik_ktp', 'wbp_id', 'tanggal_kunjungan', 'status', 'barang_bawaan', 'sesi', 'nomor_antrian_harian')
+            ->with(['wbp:id,nama,no_registrasi', 'pengikuts:id,kunjungan_id,nama,nik,hubungan,barang_bawaan,foto_ktp'])
             ->latest('tanggal_kunjungan')
             ->get();
+
+        // Transform history to include photo URLs but avoid sending full base64 in the main history list if possible, 
+        // or at least only for followers. Actually, we need the photos for the tab.
+        // We will keep pengikuts photos for now but ensure main kunjungan photos are excluded.
 
         return response()->json([
             'visitor' => $visitor,

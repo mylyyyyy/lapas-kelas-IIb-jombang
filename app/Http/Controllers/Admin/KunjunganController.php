@@ -267,8 +267,7 @@ class KunjunganController extends Controller
                     \App\Models\Pengikut::where('id', $pId)->update([
                         'nama' => $pData['nama'],
                         'nik' => $pData['nik'],
-                        // identitas_type tidak disimpan di tabel pengikut, 
-                        // tapi kita pastikan data nik sesuai (sudah divalidasi di atas)
+                        'barang_bawaan' => $pData['barang_bawaan'] ?? null,
                     ]);
                 }
             }
@@ -281,6 +280,7 @@ class KunjunganController extends Controller
                     $kunjungan->pengikuts()->create([
                         'nama' => $pData['nama'],
                         'nik' => $pData['nik'],
+                        'barang_bawaan' => $pData['barang_bawaan'] ?? null,
                     ]);
                 }
             }

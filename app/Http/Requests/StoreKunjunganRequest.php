@@ -69,6 +69,7 @@ class StoreKunjunganRequest extends FormRequest
                 },
             ],
             'pengikut_hubungan'             => 'nullable|array|max:4',
+            'pengikut_barang'               => 'nullable|array|max:4',
             'pengikut_foto'                 => 'nullable|array|max:4',
             'pengikut_foto.*'               => 'nullable|image|max:2048',
         ];

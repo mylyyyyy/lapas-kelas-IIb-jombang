@@ -103,7 +103,7 @@ class KunjunganService
                     if (!empty($nama)) {
                         $fotoPengikutBase64 = null;
                         
-                        if (isset($filesPengikut[$index])) {
+                        if (isset($filesPengikut[$index]) && $filesPengikut[$index] instanceof \Illuminate\Http\UploadedFile) {
                              $fileP = $filesPengikut[$index];
                              $compressedP = ImageService::compressUploadedFile($fileP, 1000, 80);
                              $fotoPengikutBase64 = 'data:image/jpeg;base64,' . base64_encode($compressedP);
@@ -114,7 +114,7 @@ class KunjunganService
                             'nama'          => $nama,
                             'nik'           => $data['pengikut_nik'][$index] ?? null,
                             'hubungan'      => $data['pengikut_hubungan'][$index] ?? null,
-                            'barang_bawaan' => null,
+                            'barang_bawaan' => $data['pengikut_barang'][$index] ?? null,
                             'foto_ktp'      => $fotoPengikutBase64,
                             'foto_ktp_path' => null,
                             'foto_ktp_processed_at' => $fotoPengikutBase64 ? now() : null,

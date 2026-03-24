@@ -164,6 +164,10 @@
                                                        class="flex-1 p-3 bg-white border-2 border-slate-100 rounded-xl font-bold text-slate-700 text-sm focus:border-emerald-500 focus:ring-0">
                                             </div>
                                         </div>
+                                        <div class="md:col-span-2 space-y-1">
+                                            <label class="text-[9px] font-black text-slate-400 uppercase ml-1">Barang Bawaan</label>
+                                            <input type="text" name="pengikut[{{ $pengikut->id }}][barang_bawaan]" value="{{ $pengikut->barang_bawaan }}" class="w-full p-3 bg-white border-2 border-slate-100 rounded-xl font-bold text-slate-700 text-sm focus:border-emerald-500 focus:ring-0" placeholder="Contoh: Baju, Makanan">
+                                        </div>
                                     </div>
                                 </div>
                                 @endforeach

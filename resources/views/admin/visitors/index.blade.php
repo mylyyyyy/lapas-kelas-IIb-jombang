@@ -276,37 +276,65 @@
                 <div>
                     <p class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-1.5">Intelijen Aktivitas</p>
                     <h3 class="text-3xl font-black text-slate-800 tracking-tighter" id="modal-title">
-                        Riwayat: <span id="historyNama" class="text-blue-600"></span>
+                        Profil: <span id="historyNama" class="text-blue-600"></span>
                     </h3>
                 </div>
                 <button type="button" onclick="closeHistory()" class="w-12 h-12 rounded-2xl bg-slate-50 text-slate-400 hover:text-slate-900 hover:bg-slate-100 transition-all flex items-center justify-center shadow-inner">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
+
+            {{-- TABS --}}
+            <div class="px-10 bg-white border-b border-slate-100 flex gap-8">
+                <button onclick="switchTab('history')" id="tab-history" class="py-4 border-b-4 border-blue-600 text-blue-600 font-black text-sm uppercase tracking-widest transition-all">
+                    Riwayat Kunjungan
+                </button>
+                <button onclick="switchTab('followers')" id="tab-followers" class="py-4 border-b-4 border-transparent text-slate-400 hover:text-slate-600 font-black text-sm uppercase tracking-widest transition-all">
+                    Daftar Pengikut
+                </button>
+            </div>
+
             <div class="bg-white px-10 py-10 max-h-[60vh] overflow-y-auto custom-scrollbar">
                 <div id="historyLoading" class="flex flex-col items-center justify-center py-20">
                     <div class="w-20 h-20 border-[6px] border-blue-50 border-t-blue-600 rounded-full animate-spin shadow-lg"></div>
                     <p class="mt-6 text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Sinkronisasi Data...</p>
                 </div>
-                <div id="historyContent" class="hidden">
-                    <table class="w-full text-sm text-left">
-                        <thead>
-                            <tr class="text-slate-400 border-b border-slate-100">
-                                <th class="px-4 py-5 font-black uppercase text-[10px] tracking-widest">Waktu Kunjungan</th>
-                                <th class="px-4 py-5 font-black uppercase text-[10px] tracking-widest text-center">Status Alur</th>
-                                <th class="px-4 py-5 font-black uppercase text-[10px] tracking-widest">WBP Dituju</th>
-                                <th class="px-4 py-5 font-black uppercase text-[10px] tracking-widest">Bawaan</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyTableBody" class="divide-y divide-slate-50">
-                            {{-- Data via AJAX --}}
-                        </tbody>
-                    </table>
-                    <div id="noHistory" class="hidden py-32 text-center">
-                        <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
-                            <i class="fas fa-folder-open text-3xl text-slate-200"></i>
+
+                <div id="modalDataContent" class="hidden">
+                    {{-- TAB 1: HISTORY --}}
+                    <div id="pane-history">
+                        <table class="w-full text-sm text-left">
+                            <thead>
+                                <tr class="text-slate-400 border-b border-slate-100">
+                                    <th class="px-4 py-5 font-black uppercase text-[10px] tracking-widest">Waktu Kunjungan</th>
+                                    <th class="px-4 py-5 font-black uppercase text-[10px] tracking-widest text-center">Status Alur</th>
+                                    <th class="px-4 py-5 font-black uppercase text-[10px] tracking-widest">WBP Dituju</th>
+                                    <th class="px-4 py-5 font-black uppercase text-[10px] tracking-widest">Bawaan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody" class="divide-y divide-slate-50">
+                                {{-- Data via AJAX --}}
+                            </tbody>
+                        </table>
+                        <div id="noHistory" class="hidden py-32 text-center">
+                            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                                <i class="fas fa-folder-open text-3xl text-slate-200"></i>
+                            </div>
+                            <p class="text-slate-400 font-black uppercase text-xs tracking-widest">Data Kosong</p>
                         </div>
-                        <p class="text-slate-400 font-black uppercase text-xs tracking-widest">Data Kosong</p>
+                    </div>
+
+                    {{-- TAB 2: FOLLOWERS --}}
+                    <div id="pane-followers" class="hidden">
+                        <div id="followersGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {{-- Data via AJAX --}}
+                        </div>
+                        <div id="noFollowers" class="hidden py-32 text-center">
+                            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
+                                <i class="fas fa-user-friends text-3xl text-slate-200"></i>
+                            </div>
+                            <p class="text-slate-400 font-black uppercase text-xs tracking-widest">Tidak Ada Pengikut Terdaftar</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -400,30 +428,65 @@
         document.body.classList.remove('overflow-hidden');
     }
 
+    function switchTab(tab) {
+        const historyBtn = document.getElementById('tab-history');
+        const followersBtn = document.getElementById('tab-followers');
+        const historyPane = document.getElementById('pane-history');
+        const followersPane = document.getElementById('pane-followers');
+
+        if (tab === 'history') {
+            historyBtn.classList.add('border-blue-600', 'text-blue-600');
+            historyBtn.classList.remove('border-transparent', 'text-slate-400');
+            followersBtn.classList.remove('border-blue-600', 'text-blue-600');
+            followersBtn.classList.add('border-transparent', 'text-slate-400');
+            historyPane.classList.remove('hidden');
+            followersPane.classList.add('hidden');
+        } else {
+            followersBtn.classList.add('border-blue-600', 'text-blue-600');
+            followersBtn.classList.remove('border-transparent', 'text-slate-400');
+            historyBtn.classList.remove('border-blue-600', 'text-blue-600');
+            historyBtn.classList.add('border-transparent', 'text-slate-400');
+            followersPane.classList.remove('hidden');
+            historyPane.classList.add('hidden');
+        }
+    }
+
     function showHistory(id) {
         const modal = document.getElementById('historyModal');
         const loading = document.getElementById('historyLoading');
-        const content = document.getElementById('historyContent');
+        const modalContent = document.getElementById('modalDataContent');
         const tableBody = document.getElementById('historyTableBody');
+        const followersGrid = document.getElementById('followersGrid');
         const noHistory = document.getElementById('noHistory');
+        const noFollowers = document.getElementById('noFollowers');
         const namaSpan = document.getElementById('historyNama');
 
         modal.classList.remove('hidden');
         loading.classList.remove('hidden');
-        content.classList.add('hidden');
+        modalContent.classList.add('hidden');
         noHistory.classList.add('hidden');
+        noFollowers.classList.add('hidden');
         tableBody.innerHTML = '';
+        followersGrid.innerHTML = '';
+        
+        switchTab('history'); // Default tab
 
         fetch(`/admin/pengunjung/${id}/history`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
             .then(data => {
                 namaSpan.innerText = data.visitor.nama;
                 loading.classList.add('hidden');
-                content.classList.remove('hidden');
+                modalContent.classList.remove('hidden');
 
+                // 1. Render History
                 if (!data.history || data.history.length === 0) {
                     noHistory.classList.remove('hidden');
                 } else {
+                    const allFollowers = new Map();
+
                     data.history.forEach(item => {
                         const date = new Date(item.tanggal_kunjungan).toLocaleDateString('id-ID', {
                             day: '2-digit',
@@ -445,7 +508,48 @@
                             </tr>
                         `;
                         tableBody.innerHTML += row;
+
+                        // Collect followers for unique list
+                        if (item.pengikuts && item.pengikuts.length > 0) {
+                            item.pengikuts.forEach(p => {
+                                if (!allFollowers.has(p.nik)) {
+                                    allFollowers.set(p.nik, p);
+                                }
+                            });
+                        }
                     });
+
+                    // 2. Render Followers
+                    if (allFollowers.size === 0) {
+                        noFollowers.classList.remove('hidden');
+                    } else {
+                        allFollowers.forEach(p => {
+                            const card = `
+                                <div class="bg-slate-50 border border-slate-100 p-4 rounded-2xl flex items-center gap-4 hover:shadow-md transition-all">
+                                    <div class="flex-shrink-0">
+                                        ${p.foto_ktp ? `
+                                            <a href="${p.foto_ktp}" target="_blank" class="block relative group/img">
+                                                <img src="${p.foto_ktp}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">
+                                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 rounded-full flex items-center justify-center text-white text-[8px]">
+                                                    <i class="fas fa-search"></i>
+                                                </div>
+                                            </a>
+                                        ` : `
+                                            <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 border-2 border-white shadow-sm">
+                                                <i class="fas fa-user text-sm"></i>
+                                            </div>
+                                        `}
+                                    </div>
+                                    <div class="flex-grow min-w-0">
+                                        <h4 class="font-black text-slate-800 text-xs truncate">${p.nama}</h4>
+                                        <p class="text-[10px] font-mono text-slate-400 truncate">${p.nik || '-'}</p>
+                                        <span class="inline-block mt-1 px-2 py-0.5 rounded-lg bg-blue-100 text-blue-700 text-[9px] font-black uppercase tracking-wider">${p.hubungan}</span>
+                                    </div>
+                                </div>
+                            `;
+                            followersGrid.innerHTML += card;
+                        });
+                    }
                 }
             })
             .catch(error => {
