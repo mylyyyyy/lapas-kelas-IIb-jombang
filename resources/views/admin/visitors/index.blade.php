@@ -489,8 +489,17 @@
         
         switchTab('history'); // Default tab
 
-        fetch(`{{ url('admin/pengunjung') }}/${id}/history`)
+        const historyUrl = `{{ route('admin.visitors.history', ':id') }}`.replace(':id', id);
+
+        fetch(historyUrl)
             .then(async response => {
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    const text = await response.text();
+                    console.error("Non-JSON response received:", text.substring(0, 200));
+                    throw new Error("Respon server tidak valid (Bukan JSON).");
+                }
+                
                 const data = await response.json();
                 if (!response.ok) {
                     throw new Error(data.message || 'Gagal sinkronisasi data riwayat.');

@@ -236,6 +236,7 @@ class VisitorController extends Controller
     public function getHistory($id)
     {
         try {
+            Log::info("Fetching history for visitor ID: $id");
             $visitor = ProfilPengunjung::findOrFail($id);
             
             $history = Kunjungan::where('nik_ktp', $visitor->nik)
@@ -249,7 +250,8 @@ class VisitorController extends Controller
                 'history' => $history
             ]);
         } catch (\Exception $e) {
-            Log::error('History Error: ' . $e->getMessage());
+            Log::error("History Error for ID $id: " . $e->getMessage());
+            Log::error($e->getTraceAsString());
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal sinkronisasi data riwayat: ' . $e->getMessage()
