@@ -259,7 +259,7 @@
                         </a>
                     @elseif($kunjungan->status == KunjunganStatus::COMPLETED)
                         {{-- TOMBOL SURVEI (SELESAI) --}}
-                        <a href="{{ route('survey.create', ['kunjungan_id' => $kunjungan->id]) }}" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
+                        <a href="https://star-survei3a.kemenimipas.go.id/ly/8ITXJREv" target="_blank" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-star"></i> ISI SURVEI IKM
                         </a>
                     @else

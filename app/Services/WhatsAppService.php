@@ -178,8 +178,8 @@ class WhatsAppService
     public function sendCompleted(Kunjungan $kunjungan)
     {
         $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
-        // Ganti route ke link survei IKM
-        $surveyUrl = route('survey.create', ['kunjungan_id' => $kunjungan->id]);
+        // Ganti ke link survei IKM Kemenimipas
+        $surveyUrl = 'https://star-survei3a.kemenimipas.go.id/ly/8ITXJREv';
 
         $message = "*KUNJUNGAN SELESAI* 🏁\n\n"
                  . "Halo {$kunjungan->nama_pengunjung},\n"

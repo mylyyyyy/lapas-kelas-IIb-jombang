@@ -40,10 +40,7 @@ class SendSurveyLink extends Notification implements ShouldQueue
     {
         // Generate Link Survey
         // Pastikan parameter 'kunjungan_id' ini ditangkap oleh SurveyController Anda
-        $surveyUrl = route('survey.create', [
-            'kunjungan_id' => $notifiable->id,
-            // 'token' => $notifiable->qr_token // Gunakan ini jika controller Anda butuh token
-        ]);
+        $surveyUrl = 'https://star-survei3a.kemenimipas.go.id/ly/8ITXJREv';
 
         return (new MailMessage)
             ->subject('Survei Kepuasan Layanan Kunjungan Lapas Jombang')
