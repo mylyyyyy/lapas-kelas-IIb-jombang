@@ -43,6 +43,7 @@
                 <a href="#profil" class="hover:text-gold transition">Profil</a>
                 <a href="#berita" class="hover:text-gold transition">Berita</a>
                 <a href="#pengumuman" class="hover:text-gold transition">Pengumuman</a>
+                <a href="https://sdm.lapasjombang.id" target="_blank" class="hover:text-gold transition">SDM</a>
             </div>
             <div>
                 <a href="/login" class="bg-blue-700 hover:bg-blue-600 px-4 py-2 rounded text-sm font-semibold transition">Login Admin</a>

@@ -101,6 +101,7 @@
                     <a href="{{ route('profile.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">Profil</a>
                     <a href="{{ route('news.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">Berita</a>
                     <a href="{{ route('announcements.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">Pengumuman</a>
+                    <a href="https://sdm.lapasjombang.id" target="_blank" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">SDM</a>
                     
                     {{-- Dropdown Informasi Publik --}}
                     <div class="relative group" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
@@ -201,6 +202,7 @@
                 <a href="{{ route('profile.index') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">Profil</a>
                 <a href="{{ route('news.public.index') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">Berita</a>
                 <a href="{{ route('announcements.public.index') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">Pengumuman</a>
+                <a href="https://sdm.lapasjombang.id" target="_blank" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">SDM</a>
                 
                 {{-- Dropdown Informasi Publik Mobile --}}
                 <div x-data="{ open: false }" class="space-y-1">
